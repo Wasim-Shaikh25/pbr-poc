@@ -1,0 +1,25 @@
+# PBR Stage 1A — controlled method validation
+# These tensors are synthetic. Results are not real-model evidence.
+stage: 1A
+words: 16384
+cols: 128
+seed: 7
+block_sizes: [256]
+cases:
+  - repeated_values
+  - constant_block
+  - duplicate_blocks
+  - near_duplicate_blocks
+  - repeated_residuals
+  - previous_value_runs
+  - previous_row
+  - bf16_component_concentration
+  - special_payloads
+  - random_uint16
+controlled_dir: outputs/controlled
+output_dir: outputs/reports/poc1
+runtime_lambda: 0.0
+selection: complete_encoded_bytes
+disclaimer: >
+  Stage 1A / controlled tensors only. Do not present these ratios as
+  checkpoint compression results.

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pbr-poc"
+version = "0.1.0"
+description = "Stage 1A proof of concept for Position-Based Binary Reconstruction (controlled tensors only)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "PBR research PoC" }]
+dependencies = [
+    "numpy>=1.24",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+baselines = ["zstandard>=0.22"]
+
+[project.scripts]
+pbr-poc1 = "pbr_encoder.cli:main"
+pbr-generate-controlled = "pbr_encoder.controlled_data:main"
+
+[project.urls]
+Repository = "https://github.com/Wasim-Shaikh25/pbr-poc"
+
+[tool.setuptools.packages.find]
+include = ["pbr_core*", "pbr_codecs*", "pbr_encoder*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]
