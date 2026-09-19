@@ -9,6 +9,8 @@ dist/
 build/
 outputs/
 *.u16
+*.safetensors
 !tests/fixtures/**
+!tests/fixtures/**/*.safetensors
 .coverage
 htmlcov/

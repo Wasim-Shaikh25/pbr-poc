@@ -1,16 +1,18 @@
-# PBR Stage 1A proof of concept
+# PBR Stage 1A / 1B proof of concept
 
 Position-Based Binary Reconstruction (PBR) encodes BF16 weights as a
 **generated / predicted bit pattern plus an exact XOR residual**. Reconstruction
 is `Decode(Encode(W)) == W` on the original uint16 words.
 
-This repository implements **Stage 1A only**: a controlled-method validation of
-that contract. It is **not** a model compressor, not a Safetensors qualifier,
-and **not evidence of real-checkpoint compression**.
+This repository implements **Stage 1A** (controlled tensors) and **Stage 1B**
+(real public-checkpoint tensors). It is **not** a production model compressor,
+not a full-model qualifier, and **not evidence that an 8 GB checkpoint becomes
+1–2 GB**.
 
-> **Research status:** concept and early proof of concept. Synthetic / controlled
-> tensor results demonstrate reversible reconstruction and codec mechanics. They
-> must never be presented as production ratios or as results on a real model.
+> **Research status:** concept and early proof of concept. Stage 1A uses
+> synthetic tensors. Stage 1B checks that the same codecs stay bit-exact on
+> real BF16/F16 weights and reports complete-container BPW. Neither stage is a
+> production ratio claim.
 
 ## What Stage 1A proves (Gate 1)
 
@@ -39,20 +41,22 @@ raw fallback or stay within bounded container overhead.
 
 ## What this is not
 
-- Not a real Safetensors / checkpoint experiment (PoC 1B / Gate 3).
+- Not a full-model encode of every shard, tokenizer, or config file.
 - Not a model qualification scanner (PoC 2).
 - Not a fused tile inference runtime.
-- Not a claim of 1–2 GB storage for an 8 GB model.
+- Not a claim of 1–2 GB storage for an 8 GB model. Do not scale Stage 1B BPW
+  into that story.
 - Hierarchical modes (cross-layer references, grammar coding, adaptive region
   trees) are out of scope. The encoder is Direct-first.
 
 ## Install
 
 ```bash
-python3 -m pip install -e ".[dev]"
+python3 -m pip install -e ".[dev,stage1b]"
 ```
 
-Runtime dependency: `numpy`. Tests: `pytest`. Optional baseline: `zstandard`.
+Runtime: `numpy`. Tests: `pytest`. Stage 1B download: `huggingface_hub`.
+Optional baseline: `zstandard`.
 
 ## Run Stage 1A (one command)
 
@@ -98,6 +102,51 @@ Reports written under `outputs/reports/poc1/`:
 
 Config defaults live in `configs/poc_controlled.yaml`.
 
+## Stage 1B / Gate 1B — real BF16 tensors
+
+**Gate 1B** asks: do the Stage 1A codecs still reconstruct **real** 16-bit
+checkpoint weights bit-exactly, and what complete-container BPW / mode mix
+do they produce? A PASS is exactness. A BPW near 16 on real weights is an
+honest result, not a failure.
+
+Default checkpoint: [`Qwen/Qwen2.5-0.5B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct)
+(Safetensors, BF16, ~988 MB). If that download fails, the runner falls back to
+[`HuggingFaceTB/SmolLM2-360M-Instruct`](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct)
+and prints that it did so.
+
+The whole Qwen file is larger than the 100–500 MB Stage 1B window, so the
+script selects a stratified sample of 2-D linear / attention `*.weight` tensors
+from early, middle, and late layers (default 100–160 MiB). Embeddings and
+norm vectors are skipped unless you pass `--include-embeddings`. The console
+and `summary.json` list every selected tensor and byte count.
+
+```bash
+python3 -m pip install -e ".[dev,stage1b]"
+python scripts/run_poc1b.py
+```
+
+Equivalent: `pbr-poc1b`. Useful flags:
+
+```bash
+python scripts/run_poc1b.py --model-dir /path/to/local/checkpoint
+python scripts/run_poc1b.py --repo Qwen/Qwen2.5-0.5B-Instruct --revision main
+python scripts/run_poc1b.py --max-bytes 167772160 --block-sizes 256
+```
+
+Weights are loaded from the Safetensors byte offsets as **uint16 views**.
+BF16 and F16 are accepted. F32 / wider dtypes are refused (no FP32 archival
+path). Reported `enc_B` is the complete PBR container size on disk.
+
+Reports land in `outputs/reports/poc1b/`. Config: `configs/poc_real.yaml`.
+
+### Model attribution and license
+
+Stage 1B may download **Qwen2.5-0.5B-Instruct**, © 2024 Alibaba Cloud,
+[Apache License 2.0](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct/blob/main/LICENSE).
+The fallback **SmolLM2-360M-Instruct** is also Apache 2.0 (Hugging Face TB).
+This repository does **not** redistribute those weights. Record the resolved
+commit SHA from the run output before comparing results.
+
 ## Tests
 
 ```bash
@@ -107,6 +156,10 @@ pytest
 The suite fails loudly (`ExactnessError: EXACTNESS FAIL ...`) if any uint16 word
 differs. Cases include special BF16 bit patterns (signed zero, Inf, NaN
 payloads, subnormals) that an FP32 detour would be likely to destroy.
+
+Stage 1B unit tests write a tiny local Safetensors fixture (Qwen-like shapes,
+a few kilobytes). They do **not** download the 988 MB checkpoint. A live
+download test exists but is skipped unless `PBR_LIVE_HF=1`.
 
 ## How size is counted
 
@@ -149,16 +202,16 @@ shortest.
 ## Layout
 
 ```
-pbr_core/        uint16 views, tiles, container, hashing, bit packing
+pbr_core/        uint16 views, tiles, container, hashing, Safetensors I/O
 pbr_codecs/      raw, predictors, residuals, dictionaries, components
-pbr_encoder/     cost-based search, decoder, verification, Stage 1A CLI
-scripts/         generate_controlled_data.py, run_poc1.py
-tests/           exactness, codecs, container, round-trip
-configs/         poc_controlled.yaml
+pbr_encoder/     cost-based search, decoder, Stage 1A/1B CLIs, HF download
+scripts/         generate_controlled_data.py, run_poc1.py, run_poc1b.py
+tests/           exactness, codecs, container, round-trip, Stage 1B fixtures
+configs/         poc_controlled.yaml, poc_real.yaml
 ```
 
-Later stages from the research drafts (`pbr_qualifier`, fused runtime, real
-checkpoints) are intentionally absent.
+Later stages from the research drafts (full-model qualification scanner, fused
+runtime) are intentionally absent.
 
 ## Interpreting numbers
 
@@ -166,9 +219,14 @@ A low BPW on `constant_block` or `previous_row` only shows that the codec
 recognizes the pattern it was given. The `random_uint16` row is the honesty
 check: PBR must not invent compression on unstructured bits.
 
+Stage 1B BPW on real Qwen tensors is a measurement of **this encoder on those
+tensors**, including headers. It is not a projection for an 8 GB model.
+
 zlib / zstd columns, when present, are **general-purpose baselines**, not PBR
 modes.
 
 ## License
 
-MIT. Research drafts that specify this PoC remain separate documents.
+This PoC is MIT. Research drafts that specify it remain separate documents.
+Third-party checkpoints used in Stage 1B keep their own licenses (Qwen2.5
+Instruct: Apache 2.0; see above).

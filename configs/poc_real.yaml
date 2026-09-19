@@ -1,0 +1,23 @@
+# PBR Stage 1B — real BF16/F16 tensor validation
+# Method validation on a public checkpoint. Not a production ratio claim.
+stage: 1B
+repo: Qwen/Qwen2.5-0.5B-Instruct
+revision: main
+license: Apache-2.0
+attribution: >
+  Qwen2.5-0.5B-Instruct, © 2024 Alibaba Cloud, Apache License 2.0.
+  https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct
+  Weights are downloaded at run time and are not redistributed by this repo.
+fallback_repo: HuggingFaceTB/SmolLM2-360M-Instruct
+block_sizes: [256]
+# Whole checkpoint is ~988 MB; Stage 1B samples 100–200 MiB of linear weights.
+min_bytes: 104857600
+max_bytes: 167772160
+include_embeddings: false
+cache_dir: outputs/hf_cache
+local_dir: outputs/models
+output_dir: outputs/reports/poc1b
+selection: complete_encoded_bytes
+disclaimer: >
+  Stage 1B / Gate 1B real-tensor method validation only.
+  Do not present these BPW numbers as 1–2 GB / 8 GB model evidence.

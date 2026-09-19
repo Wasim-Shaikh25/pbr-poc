@@ -36,7 +36,7 @@ def _load_config(path: Path | None) -> dict:
     return loaded
 
 
-def _format_table(rows: list[dict]) -> str:
+def format_table(rows: list[dict]) -> str:
     headers = [
         "case",
         "orig_B",
@@ -88,13 +88,15 @@ def run_one(
     case: str,
     block_sizes: list[int],
     include_baselines: bool,
+    extra: dict | None = None,
+    disclaimer: str | None = None,
 ) -> dict:
     original_bytes = int(words.size * 2)
     best: dict | None = None
     attempts = []
     for block_size in block_sizes:
         t0 = time.perf_counter()
-        container = encode_tensor(words, name=case, block_size=block_size)
+        container = encode_tensor(words, name=case, block_size=block_size, extra=extra)
         encode_s = time.perf_counter() - t0
         blob = container.dumps()
         t1 = time.perf_counter()
@@ -126,7 +128,7 @@ def run_one(
             "mode_usage": usage,
             "encode_seconds": encode_s,
             "decode_seconds": decode_s,
-            "disclaimer": DISCLAIMER,
+            "disclaimer": disclaimer or DISCLAIMER,
         }
         attempts.append(record)
         if best is None or record["encoded_bytes"] < best["encoded_bytes"]:
@@ -169,7 +171,7 @@ def write_reports(row: dict, output_dir: Path) -> None:
                 "differing_words": 0 if row["exact"] == "PASS" else None,
                 "original_sha256": row["original_sha256"],
                 "restored_sha256": row["restored_sha256"],
-                "disclaimer": DISCLAIMER,
+                "disclaimer": row.get("disclaimer", DISCLAIMER),
             },
             indent=2,
         )
@@ -226,7 +228,7 @@ def run_poc1(
         encoding="utf-8",
     )
     (output_dir / "console_report.txt").write_text(
-        DISCLAIMER + "\n\n" + _format_table(rows) + "\n",
+        DISCLAIMER + "\n\n" + format_table(rows) + "\n",
         encoding="utf-8",
     )
     return rows
@@ -279,7 +281,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"GATE 1 FAIL: {exc}")
         return 1
 
-    print(_format_table(rows))
+    print(format_table(rows))
     print()
     failed = [r["case"] for r in rows if r["exact"] != "PASS"]
     if failed:

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pbr-poc"
 version = "0.1.0"
-description = "Stage 1A proof of concept for Position-Based Binary Reconstruction (controlled tensors only)"
+description = "PBR Stage 1A/1B proof of concept (controlled tensors + real-weight exactness)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -18,9 +18,11 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=7.4"]
 baselines = ["zstandard>=0.22"]
+stage1b = ["huggingface_hub>=0.23", "safetensors>=0.4"]
 
 [project.scripts]
 pbr-poc1 = "pbr_encoder.cli:main"
+pbr-poc1b = "pbr_encoder.poc1b:main"
 pbr-generate-controlled = "pbr_encoder.controlled_data:main"
 
 [project.urls]
