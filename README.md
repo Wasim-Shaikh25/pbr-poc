@@ -230,6 +230,32 @@ check, not a new compression claim.
 Config: `configs/qualifier_default.yaml`. Reports:
 `outputs/reports/poc2/stage2_qwen05b.json` and `console_report.txt`.
 
+### Measured Stage 2 run (this repo)
+
+Same Qwen revision as Stage 1B
+(`7ae557604adf67be50417f59c2c2f167def9a775`). **290 / 290** 16-bit tensors
+scanned (494,032,768 parameters). Every sample encode/decode **PASS**.
+Zero non-16-bit tensors. Zero unscanned 16-bit remainder.
+
+| | value |
+| --- | --- |
+| Projected complete BPW | **12.69** |
+| Band | **not exceptional** (>8) |
+| High-potential (≤4 projected) | **NO** |
+| One-GB qualified | **NO** (Stage 2 cannot award this) |
+| Projected encoded bytes | 783,604,658 |
+| Dominant sample modes | `bf16_components` on large weights; raw/header-heavy on tiny biases/norms |
+
+Best projected large tensor: `model.embed_tokens.weight` at 11.70 BPW.
+Layer linear/attention weights cluster around **13.0–13.2 BPW**, which
+matches the Stage 1B full-encode measurement of **13.61 BPW** on a 160 MiB
+linear subset (sample projection is slightly optimistic). Tiny 1-D norms and
+biases show 35–47 BPW because complete container headers dominate a few
+hundred words; they barely move the weighted total.
+
+**This model is not high-potential under the current Direct codecs.** A
+future hierarchical scanner could revise that; this run does not.
+
 ## Tests
 
 ```bash
