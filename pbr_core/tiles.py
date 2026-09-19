@@ -64,3 +64,19 @@ def iter_tiles(words_2d: np.ndarray, block_size: int) -> list[TileInfo]:
 
 def place_tile(dest: np.ndarray, tile: np.ndarray, row0: int, col0: int) -> None:
     dest[row0 : row0 + tile.shape[0], col0 : col0 + tile.shape[1]] = tile
+
+
+def tile_origins(rows: int, cols: int, block_size: int) -> list[tuple[int, int, int, int]]:
+    """Return (row0, col0, height, width) for every tile without loading data."""
+    if rows <= 0 or cols <= 0:
+        return []
+    th, tw = choose_tile_hw(block_size, rows, cols)
+    out: list[tuple[int, int, int, int]] = []
+    for r0 in range(0, rows, th):
+        for c0 in range(0, cols, tw):
+            out.append((r0, c0, min(th, rows - r0), min(tw, cols - c0)))
+    return out
+
+
+def tile_count(rows: int, cols: int, block_size: int) -> int:
+    return len(tile_origins(rows, cols, block_size))

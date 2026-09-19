@@ -4,15 +4,16 @@ Position-Based Binary Reconstruction (PBR) encodes BF16 weights as a
 **generated / predicted bit pattern plus an exact XOR residual**. Reconstruction
 is `Decode(Encode(W)) == W` on the original uint16 words.
 
-This repository implements **Stage 1A** (controlled tensors) and **Stage 1B**
-(real public-checkpoint tensors). It is **not** a production model compressor,
-not a full-model qualifier, and **not evidence that an 8 GB checkpoint becomes
-1–2 GB**.
+This repository implements **Stage 1A** (controlled tensors), **Stage 1B**
+(real public-checkpoint tensors), and **Stage 2** (a qualification *scanner*
+that projects BPW from samples). It is **not** a production model compressor
+and **not evidence that an 8 GB checkpoint becomes 1–2 GB**.
 
 > **Research status:** concept and early proof of concept. Stage 1A uses
 > synthetic tensors. Stage 1B checks that the same codecs stay bit-exact on
-> real BF16/F16 weights and reports complete-container BPW. Neither stage is a
-> production ratio claim.
+> real BF16/F16 weights and reports complete-container BPW. Stage 2 projects
+> whole-model BPW from sampled encodings. None of these is a production ratio
+> claim. Stage 2 projections are not measured full-model sizes.
 
 ## What Stage 1A proves (Gate 1)
 
@@ -42,12 +43,12 @@ raw fallback or stay within bounded container overhead.
 ## What this is not
 
 - Not a full-model encode of every shard, tokenizer, or config file.
-- Not a model qualification scanner (PoC 2).
 - Not a fused tile inference runtime.
 - Not a claim of 1–2 GB storage for an 8 GB model. Do not scale Stage 1B BPW
-  into that story.
+  or Stage 2 projections into that story.
 - Hierarchical modes (cross-layer references, grammar coding, adaptive region
-  trees) are out of scope. The encoder is Direct-first.
+  trees) are out of scope. The encoder is Direct-first. A later hierarchical
+  scanner could change a projection; this one does not include those codecs.
 
 ## Install
 
@@ -167,6 +168,68 @@ The fallback **SmolLM2-360M-Instruct** is also Apache 2.0 (Hugging Face TB).
 This repository does **not** redistribute those weights. Record the resolved
 commit SHA from the run output before comparing results.
 
+## Stage 2 — model qualification scanner
+
+Stage 2 asks whether a **full encode is worth running**, using the same
+Stage 1 codecs on **samples**. It does not produce a measured checkpoint
+size.
+
+```
+python scripts/run_qualifier.py --model Qwen/Qwen2.5-0.5B-Instruct
+# or
+pbr-qualify --model-dir /path/to/local/checkpoint
+```
+
+Pipeline:
+
+1. **Inventory** every Safetensors tensor (name, shape, dtype, nbytes).
+2. **Entropy triage** on uint16 words, BF16 components, and previous-value /
+   previous-row residuals (subsampled on large tensors).
+3. **Predictor / mode screening** by running the existing cost-based encoder
+   on a strided tile sample (or the whole tensor if it is tiny).
+4. **Repetition** — exact-duplicate rate and mean XOR popcount vs the
+   previous sampled tile.
+5. **Actual sample encode** — complete container bytes (headers, mode ids,
+   dictionaries, residuals). Each sample is decoded and must be bit-exact.
+6. **Whole-model projection**
+   `Total_BPW = 8 × total_projected_encoded_bytes / total_16bit_parameter_count`.
+   Tile on-wire bytes are scaled to the full tile count; the container header
+   is counted once per tensor. **Unscanned 16-bit remainder is raw BF16 at
+   16 BPW.**
+
+### Dtype policy
+
+Only `BF16` / `F16` / `FP16` are scanned, as uint16 views. Other dtypes are
+**not converted**. They are listed, their raw bytes are reported separately,
+and they are excluded from the 16-bit BPW denominator.
+
+### How to read the bands
+
+| projected BPW | Band | What Stage 2 may say |
+| --- | --- | --- |
+| >8 | not exceptional | Not a PBR-Direct high-potential target |
+| 4–8 | strong | Worth a closer look; not high-potential yet |
+| 2–4 | exceptional | **High-potential** (projection ≤4 BPW) |
+| ≤2 | one-GB *class* | Class label only |
+| ≤1 | extreme | Class label only |
+
+**High-potential** is allowed only when the projected complete BPW is **≤4**.
+**One-GB qualified** is **never** set by Stage 2. That label requires a later
+measured full-container encode at ≤2 BPW.
+
+### Relation to the Stage 1B result
+
+Stage 1B fully encoded 159.9 MiB of Qwen linear/attention weights at
+**13.61 complete-container BPW**, with `bf16_components` winning and zlib
+slightly smaller. That already says this checkpoint, under *these* codecs,
+looks like ordinary lossless data. Stage 2 should land in the same
+**not exceptional** band unless hierarchical modes (not implemented here)
+change the sample encodes. A projection near 13–16 BPW is a consistency
+check, not a new compression claim.
+
+Config: `configs/qualifier_default.yaml`. Reports:
+`outputs/reports/poc2/stage2_qwen05b.json` and `console_report.txt`.
+
 ## Tests
 
 ```bash
@@ -177,9 +240,9 @@ The suite fails loudly (`ExactnessError: EXACTNESS FAIL ...`) if any uint16 word
 differs. Cases include special BF16 bit patterns (signed zero, Inf, NaN
 payloads, subnormals) that an FP32 detour would be likely to destroy.
 
-Stage 1B unit tests write a tiny local Safetensors fixture (Qwen-like shapes,
-a few kilobytes). They do **not** download the 988 MB checkpoint. A live
-download test exists but is skipped unless `PBR_LIVE_HF=1`.
+Stage 1B / Stage 2 unit tests write tiny local Safetensors fixtures. They do
+**not** download the 988 MB checkpoint. Live download tests are skipped
+unless `PBR_LIVE_HF=1`.
 
 ## How size is counted
 
@@ -225,13 +288,14 @@ shortest.
 pbr_core/        uint16 views, tiles, container, hashing, Safetensors I/O
 pbr_codecs/      raw, predictors, residuals, dictionaries, components
 pbr_encoder/     cost-based search, decoder, Stage 1A/1B CLIs, HF download
-scripts/         generate_controlled_data.py, run_poc1.py, run_poc1b.py
-tests/           exactness, codecs, container, round-trip, Stage 1B fixtures
-configs/         poc_controlled.yaml, poc_real.yaml
+pbr_qualifier/   Stage 2 inventory, entropy, sample encode, BPW projection
+scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py
+tests/           exactness, codecs, Stage 1B fixtures, qualifier math
+configs/         poc_controlled.yaml, poc_real.yaml, qualifier_default.yaml
 ```
 
-Later stages from the research drafts (full-model qualification scanner, fused
-runtime) are intentionally absent.
+Later stages (full selected-model encode vs projection, fused runtime) are
+intentionally absent.
 
 ## Interpreting numbers
 
@@ -240,7 +304,8 @@ recognizes the pattern it was given. The `random_uint16` row is the honesty
 check: PBR must not invent compression on unstructured bits.
 
 Stage 1B BPW on real Qwen tensors is a measurement of **this encoder on those
-tensors**, including headers. It is not a projection for an 8 GB model.
+tensors**, including headers. Stage 2 BPW is a **sample projection** for the
+whole 16-bit parameter set. Neither number is a measured 8 GB-model result.
 
 zlib / zstd columns, when present, are **general-purpose baselines**, not PBR
 modes.

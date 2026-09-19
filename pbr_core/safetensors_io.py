@@ -99,6 +99,65 @@ def inventory_model(model_dir: Path) -> list[TensorSpec]:
     return specs
 
 
+def logical_2d_shape(shape: tuple[int, ...]) -> tuple[int, int]:
+    """Row-major 2-D view used for tiling. 1-D becomes ``(1, n)``."""
+    if len(shape) == 0:
+        return (0, 0)
+    if len(shape) == 1:
+        return (1, int(shape[0]))
+    if len(shape) == 2:
+        return (int(shape[0]), int(shape[1]))
+    head = int(shape[0])
+    tail = 1
+    for dim in shape[1:]:
+        tail *= int(dim)
+    return (head, tail)
+
+
+def load_uint16_words(spec: TensorSpec, start: int, count: int) -> np.ndarray:
+    """Load a contiguous uint16 slice. Never casts through FP32."""
+    if spec.dtype not in TWO_BYTE_DTYPES:
+        raise TypeError(
+            f"Refusing to archive {spec.name} dtype {spec.dtype}. "
+            "PBR only views 16-bit tensors as uint16."
+        )
+    if start < 0 or count < 0 or start + count > spec.n_words:
+        raise ValueError(
+            f"{spec.name}: slice [{start}:{start + count}] outside {spec.n_words} words"
+        )
+    byte0 = spec.data_start + spec.data_offsets[0] + start * 2
+    mm = np.memmap(spec.file_path, dtype=np.uint8, mode="r")
+    raw = np.array(mm[byte0 : byte0 + count * 2], dtype=np.uint8, copy=True)
+    del mm
+    return np.frombuffer(raw, dtype="<u2").copy()
+
+
+def load_uint16_region(
+    spec: TensorSpec, row0: int, col0: int, height: int, width: int
+) -> np.ndarray:
+    """Load a 2-D window using the logical row-major layout."""
+    rows, cols = logical_2d_shape(spec.shape)
+    if row0 < 0 or col0 < 0 or row0 + height > rows or col0 + width > cols:
+        raise ValueError(f"{spec.name}: region out of bounds for {(rows, cols)}")
+    if spec.dtype not in TWO_BYTE_DTYPES:
+        raise TypeError(
+            f"Refusing to archive {spec.name} dtype {spec.dtype}. "
+            "PBR only views 16-bit tensors as uint16."
+        )
+    out = np.empty((height, width), dtype=np.uint16)
+    mm = np.memmap(spec.file_path, dtype=np.uint8, mode="r")
+    base = spec.data_start + spec.data_offsets[0]
+    try:
+        for i in range(height):
+            word_off = (row0 + i) * cols + col0
+            byte0 = base + word_off * 2
+            raw = mm[byte0 : byte0 + width * 2]
+            out[i] = np.frombuffer(np.array(raw, dtype=np.uint8, copy=True), dtype="<u2")
+    finally:
+        del mm
+    return out
+
+
 def load_uint16(spec: TensorSpec) -> np.ndarray:
     """Load F16/BF16 tensor bytes as a uint16 view. Never casts through FP32."""
     if spec.dtype not in TWO_BYTE_DTYPES:
