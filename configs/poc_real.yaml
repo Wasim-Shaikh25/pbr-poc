@@ -2,7 +2,8 @@
 # Method validation on a public checkpoint. Not a production ratio claim.
 stage: 1B
 repo: Qwen/Qwen2.5-0.5B-Instruct
-revision: main
+# Resolved from `main` during the Gate 1B run documented in the README.
+revision: 7ae557604adf67be50417f59c2c2f167def9a775
 license: Apache-2.0
 attribution: >
   Qwen2.5-0.5B-Instruct, © 2024 Alibaba Cloud, Apache License 2.0.

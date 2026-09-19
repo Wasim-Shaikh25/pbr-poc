@@ -139,6 +139,26 @@ path). Reported `enc_B` is the complete PBR container size on disk.
 
 Reports land in `outputs/reports/poc1b/`. Config: `configs/poc_real.yaml`.
 
+### Measured Gate 1B run (this repo)
+
+Checkpoint: `Qwen/Qwen2.5-0.5B-Instruct` revision
+`7ae557604adf67be50417f59c2c2f167def9a775`, Apache 2.0. Selected **42**
+linear/attention weight tensors from layers 0, 1, 2, 3, 4, 5, 12, 23
+(**159.9 MiB** of BF16). Embeddings were not included. **Every tensor
+PASS** (uint16 / SHA-256). Winning mode on all tiles: `bf16_components`.
+
+| tensor | orig B | enc B | BPW | ratio | exact | zlib B (baseline) |
+| --- | ---: | ---: | ---: | ---: | --- | ---: |
+| layers.0.mlp.down_proj.weight | 8716288 | 7408946 | 13.60 | 0.850 | PASS | 6933245 |
+| layers.12.self_attn.q_proj.weight | 1605632 | 1367170 | 13.62 | 0.851 | PASS | 1278723 |
+| layers.23.mlp.up_proj.weight | 8716288 | 7403422 | 13.59 | 0.849 | PASS | 6936780 |
+| **TOTAL (42 tensors)** | **167673856** | **142577035** | **13.61** | **0.850** | **PASS** | **133488038** |
+
+zlib is a **baseline, not PBR**. On this sample zlib is slightly smaller
+(~12.7 BPW vs PBR 13.6). That is expected: Stage 1B proves exactness and
+complete-byte accounting on real weights, not that PBR beats general
+compressors. **Do not scale 13.6 BPW into a 1–2 GB / 8 GB claim.**
+
 ### Model attribution and license
 
 Stage 1B may download **Qwen2.5-0.5B-Instruct**, © 2024 Alibaba Cloud,
