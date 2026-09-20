@@ -731,6 +731,8 @@ python scripts/disk_tunnel_infer.py --model-dir outputs/models/Qwen__Qwen2.5-0.5
 - Microbench: numpy Qwen2 forward on a short fixed token list (not HF `generate` quality). Tunnel logits must match the full-load path. PBR-E tiles SHA-256 match the BF16 source.
 - Metrics: `artifacts/disk_ram_tunnel.md` and `.json` (peak RSS, disk-read bytes, decode/compute time, tok/s, exactness).
 
+Measured on this Qwen 0.5B Instruct checkpoint (8 tokens, 24 layers, isolated processes): **full-load sampled peak 1006 MiB** vs **mmap 78 MiB** / **PBR-E 83 MiB**. Logits bit-identical (`max_abs=0`). PBR-E SHA **289/289 PASS**. PBR-E decode is slow (~124 s) because every tensor is rANS-decoded on the CPU; RAM stays in the mmap band.
+
 This does **not** claim phone-scale 27B, ≤8 BPW exact, or 1–2 GB / 8 GB. ≤8 BPW hunt notes stay in `artifacts/path_to_50pct.md` and are not the goal here.
 
 ## Tests
