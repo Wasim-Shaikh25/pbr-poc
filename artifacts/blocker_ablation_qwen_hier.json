@@ -1,0 +1,1584 @@
+{
+  "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+  "model": {
+    "repo_id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "license": "Apache-2.0",
+    "local_dir": "outputs/models/Qwen__Qwen2.5-0.5B-Instruct",
+    "selected": [
+      "model.layers.0.mlp.down_proj.weight",
+      "model.layers.0.mlp.gate_proj.weight",
+      "model.layers.0.mlp.up_proj.weight",
+      "model.layers.0.self_attn.k_proj.weight",
+      "model.layers.0.self_attn.o_proj.weight",
+      "model.layers.0.self_attn.q_proj.weight",
+      "model.layers.0.self_attn.v_proj.weight",
+      "model.layers.12.mlp.down_proj.weight",
+      "model.layers.12.mlp.gate_proj.weight",
+      "model.layers.12.mlp.up_proj.weight",
+      "model.layers.12.self_attn.k_proj.weight",
+      "model.layers.12.self_attn.o_proj.weight",
+      "model.layers.12.self_attn.q_proj.weight",
+      "model.layers.12.self_attn.v_proj.weight",
+      "model.layers.23.mlp.down_proj.weight",
+      "model.layers.23.mlp.gate_proj.weight",
+      "model.layers.23.mlp.up_proj.weight",
+      "model.layers.23.self_attn.k_proj.weight",
+      "model.layers.23.self_attn.o_proj.weight",
+      "model.layers.23.self_attn.q_proj.weight",
+      "model.layers.23.self_attn.v_proj.weight",
+      "model.layers.1.mlp.down_proj.weight",
+      "model.layers.1.mlp.gate_proj.weight",
+      "model.layers.1.mlp.up_proj.weight",
+      "model.layers.1.self_attn.k_proj.weight",
+      "model.layers.1.self_attn.o_proj.weight",
+      "model.layers.1.self_attn.q_proj.weight",
+      "model.layers.1.self_attn.v_proj.weight",
+      "model.layers.2.mlp.down_proj.weight",
+      "model.layers.2.mlp.gate_proj.weight",
+      "model.layers.2.mlp.up_proj.weight",
+      "model.layers.2.self_attn.k_proj.weight",
+      "model.layers.2.self_attn.o_proj.weight",
+      "model.layers.2.self_attn.q_proj.weight",
+      "model.layers.2.self_attn.v_proj.weight",
+      "model.layers.3.mlp.down_proj.weight",
+      "model.layers.3.mlp.gate_proj.weight",
+      "model.layers.3.self_attn.k_proj.weight",
+      "model.layers.3.self_attn.v_proj.weight",
+      "model.layers.4.self_attn.k_proj.weight",
+      "model.layers.4.self_attn.v_proj.weight",
+      "model.layers.5.self_attn.k_proj.weight"
+    ]
+  },
+  "totals": [
+    {
+      "case": "TOTAL",
+      "profile": "hierarchical",
+      "original_bytes": 167673856,
+      "encoded_bytes": 113900778,
+      "n_words": 83836928,
+      "bpw": 10.86879309318204,
+      "ratio_vs_raw_bf16": 0.6792995683238775,
+      "exact": "PASS",
+      "winning_modes": "bf16_exp_huffman:42",
+      "zlib_bytes": null,
+      "tensor_count": 42
+    }
+  ],
+  "profiles": {
+    "hierarchical": [
+      {
+        "case": "model.layers.0.mlp.down_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          896,
+          4864
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5892020,
+        "payload_bytes": 5891401,
+        "metadata_bytes": 619,
+        "bpw": 10.81564996475564,
+        "ratio_vs_raw_bf16": 0.6759781227972275,
+        "exact": "PASS",
+        "original_sha256": "195f2fd5f3bc96980f509c46b59180cfe3eacba58cb890381900d4c118157200",
+        "restored_sha256": "195f2fd5f3bc96980f509c46b59180cfe3eacba58cb890381900d4c118157200",
+        "container_sha256": "c6f7f97ad5d734da506efbfca9032708695fc904cb3ce67540e9212d1279aa57",
+        "source_sha256": "195f2fd5f3bc96980f509c46b59180cfe3eacba58cb890381900d4c118157200",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5891418
+          }
+        },
+        "encode_seconds": 20.672511836000012,
+        "decode_seconds": 0.9646394119999968,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.0.mlp.gate_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          4864,
+          896
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5936204,
+        "payload_bytes": 5935585,
+        "metadata_bytes": 619,
+        "bpw": 10.896756050281954,
+        "ratio_vs_raw_bf16": 0.6810472531426222,
+        "exact": "PASS",
+        "original_sha256": "e3346225575baaf568a0835e2c8f4bb682652093afdab5ff1a49224853c156a2",
+        "restored_sha256": "e3346225575baaf568a0835e2c8f4bb682652093afdab5ff1a49224853c156a2",
+        "container_sha256": "2938abd55f964f8a7df1d8a6b34869c765f1b2da1fe2be22cf7f1885b6f460b5",
+        "source_sha256": "e3346225575baaf568a0835e2c8f4bb682652093afdab5ff1a49224853c156a2",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5935602
+          }
+        },
+        "encode_seconds": 20.378607376000218,
+        "decode_seconds": 0.956270804000269,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.0.mlp.up_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          4864,
+          896
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5932602,
+        "payload_bytes": 5931985,
+        "metadata_bytes": 617,
+        "bpw": 10.890144061325188,
+        "ratio_vs_raw_bf16": 0.6806340038328242,
+        "exact": "PASS",
+        "original_sha256": "c66e277c3f509f8b2e3b40155a954f98ac5753870d344c9f67005f7108991862",
+        "restored_sha256": "c66e277c3f509f8b2e3b40155a954f98ac5753870d344c9f67005f7108991862",
+        "container_sha256": "377fa3c9c934ae063f29d2e97cfbb668ee907f9bf8ed6a24a109ce23de554f82",
+        "source_sha256": "c66e277c3f509f8b2e3b40155a954f98ac5753870d344c9f67005f7108991862",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5932002
+          }
+        },
+        "encode_seconds": 20.28085203399951,
+        "decode_seconds": 0.9548647179999534,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.0.self_attn.k_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 114688,
+        "shape": [
+          128,
+          896
+        ],
+        "original_bytes": 229376,
+        "encoded_bytes": 160392,
+        "payload_bytes": 159774,
+        "metadata_bytes": 618,
+        "bpw": 11.188058035714286,
+        "ratio_vs_raw_bf16": 0.6992536272321429,
+        "exact": "PASS",
+        "original_sha256": "e26298921de4a3580417534336302070ab0e25f64a0a2dec7f9cbee98dfe5f15",
+        "restored_sha256": "e26298921de4a3580417534336302070ab0e25f64a0a2dec7f9cbee98dfe5f15",
+        "container_sha256": "69cf063f6e1bf2ade9b6213b7a68bf38a044f4eea1b30e909144577a3b1744b3",
+        "source_sha256": "e26298921de4a3580417534336302070ab0e25f64a0a2dec7f9cbee98dfe5f15",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 159791
+          }
+        },
+        "encode_seconds": 0.5389634879993537,
+        "decode_seconds": 0.03030102800039458,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.0.self_attn.o_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 802816,
+        "shape": [
+          896,
+          896
+        ],
+        "original_bytes": 1605632,
+        "encoded_bytes": 1103330,
+        "payload_bytes": 1102712,
+        "metadata_bytes": 618,
+        "bpw": 10.994599011479592,
+        "ratio_vs_raw_bf16": 0.6871624382174745,
+        "exact": "PASS",
+        "original_sha256": "550df0b768809efcfc3cda7f8bf86e5c1d64ec5a456fa8c443a51d6bbf20c8d6",
+        "restored_sha256": "550df0b768809efcfc3cda7f8bf86e5c1d64ec5a456fa8c443a51d6bbf20c8d6",
+        "container_sha256": "61e30eff8fdb237f7a0af172c904ffbcebbc7644c682d6ebe18a26068eacd2de",
+        "source_sha256": "550df0b768809efcfc3cda7f8bf86e5c1d64ec5a456fa8c443a51d6bbf20c8d6",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 1102729
+          }
+        },
+        "encode_seconds": 3.7511377459995856,
+        "decode_seconds": 0.17446404299971618,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.0.self_attn.q_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 802816,
+        "shape": [
+          896,
+          896
+        ],
+        "original_bytes": 1605632,
+        "encoded_bytes": 1115952,
+        "payload_bytes": 1115334,
+        "metadata_bytes": 618,
+        "bpw": 11.120376275510203,
+        "ratio_vs_raw_bf16": 0.6950235172193877,
+        "exact": "PASS",
+        "original_sha256": "7af566022f07072d911a22135d8835121b1fe44e05e2d9a009c1263cba98fdef",
+        "restored_sha256": "7af566022f07072d911a22135d8835121b1fe44e05e2d9a009c1263cba98fdef",
+        "container_sha256": "791fcf8f528133a9f69b3fbed3f655dbc7d391058da167014f5acddb3b1529d5",
+        "source_sha256": "7af566022f07072d911a22135d8835121b1fe44e05e2d9a009c1263cba98fdef",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 1115351
+          }
+        },
+        "encode_seconds": 3.76089968999986,
+        "decode_seconds": 0.1745508849999169,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.0.self_attn.v_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 114688,
+        "shape": [
+          128,
+          896
+        ],
+        "original_bytes": 229376,
+        "encoded_bytes": 157439,
+        "payload_bytes": 156821,
+        "metadata_bytes": 618,
+        "bpw": 10.982073102678571,
+        "ratio_vs_raw_bf16": 0.6863795689174107,
+        "exact": "PASS",
+        "original_sha256": "e91cd98736944a3939585889527255165ace900bc926e85b1f13d90d3cad6e0c",
+        "restored_sha256": "e91cd98736944a3939585889527255165ace900bc926e85b1f13d90d3cad6e0c",
+        "container_sha256": "3dabe5ac1bd3ebf1c90657cc5cdcbffdc3294e342913d37ae2b1bde4fe6e8a8d",
+        "source_sha256": "e91cd98736944a3939585889527255165ace900bc926e85b1f13d90d3cad6e0c",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 156838
+          }
+        },
+        "encode_seconds": 0.5326341180007148,
+        "decode_seconds": 0.02882551000038802,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.12.mlp.down_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          896,
+          4864
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5969533,
+        "payload_bytes": 5968913,
+        "metadata_bytes": 620,
+        "bpw": 10.957936222391917,
+        "ratio_vs_raw_bf16": 0.6848710138994948,
+        "exact": "PASS",
+        "original_sha256": "79ae5a8fe91ecf437f5959c7cb28121fda775a8e62fc807179cd037fbe6c1762",
+        "restored_sha256": "79ae5a8fe91ecf437f5959c7cb28121fda775a8e62fc807179cd037fbe6c1762",
+        "container_sha256": "3627b96af3cd73af36127e9e7d907d50a746007d63bad9f7e498ebb8075ef9c5",
+        "source_sha256": "79ae5a8fe91ecf437f5959c7cb28121fda775a8e62fc807179cd037fbe6c1762",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5968930
+          }
+        },
+        "encode_seconds": 22.19969465899976,
+        "decode_seconds": 0.937868220999917,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.12.mlp.gate_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          4864,
+          896
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5962608,
+        "payload_bytes": 5961988,
+        "metadata_bytes": 620,
+        "bpw": 10.945224389097744,
+        "ratio_vs_raw_bf16": 0.684076524318609,
+        "exact": "PASS",
+        "original_sha256": "4c3c119736760683a14b05074c290e837dd7a4d5cb08a680446e62baa3d631dd",
+        "restored_sha256": "4c3c119736760683a14b05074c290e837dd7a4d5cb08a680446e62baa3d631dd",
+        "container_sha256": "eaa53338e3c0bb198ed8fe12dae21ffdf99a28034e03fb139e95343f0a56491d",
+        "source_sha256": "4c3c119736760683a14b05074c290e837dd7a4d5cb08a680446e62baa3d631dd",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5962005
+          }
+        },
+        "encode_seconds": 22.245351477999975,
+        "decode_seconds": 0.9310381390005205,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.12.mlp.up_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          4864,
+          896
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5947536,
+        "payload_bytes": 5946918,
+        "metadata_bytes": 618,
+        "bpw": 10.917557565789474,
+        "ratio_vs_raw_bf16": 0.6823473478618421,
+        "exact": "PASS",
+        "original_sha256": "456ee472d1a607028419a73c53b791d80f53c58ba9baa162a9cca6c22a3e2d40",
+        "restored_sha256": "456ee472d1a607028419a73c53b791d80f53c58ba9baa162a9cca6c22a3e2d40",
+        "container_sha256": "89cc7bdef2a505dd998e85148833bdc7fc9a95080d3c445aa69da10383a94815",
+        "source_sha256": "456ee472d1a607028419a73c53b791d80f53c58ba9baa162a9cca6c22a3e2d40",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5946935
+          }
+        },
+        "encode_seconds": 22.068165104999935,
+        "decode_seconds": 0.9381581229999938,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.12.self_attn.k_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 114688,
+        "shape": [
+          128,
+          896
+        ],
+        "original_bytes": 229376,
+        "encoded_bytes": 154421,
+        "payload_bytes": 153802,
+        "metadata_bytes": 619,
+        "bpw": 10.771554129464286,
+        "ratio_vs_raw_bf16": 0.6732221330915179,
+        "exact": "PASS",
+        "original_sha256": "17cb102c41469ce106213ba6845d3fd25d87d62298288568f37fc4f3a46b5d5d",
+        "restored_sha256": "17cb102c41469ce106213ba6845d3fd25d87d62298288568f37fc4f3a46b5d5d",
+        "container_sha256": "aa9ec69a1d0a0935499991915327a287aa5d178a6b30b8cf438c9f2ecfe3cb96",
+        "source_sha256": "17cb102c41469ce106213ba6845d3fd25d87d62298288568f37fc4f3a46b5d5d",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 153819
+          }
+        },
+        "encode_seconds": 0.5659198889998152,
+        "decode_seconds": 0.027504532000421023,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.12.self_attn.o_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 802816,
+        "shape": [
+          896,
+          896
+        ],
+        "original_bytes": 1605632,
+        "encoded_bytes": 1106881,
+        "payload_bytes": 1106262,
+        "metadata_bytes": 619,
+        "bpw": 11.029984454719388,
+        "ratio_vs_raw_bf16": 0.6893740284199618,
+        "exact": "PASS",
+        "original_sha256": "eb9ec8dd8892d1f4ab95f3789eb488cbbec494d1ce2b9ebb7e2fbf08bdb42359",
+        "restored_sha256": "eb9ec8dd8892d1f4ab95f3789eb488cbbec494d1ce2b9ebb7e2fbf08bdb42359",
+        "container_sha256": "136928bb22546640cf1e53f34df1f5c8432c3f14d0131364e24075b0ee163eaf",
+        "source_sha256": "eb9ec8dd8892d1f4ab95f3789eb488cbbec494d1ce2b9ebb7e2fbf08bdb42359",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 1106279
+          }
+        },
+        "encode_seconds": 4.012968135000847,
+        "decode_seconds": 0.17645191500014334,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.12.self_attn.q_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 802816,
+        "shape": [
+          896,
+          896
+        ],
+        "original_bytes": 1605632,
+        "encoded_bytes": 1103247,
+        "payload_bytes": 1102628,
+        "metadata_bytes": 619,
+        "bpw": 10.993771922831632,
+        "ratio_vs_raw_bf16": 0.687110745176977,
+        "exact": "PASS",
+        "original_sha256": "e1818f862dec0e01975debeb084759c0a9d6fd3df8f6d3a38b8bb7f83efcb1fb",
+        "restored_sha256": "e1818f862dec0e01975debeb084759c0a9d6fd3df8f6d3a38b8bb7f83efcb1fb",
+        "container_sha256": "6a06c46d28654644a72c4e7e6c32ec497382136e223e7515e91006fe4b38015a",
+        "source_sha256": "e1818f862dec0e01975debeb084759c0a9d6fd3df8f6d3a38b8bb7f83efcb1fb",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 1102645
+          }
+        },
+        "encode_seconds": 4.00054988500051,
+        "decode_seconds": 0.17707899899960466,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.12.self_attn.v_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 114688,
+        "shape": [
+          128,
+          896
+        ],
+        "original_bytes": 229376,
+        "encoded_bytes": 153545,
+        "payload_bytes": 152926,
+        "metadata_bytes": 619,
+        "bpw": 10.71044921875,
+        "ratio_vs_raw_bf16": 0.669403076171875,
+        "exact": "PASS",
+        "original_sha256": "1e6cff29995344801fa16098edb0ba2e8c2a5106a96a4762fcad2c547ace555c",
+        "restored_sha256": "1e6cff29995344801fa16098edb0ba2e8c2a5106a96a4762fcad2c547ace555c",
+        "container_sha256": "b9c3c3d25cee695ac6815b3aacead21eee05d38214e49ec5b83bd4f7d9e6444c",
+        "source_sha256": "1e6cff29995344801fa16098edb0ba2e8c2a5106a96a4762fcad2c547ace555c",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 152943
+          }
+        },
+        "encode_seconds": 0.5677911859993401,
+        "decode_seconds": 0.02687359599985939,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.23.mlp.down_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          896,
+          4864
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5895991,
+        "payload_bytes": 5895371,
+        "metadata_bytes": 620,
+        "bpw": 10.822939306273497,
+        "ratio_vs_raw_bf16": 0.6764337066420936,
+        "exact": "PASS",
+        "original_sha256": "e9c9f13345658df421db84b2ecb11d62258a569511bfa549859a7180061d6d95",
+        "restored_sha256": "e9c9f13345658df421db84b2ecb11d62258a569511bfa549859a7180061d6d95",
+        "container_sha256": "9512c7cb79d0d4a1d30b325dca51f46e89d0cc83654203e4613d7ce58252d6dd",
+        "source_sha256": "e9c9f13345658df421db84b2ecb11d62258a569511bfa549859a7180061d6d95",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5895388
+          }
+        },
+        "encode_seconds": 22.13418142499995,
+        "decode_seconds": 0.9483718989995396,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.23.mlp.gate_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          4864,
+          896
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5933588,
+        "payload_bytes": 5932968,
+        "metadata_bytes": 620,
+        "bpw": 10.891954006109023,
+        "ratio_vs_raw_bf16": 0.6807471253818139,
+        "exact": "PASS",
+        "original_sha256": "03b3fd4c785569559f8aaaebdcb33b52903f8602e35f00dd3000ca2d4a2c01de",
+        "restored_sha256": "03b3fd4c785569559f8aaaebdcb33b52903f8602e35f00dd3000ca2d4a2c01de",
+        "container_sha256": "6e16597dd6210ddc57d951c532aa8a9064c19908681bc55f2ff8914fb4fc16a0",
+        "source_sha256": "03b3fd4c785569559f8aaaebdcb33b52903f8602e35f00dd3000ca2d4a2c01de",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5932985
+          }
+        },
+        "encode_seconds": 22.09855622000032,
+        "decode_seconds": 0.9362972649996664,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.23.mlp.up_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          4864,
+          896
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5926935,
+        "payload_bytes": 5926317,
+        "metadata_bytes": 618,
+        "bpw": 10.879741467927632,
+        "ratio_vs_raw_bf16": 0.679983841745477,
+        "exact": "PASS",
+        "original_sha256": "763040c6066a2a82f45fdd87d306a18620007409812ca139f999561ea823ad08",
+        "restored_sha256": "763040c6066a2a82f45fdd87d306a18620007409812ca139f999561ea823ad08",
+        "container_sha256": "c3c2569c4505969f242fd65aaa0cdb21d12802c9a9216500c7c98b7511390b3e",
+        "source_sha256": "763040c6066a2a82f45fdd87d306a18620007409812ca139f999561ea823ad08",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5926334
+          }
+        },
+        "encode_seconds": 22.13119665799968,
+        "decode_seconds": 0.9332082050004828,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.23.self_attn.k_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 114688,
+        "shape": [
+          128,
+          896
+        ],
+        "original_bytes": 229376,
+        "encoded_bytes": 159085,
+        "payload_bytes": 158466,
+        "metadata_bytes": 619,
+        "bpw": 11.096888950892858,
+        "ratio_vs_raw_bf16": 0.6935555594308036,
+        "exact": "PASS",
+        "original_sha256": "8efa5e5ffc5b284052bdf5bb4db8861c0c16a883415cd5955558b0b0e4eea7ce",
+        "restored_sha256": "8efa5e5ffc5b284052bdf5bb4db8861c0c16a883415cd5955558b0b0e4eea7ce",
+        "container_sha256": "0bf6d4419e1e5ea4e41818814db937f4e421e59074995d0d900062c11febf5b7",
+        "source_sha256": "8efa5e5ffc5b284052bdf5bb4db8861c0c16a883415cd5955558b0b0e4eea7ce",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 158483
+          }
+        },
+        "encode_seconds": 0.5680545979994349,
+        "decode_seconds": 0.029018635999818798,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.23.self_attn.o_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 802816,
+        "shape": [
+          896,
+          896
+        ],
+        "original_bytes": 1605632,
+        "encoded_bytes": 1104181,
+        "payload_bytes": 1103562,
+        "metadata_bytes": 619,
+        "bpw": 11.00307916135204,
+        "ratio_vs_raw_bf16": 0.6876924475845025,
+        "exact": "PASS",
+        "original_sha256": "ac10706a3dab8947109c4dcd5297904f5c7b5f4cf6bf4c35d1e7051efd0f4bb0",
+        "restored_sha256": "ac10706a3dab8947109c4dcd5297904f5c7b5f4cf6bf4c35d1e7051efd0f4bb0",
+        "container_sha256": "21fd1a74f8343ad856018b8ffe27453c4ddc5cf7ad664ae177acdf09239a695d",
+        "source_sha256": "ac10706a3dab8947109c4dcd5297904f5c7b5f4cf6bf4c35d1e7051efd0f4bb0",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 1103579
+          }
+        },
+        "encode_seconds": 4.005823947999488,
+        "decode_seconds": 0.1738263699999152,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.23.self_attn.q_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 802816,
+        "shape": [
+          896,
+          896
+        ],
+        "original_bytes": 1605632,
+        "encoded_bytes": 1116137,
+        "payload_bytes": 1115518,
+        "metadata_bytes": 619,
+        "bpw": 11.12221978635204,
+        "ratio_vs_raw_bf16": 0.6951387366470025,
+        "exact": "PASS",
+        "original_sha256": "bc8003e71b8f6f622b6f648e0212456b455feffa0ca1ef377c5c6584b1668aa1",
+        "restored_sha256": "bc8003e71b8f6f622b6f648e0212456b455feffa0ca1ef377c5c6584b1668aa1",
+        "container_sha256": "a4632d1fe51a539daaf77975f7dafafab9d86ceabc8f898110cd92b7c9440202",
+        "source_sha256": "bc8003e71b8f6f622b6f648e0212456b455feffa0ca1ef377c5c6584b1668aa1",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 1115535
+          }
+        },
+        "encode_seconds": 4.010505573000046,
+        "decode_seconds": 0.17525537700021232,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.23.self_attn.v_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 114688,
+        "shape": [
+          128,
+          896
+        ],
+        "original_bytes": 229376,
+        "encoded_bytes": 154272,
+        "payload_bytes": 153653,
+        "metadata_bytes": 619,
+        "bpw": 10.761160714285714,
+        "ratio_vs_raw_bf16": 0.6725725446428571,
+        "exact": "PASS",
+        "original_sha256": "1b79dfea2c74ef52b642b20f9fe949dd0cffcd4952d71c92124c426a8f19b977",
+        "restored_sha256": "1b79dfea2c74ef52b642b20f9fe949dd0cffcd4952d71c92124c426a8f19b977",
+        "container_sha256": "c1e8a0401cc2a4f9c8362a09f091dbc676b275b485812d62aa554fd3db6d70a6",
+        "source_sha256": "1b79dfea2c74ef52b642b20f9fe949dd0cffcd4952d71c92124c426a8f19b977",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 153670
+          }
+        },
+        "encode_seconds": 0.5642141560001619,
+        "decode_seconds": 0.03038949700021476,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.1.mlp.down_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          896,
+          4864
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5885107,
+        "payload_bytes": 5884488,
+        "metadata_bytes": 619,
+        "bpw": 10.80296015918703,
+        "ratio_vs_raw_bf16": 0.6751850099491894,
+        "exact": "PASS",
+        "original_sha256": "76b93dabcb4247e6bace2b8fd29833431809a8655ad594fc53a7896a62feeadd",
+        "restored_sha256": "76b93dabcb4247e6bace2b8fd29833431809a8655ad594fc53a7896a62feeadd",
+        "container_sha256": "91e5bd1df0e8ece48008ffd1bc137f8cce672275f9a12ff187b2575f3618080a",
+        "source_sha256": "76b93dabcb4247e6bace2b8fd29833431809a8655ad594fc53a7896a62feeadd",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5884505
+          }
+        },
+        "encode_seconds": 22.018258340999637,
+        "decode_seconds": 0.9440151999997397,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.1.mlp.gate_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          4864,
+          896
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5879327,
+        "payload_bytes": 5878708,
+        "metadata_bytes": 619,
+        "bpw": 10.792350138040414,
+        "ratio_vs_raw_bf16": 0.6745218836275259,
+        "exact": "PASS",
+        "original_sha256": "f65a208e6f676ce3f33904fc252a39aeb2cf20e75f6d5d99bffb01ee70d99bf8",
+        "restored_sha256": "f65a208e6f676ce3f33904fc252a39aeb2cf20e75f6d5d99bffb01ee70d99bf8",
+        "container_sha256": "6fcaf5296b4f33864f0e54d3192745cac98f97c1061850563c7c5de8c959cece",
+        "source_sha256": "f65a208e6f676ce3f33904fc252a39aeb2cf20e75f6d5d99bffb01ee70d99bf8",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5878725
+          }
+        },
+        "encode_seconds": 22.004126830999667,
+        "decode_seconds": 0.9363199090003036,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.1.mlp.up_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          4864,
+          896
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5874940,
+        "payload_bytes": 5874323,
+        "metadata_bytes": 617,
+        "bpw": 10.784297168703008,
+        "ratio_vs_raw_bf16": 0.674018573043938,
+        "exact": "PASS",
+        "original_sha256": "1ad73428e44709872103940396a390975d2792019ff95d6e1608bbf46d1d3692",
+        "restored_sha256": "1ad73428e44709872103940396a390975d2792019ff95d6e1608bbf46d1d3692",
+        "container_sha256": "76349c119e5bb96c7f0171c81212d811d6b68e00c7d968a4d2f18722bf7b1919",
+        "source_sha256": "1ad73428e44709872103940396a390975d2792019ff95d6e1608bbf46d1d3692",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5874340
+          }
+        },
+        "encode_seconds": 22.11240470100074,
+        "decode_seconds": 0.9401161350006078,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.1.self_attn.k_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 114688,
+        "shape": [
+          128,
+          896
+        ],
+        "original_bytes": 229376,
+        "encoded_bytes": 154271,
+        "payload_bytes": 153653,
+        "metadata_bytes": 618,
+        "bpw": 10.761090959821429,
+        "ratio_vs_raw_bf16": 0.6725681849888393,
+        "exact": "PASS",
+        "original_sha256": "68965d21ec67cd5b99b9fbe868fa580ce4f7c6067b4cbafbb046d6ec8b9e6717",
+        "restored_sha256": "68965d21ec67cd5b99b9fbe868fa580ce4f7c6067b4cbafbb046d6ec8b9e6717",
+        "container_sha256": "b48dfb73908eaf615075e20992a08c4b71c43bd42e2b478592e056124a31d470",
+        "source_sha256": "68965d21ec67cd5b99b9fbe868fa580ce4f7c6067b4cbafbb046d6ec8b9e6717",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 153670
+          }
+        },
+        "encode_seconds": 0.5656602540002496,
+        "decode_seconds": 0.030608770000071672,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.1.self_attn.o_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 802816,
+        "shape": [
+          896,
+          896
+        ],
+        "original_bytes": 1605632,
+        "encoded_bytes": 1095707,
+        "payload_bytes": 1095089,
+        "metadata_bytes": 618,
+        "bpw": 10.91863639987245,
+        "ratio_vs_raw_bf16": 0.6824147749920281,
+        "exact": "PASS",
+        "original_sha256": "46ec79ddfed230a01b3d1377ffe8e5cc7c64c007e802edf662fc7db0eee4dc9c",
+        "restored_sha256": "46ec79ddfed230a01b3d1377ffe8e5cc7c64c007e802edf662fc7db0eee4dc9c",
+        "container_sha256": "cdd0d719d5e333db50bf03cc0f5fc14f640bc5f9cf670f707346b002c9ccedfd",
+        "source_sha256": "46ec79ddfed230a01b3d1377ffe8e5cc7c64c007e802edf662fc7db0eee4dc9c",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 1095106
+          }
+        },
+        "encode_seconds": 4.002335877000405,
+        "decode_seconds": 0.17798471500009327,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.1.self_attn.q_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 802816,
+        "shape": [
+          896,
+          896
+        ],
+        "original_bytes": 1605632,
+        "encoded_bytes": 1097916,
+        "payload_bytes": 1097298,
+        "metadata_bytes": 618,
+        "bpw": 10.940648915816327,
+        "ratio_vs_raw_bf16": 0.6837905572385204,
+        "exact": "PASS",
+        "original_sha256": "fa0bdadf045770a258498b7eff459c52601cb917eeae3e756f9c3a0e85020e45",
+        "restored_sha256": "fa0bdadf045770a258498b7eff459c52601cb917eeae3e756f9c3a0e85020e45",
+        "container_sha256": "2522cb9a0541072abbd649702d007fa1b2a8e95c07589c02c516390899b32701",
+        "source_sha256": "fa0bdadf045770a258498b7eff459c52601cb917eeae3e756f9c3a0e85020e45",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 1097315
+          }
+        },
+        "encode_seconds": 3.993871454999862,
+        "decode_seconds": 0.17710147100024187,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.1.self_attn.v_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 114688,
+        "shape": [
+          128,
+          896
+        ],
+        "original_bytes": 229376,
+        "encoded_bytes": 153788,
+        "payload_bytes": 153170,
+        "metadata_bytes": 618,
+        "bpw": 10.727399553571429,
+        "ratio_vs_raw_bf16": 0.6704624720982143,
+        "exact": "PASS",
+        "original_sha256": "e9a896d29f44908ece842882ddff891db5bf8fabeb62b3107d3fcd929b45090a",
+        "restored_sha256": "e9a896d29f44908ece842882ddff891db5bf8fabeb62b3107d3fcd929b45090a",
+        "container_sha256": "4eb84f679e496e63c0e231cd8f43fb1936a0477ca97c57642edb6e687984ea7c",
+        "source_sha256": "e9a896d29f44908ece842882ddff891db5bf8fabeb62b3107d3fcd929b45090a",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 153187
+          }
+        },
+        "encode_seconds": 0.5681051159999697,
+        "decode_seconds": 0.030741974999727972,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.2.mlp.down_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          896,
+          4864
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5891313,
+        "payload_bytes": 5890694,
+        "metadata_bytes": 619,
+        "bpw": 10.814352164591165,
+        "ratio_vs_raw_bf16": 0.6758970102869478,
+        "exact": "PASS",
+        "original_sha256": "f63c374701cb7470074cd572b26de4061cc794c859ea9cf4d39b38caed7f8bdb",
+        "restored_sha256": "f63c374701cb7470074cd572b26de4061cc794c859ea9cf4d39b38caed7f8bdb",
+        "container_sha256": "445c9edcd28800291783aae7464aec9af42da1bf8d9125957111c2f6f89fbff7",
+        "source_sha256": "f63c374701cb7470074cd572b26de4061cc794c859ea9cf4d39b38caed7f8bdb",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5890711
+          }
+        },
+        "encode_seconds": 22.07793144000061,
+        "decode_seconds": 0.9465465499997663,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.2.mlp.gate_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          4864,
+          896
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5880365,
+        "payload_bytes": 5879746,
+        "metadata_bytes": 619,
+        "bpw": 10.794255536301693,
+        "ratio_vs_raw_bf16": 0.6746409710188558,
+        "exact": "PASS",
+        "original_sha256": "4d3697a14f1f060d8ef2939e99007872394c11edbd16a7fabe2f4d95a309d93c",
+        "restored_sha256": "4d3697a14f1f060d8ef2939e99007872394c11edbd16a7fabe2f4d95a309d93c",
+        "container_sha256": "0c09156e19ea5947c7e3c7484ab8a48d6f636d21173424ca990e732fe841b128",
+        "source_sha256": "4d3697a14f1f060d8ef2939e99007872394c11edbd16a7fabe2f4d95a309d93c",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5879763
+          }
+        },
+        "encode_seconds": 22.03542851900056,
+        "decode_seconds": 0.9463937660002557,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.2.mlp.up_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          4864,
+          896
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5880369,
+        "payload_bytes": 5879752,
+        "metadata_bytes": 617,
+        "bpw": 10.79426287887688,
+        "ratio_vs_raw_bf16": 0.674641429929805,
+        "exact": "PASS",
+        "original_sha256": "98ec9fbc054f78a85f9482a6c942d234be443906c456c11544c8210afc862ecf",
+        "restored_sha256": "98ec9fbc054f78a85f9482a6c942d234be443906c456c11544c8210afc862ecf",
+        "container_sha256": "ccdab8bfffe14821def49939f621cb04afc5e6801a050d3626c1b61141623111",
+        "source_sha256": "98ec9fbc054f78a85f9482a6c942d234be443906c456c11544c8210afc862ecf",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5879769
+          }
+        },
+        "encode_seconds": 22.090304674000436,
+        "decode_seconds": 0.9481492590002745,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.2.self_attn.k_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 114688,
+        "shape": [
+          128,
+          896
+        ],
+        "original_bytes": 229376,
+        "encoded_bytes": 158028,
+        "payload_bytes": 157410,
+        "metadata_bytes": 618,
+        "bpw": 11.023158482142858,
+        "ratio_vs_raw_bf16": 0.6889474051339286,
+        "exact": "PASS",
+        "original_sha256": "1e97937d88791ae1c049e7d34b2c1b3c4757f37f16c38c651f3ffd4164a35070",
+        "restored_sha256": "1e97937d88791ae1c049e7d34b2c1b3c4757f37f16c38c651f3ffd4164a35070",
+        "container_sha256": "957669596e6912cad56a693a5a168b3aac1df7bd90cf0e9113d11f4c8e83d208",
+        "source_sha256": "1e97937d88791ae1c049e7d34b2c1b3c4757f37f16c38c651f3ffd4164a35070",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 157427
+          }
+        },
+        "encode_seconds": 0.568182252999577,
+        "decode_seconds": 0.02942691000043851,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.2.self_attn.o_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 802816,
+        "shape": [
+          896,
+          896
+        ],
+        "original_bytes": 1605632,
+        "encoded_bytes": 1096575,
+        "payload_bytes": 1095957,
+        "metadata_bytes": 618,
+        "bpw": 10.927285953443878,
+        "ratio_vs_raw_bf16": 0.6829553720902424,
+        "exact": "PASS",
+        "original_sha256": "c16634511de9ddfe82383777994f361ffdfe55156466e06654fdd2bb4212c692",
+        "restored_sha256": "c16634511de9ddfe82383777994f361ffdfe55156466e06654fdd2bb4212c692",
+        "container_sha256": "52286b3a0abe664d24cdfe90108303831f639233ce383c6d42218fcaaf482690",
+        "source_sha256": "c16634511de9ddfe82383777994f361ffdfe55156466e06654fdd2bb4212c692",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 1095974
+          }
+        },
+        "encode_seconds": 3.9920283010005733,
+        "decode_seconds": 0.1760229999999865,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.2.self_attn.q_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 802816,
+        "shape": [
+          896,
+          896
+        ],
+        "original_bytes": 1605632,
+        "encoded_bytes": 1106235,
+        "payload_bytes": 1105617,
+        "metadata_bytes": 618,
+        "bpw": 11.023547114158163,
+        "ratio_vs_raw_bf16": 0.6889716946348852,
+        "exact": "PASS",
+        "original_sha256": "0788c986facb8858582820a8f9a94791217c24902577400102efba4fd11dd332",
+        "restored_sha256": "0788c986facb8858582820a8f9a94791217c24902577400102efba4fd11dd332",
+        "container_sha256": "9b448f10563284ec4204a0a8f1e07d06694bd35d6ab2d61e323323ba16afcae8",
+        "source_sha256": "0788c986facb8858582820a8f9a94791217c24902577400102efba4fd11dd332",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 1105634
+          }
+        },
+        "encode_seconds": 3.983342664000702,
+        "decode_seconds": 0.1754796980003448,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.2.self_attn.v_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 114688,
+        "shape": [
+          128,
+          896
+        ],
+        "original_bytes": 229376,
+        "encoded_bytes": 157898,
+        "payload_bytes": 157280,
+        "metadata_bytes": 618,
+        "bpw": 11.014090401785714,
+        "ratio_vs_raw_bf16": 0.6883806501116071,
+        "exact": "PASS",
+        "original_sha256": "5d8d6d4736ad6e3235708cd8ffb6181ac1f43290ab6c399cd686e6abc41a5bd9",
+        "restored_sha256": "5d8d6d4736ad6e3235708cd8ffb6181ac1f43290ab6c399cd686e6abc41a5bd9",
+        "container_sha256": "7f09f9de892bce51c2372e4f3a388d77263dc0673c9d60bcb3b990b1cdf70ee5",
+        "source_sha256": "5d8d6d4736ad6e3235708cd8ffb6181ac1f43290ab6c399cd686e6abc41a5bd9",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 157297
+          }
+        },
+        "encode_seconds": 0.567523503999837,
+        "decode_seconds": 0.028575039000315883,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.3.mlp.down_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          896,
+          4864
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5894076,
+        "payload_bytes": 5893457,
+        "metadata_bytes": 619,
+        "bpw": 10.819424048402256,
+        "ratio_vs_raw_bf16": 0.676214003025141,
+        "exact": "PASS",
+        "original_sha256": "97ec77ac02d6aa263136096efe304ea6d0f3fe1b7ee45beb78296049b568d08a",
+        "restored_sha256": "97ec77ac02d6aa263136096efe304ea6d0f3fe1b7ee45beb78296049b568d08a",
+        "container_sha256": "25feff7789f9d7261865969d1343693ca8386dbbab3684180c68f5d14cdc2871",
+        "source_sha256": "97ec77ac02d6aa263136096efe304ea6d0f3fe1b7ee45beb78296049b568d08a",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5893474
+          }
+        },
+        "encode_seconds": 22.046129686999848,
+        "decode_seconds": 0.9425654159995247,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.3.mlp.gate_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 4358144,
+        "shape": [
+          4864,
+          896
+        ],
+        "original_bytes": 8716288,
+        "encoded_bytes": 5926869,
+        "payload_bytes": 5926250,
+        "metadata_bytes": 619,
+        "bpw": 10.87962031543703,
+        "ratio_vs_raw_bf16": 0.6799762697148144,
+        "exact": "PASS",
+        "original_sha256": "211a021f1a54f527d53965be5397c6275eca777edaaabf1f81890ddb02fe941f",
+        "restored_sha256": "211a021f1a54f527d53965be5397c6275eca777edaaabf1f81890ddb02fe941f",
+        "container_sha256": "9ca1411d89d617263a865819321d9de0e35bdfe85479424ea85452106ab2993a",
+        "source_sha256": "211a021f1a54f527d53965be5397c6275eca777edaaabf1f81890ddb02fe941f",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 5926267
+          }
+        },
+        "encode_seconds": 22.0281865019997,
+        "decode_seconds": 0.9275107640005444,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.3.self_attn.k_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 114688,
+        "shape": [
+          128,
+          896
+        ],
+        "original_bytes": 229376,
+        "encoded_bytes": 155205,
+        "payload_bytes": 154587,
+        "metadata_bytes": 618,
+        "bpw": 10.826241629464286,
+        "ratio_vs_raw_bf16": 0.6766401018415179,
+        "exact": "PASS",
+        "original_sha256": "0df69edf4f94ff651bae9cdf7ec91d4b569b99a77859c21624fb4b05e86955dd",
+        "restored_sha256": "0df69edf4f94ff651bae9cdf7ec91d4b569b99a77859c21624fb4b05e86955dd",
+        "container_sha256": "443a9ee9e918b715b3ea73b3958d46df1118dab843dfb28a5a95996d23d0f5ed",
+        "source_sha256": "0df69edf4f94ff651bae9cdf7ec91d4b569b99a77859c21624fb4b05e86955dd",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 154604
+          }
+        },
+        "encode_seconds": 0.5664270999996006,
+        "decode_seconds": 0.03176979099953314,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.3.self_attn.v_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 114688,
+        "shape": [
+          128,
+          896
+        ],
+        "original_bytes": 229376,
+        "encoded_bytes": 154108,
+        "payload_bytes": 153490,
+        "metadata_bytes": 618,
+        "bpw": 10.749720982142858,
+        "ratio_vs_raw_bf16": 0.6718575613839286,
+        "exact": "PASS",
+        "original_sha256": "285ba2f89b6608e43ab5fedeb441ed20b20dfe6b359f5b425420623fac3de4b3",
+        "restored_sha256": "285ba2f89b6608e43ab5fedeb441ed20b20dfe6b359f5b425420623fac3de4b3",
+        "container_sha256": "ee4591d87f521a9f73a8ef7464e4f2ca1ed18c119babaea8782fab9f6f7dc867",
+        "source_sha256": "285ba2f89b6608e43ab5fedeb441ed20b20dfe6b359f5b425420623fac3de4b3",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 153507
+          }
+        },
+        "encode_seconds": 0.5666891749997376,
+        "decode_seconds": 0.026556343999800447,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.4.self_attn.k_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 114688,
+        "shape": [
+          128,
+          896
+        ],
+        "original_bytes": 229376,
+        "encoded_bytes": 157142,
+        "payload_bytes": 156524,
+        "metadata_bytes": 618,
+        "bpw": 10.961356026785714,
+        "ratio_vs_raw_bf16": 0.6850847516741071,
+        "exact": "PASS",
+        "original_sha256": "502d58934dd7604ff2a83c08dfe73e91646ec89819f153bffcf6d8cf023c9895",
+        "restored_sha256": "502d58934dd7604ff2a83c08dfe73e91646ec89819f153bffcf6d8cf023c9895",
+        "container_sha256": "6c20ed6335ed3a519011db3dd8eeec4cc7ffc9193b45fed8facdafc4bfbe0523",
+        "source_sha256": "502d58934dd7604ff2a83c08dfe73e91646ec89819f153bffcf6d8cf023c9895",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 156541
+          }
+        },
+        "encode_seconds": 0.5657488340002601,
+        "decode_seconds": 0.02952312700017501,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.4.self_attn.v_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 114688,
+        "shape": [
+          128,
+          896
+        ],
+        "original_bytes": 229376,
+        "encoded_bytes": 157536,
+        "payload_bytes": 156918,
+        "metadata_bytes": 618,
+        "bpw": 10.988839285714286,
+        "ratio_vs_raw_bf16": 0.6868024553571429,
+        "exact": "PASS",
+        "original_sha256": "7f11d5346929f579341d9e4dde9a39a5b2c480aa7357c947f90d54f51fd60e9d",
+        "restored_sha256": "7f11d5346929f579341d9e4dde9a39a5b2c480aa7357c947f90d54f51fd60e9d",
+        "container_sha256": "51149a664dfcfde000345902269d61f12815ff1fe41d643d1dd080e91f218928",
+        "source_sha256": "7f11d5346929f579341d9e4dde9a39a5b2c480aa7357c947f90d54f51fd60e9d",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 156935
+          }
+        },
+        "encode_seconds": 0.5706881229998544,
+        "decode_seconds": 0.06378731099994184,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      },
+      {
+        "case": "model.layers.5.self_attn.k_proj.weight",
+        "block_size": 256,
+        "tile_hw": [
+          16,
+          16
+        ],
+        "n_words": 114688,
+        "shape": [
+          128,
+          896
+        ],
+        "original_bytes": 229376,
+        "encoded_bytes": 158104,
+        "payload_bytes": 157486,
+        "metadata_bytes": 618,
+        "bpw": 11.028459821428571,
+        "ratio_vs_raw_bf16": 0.6892787388392857,
+        "exact": "PASS",
+        "original_sha256": "f93d9472614d9467abbe14e9a4eba5f319749fbed0efbc05ebe970619c0652f2",
+        "restored_sha256": "f93d9472614d9467abbe14e9a4eba5f319749fbed0efbc05ebe970619c0652f2",
+        "container_sha256": "623b5c436db2fdbecda312d1806b32c99334c43ef1b09cf02e3b5bb82c8ea19b",
+        "source_sha256": "f93d9472614d9467abbe14e9a4eba5f319749fbed0efbc05ebe970619c0652f2",
+        "winning_modes": "bf16_exp_huffman:1",
+        "mode_usage": {
+          "bf16_exp_huffman": {
+            "tiles": 1,
+            "tile_share": 1.0,
+            "bytes": 157503
+          }
+        },
+        "encode_seconds": 0.611381075999816,
+        "decode_seconds": 0.030021321000276657,
+        "disclaimer": "Blocker-fix ablation on the Stage 1B Qwen tensor set. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+        "profile": "hierarchical"
+      }
+    ]
+  }
+}

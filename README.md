@@ -7,16 +7,23 @@ is `Decode(Encode(W)) == W` on the original uint16 words.
 This repository implements **Stage 1A** (controlled tensors), **Stage 1B**
 (real public-checkpoint tensors), **Stage 2** (a qualification *scanner*),
 and **PBR-E / Stage 2.5** (exponent-Huffman so typical models can hit the
-published ~11 BPW lossless band). It is **not** a production model compressor
-and **not evidence that an 8 GB checkpoint becomes 1–2 GB**.
+published ~11 BPW lossless band). **PBR-E is DF11/ZipNN-class, not a novel
+rate.** The distinctive bet is a Hierarchical / position program on top of
+that; it has been implemented and, on the Qwen and Llama samples below, did
+not win vs PBR-E. This repo is **not** a production model compressor and
+**not evidence that an 8 GB checkpoint becomes 1–2 GB**.
 
 > **Research status:** concept and early proof of concept. Stage 1A uses
 > synthetic tensors. Stage 1B checks that the same codecs stay bit-exact on
 > real BF16/F16 weights and reports complete-container BPW. Stage 2 projects
 > whole-model BPW from sampled encodings. PBR-E adds exponent entropy coding
-> and measured **10.87 complete-container BPW** (DF11-class) on the same
-> Qwen 42-tensor set that Stage 1B encoded at 13.61. None of these is a
-> production ratio claim. ≤4 BPW remains out of scope for dense LLMs.
+> and measured **10.87 complete-container BPW** (DF11/ZipNN-class, not novel)
+> on the same Qwen 42-tensor set that Stage 1B encoded at 13.61. Hierarchical
+> leftovers (bit-planes, residual grammar, transformed refs, position+value
+> dicts) compete on complete encoded bytes and **won 0 / 42** Qwen tensors
+> vs PBR-E. The same story holds on a Llama-3.2-1B BF16 sample (~10.84 BPW).
+> None of these is a production ratio claim. ≤4 BPW remains out of scope for
+> dense LLMs.
 
 ## What Stage 1A proves (Gate 1)
 
@@ -49,9 +56,10 @@ raw fallback or stay within bounded container overhead.
 - Not a fused tile inference runtime.
 - Not a claim of 1–2 GB storage for an 8 GB model. Do not scale Stage 1B BPW
   or Stage 2 projections into that story.
-- Hierarchical modes (cross-layer references, grammar coding, adaptive region
-  trees) are out of scope. The encoder is Direct-first. A later hierarchical
-  scanner could change a projection; this one does not include those codecs.
+- Hierarchical leftovers (bit-planes, residual-sequence grammar, transformed
+  refs, position+value dicts) **are implemented** and compete on complete
+  encoded bytes. On Qwen and Llama dense samples they do **not** beat PBR-E.
+  That is an honest miss, not a 1–2 GB / 8 GB or ≤4 BPW claim.
 
 ## Install
 
@@ -365,6 +373,106 @@ They stay in the menu and remain bit-exact; the winner is still PBR-E at
 (raw fallback, worse than uncompressed because of tile headers). ≤4 BPW
 is still out of scope. Not a 1–2 GB / 8 GB claim.
 
+## Hierarchical leftovers (Option B)
+
+PBR-E is the ZipNN / DFloat11 idea: Huffman (or ANS) the exponent byte,
+store sign+mantissa packed. That is **not the novel claim**. The distinctive
+bet is a **position / hierarchical program** that would have to beat PBR-E
+on `complete_encoded_bytes` while staying bit-exact.
+
+Four leftover modes now sit in the same menu as `bf16_exp_huffman` and the
+spatial-on-exponent codecs (`--profiles hierarchical`):
+
+| mode | what it does |
+| --- | --- |
+| `bit_planes` | 16 planes per tile; all-zero / all-one / sparse-patch / raw; rebuilds exact uint16 |
+| `residual_grammar` | repeated prev-value residual ID phrases (len 4); admitted only if savings > dict cost |
+| `transformed_ref` | exact or exact-after cheap transform (identity / transpose if square / sign-bit XOR / byteswap) plus XOR patch |
+| `position_value_dict` | default word + small exception palette + positions; positive-savings admission |
+
+```bash
+python scripts/run_blocker_ablation.py --profiles hierarchical --tag qwen_hier
+```
+
+### Measured hierarchical ablation (same Qwen 42 tensors)
+
+Same checkpoint and **the same 42-tensor / 159.9 MiB** Stage 1B selection.
+Revision `7ae557604adf67be50417f59c2c2f167def9a775`. **Every tensor PASS.**
+Winning mode on **42 / 42** tensors: `bf16_exp_huffman`.
+
+| profile | orig B | enc B | BPW | ratio | exact | winning modes |
+| --- | ---: | ---: | ---: | ---: | --- | --- |
+| hierarchical (leftovers + PBR-E) | 167673856 | 113900778 | **10.87** | 0.679 | PASS | `bf16_exp_huffman` 42/42 |
+| PBR-E only (same set) | 167673856 | 113900400 | **10.87** | 0.679 | PASS | `bf16_exp_huffman` 42/42 |
+
+**Honest negative:** no leftover hierarchical mode won any tensor vs PBR-E
+~10.87 BPW. The extra menu costs a few hundred bytes of search overhead in
+the container (113900778 vs 113900400). Bit-exact still holds. Not ≤4 BPW.
+
+Reports: `artifacts/blocker_ablation_qwen_hier.{json,md}`.
+
+## Llama-family check (not MoE)
+
+`meta-llama/Llama-3.2-1B-Instruct` is gated here (`GatedRepoError` 401 on
+`config.json`). Used the public BF16 mirror
+[`unsloth/Llama-3.2-1B-Instruct`](https://huggingface.co/unsloth/Llama-3.2-1B-Instruct)
+revision **`5a8abab4a5d6f164389b1079fb721cfab8d7126c`**. Inventory: **146**
+16-bit tensors. Sampled **11** linear/attention weights from layers 0 and 8
+(**167,772,160 B** / 83,886,080 words) with the same 100–160 MiB window as
+Stage 1B. Config: `configs/poc_llama.yaml`.
+
+### Diagnosis snapshot
+
+| field | bits |
+| --- | ---: |
+| H(uint16) | 10.51 |
+| H(exponent) | **2.60** |
+| H(mantissa) | **6.97** |
+| H(sign) | 1.00 |
+| H(uint16 prev_value residual) | 11.10 |
+| exact dup tile rate (64 / 256 / 1024) | **0** |
+
+Same blocker story as Qwen: mantissa ≈ 7 bits, spatial residuals raise
+entropy, zero exact tile duplicates.
+
+### PBR-E + hierarchical + zlib (all exact PASS)
+
+| profile | orig B | enc B | BPW | ratio | exact | winning modes |
+| --- | ---: | ---: | ---: | ---: | --- | --- |
+| PBR-E (`bf16_exp_huffman`) | 167772160 | 113694055 | **10.84** | 0.678 | PASS | `bf16_exp_huffman` 11/11 |
+| hierarchical leftovers on | 167772160 | 113694143 | **10.84** | 0.678 | PASS | `bf16_exp_huffman` 11/11 |
+| zlib (baseline, not PBR) | 167772160 | 133302428 | 12.71 | 0.795 | n/a | zlib |
+
+**Honest negative:** leftover hierarchical modes won **0 / 11** Llama
+tensors vs PBR-E. PBR-E beats zlib (10.84 vs 12.71 BPW) in the DF11-class
+band. Not ≤4 BPW. Not a 1–2 GB / 8 GB claim.
+
+Reports: `artifacts/blocker_diagnosis_llama.{json,md}`,
+`artifacts/blocker_ablation_llama.{json,md}`.
+
+## New directions (PBR-E / PBR-M / Extreme)
+
+Stop treating hierarchical leftovers / MoE as the main path. Three tracks:
+
+1. **PBR-E Practical** — full bit-exact checkpoint codec in the DF11/ZipNN
+   class (~11 BPW on typical dense LLMs). Not novel; it is the productized
+   lossless bar.
+2. **PBR-M Research** — reduce dense *mantissa* **conditional** entropy.
+   Open question. Every predictor / table / transform byte counts.
+3. **Extreme PBR** — ≤4 BPW only if structure actually appears; falsifiable.
+   Do not claim it on these dense Qwen/Llama samples.
+
+**Phase A gate (mantissa):** a compact context or reversible transform must
+code held-out mantissas at **< 6.5 complete BPW after overhead**
+(≈ <10.1 total with ~1 sign + ~2.6 exp). Anything that does not beat
+unconditional H(M) including tables is rejected.
+
+```bash
+python scripts/run_phase_a_mantissa_audit.py --tag qwen
+```
+
+Reports: `artifacts/phase_a_mantissa_audit_qwen.{json,md}`.
+
 ### Measured Stage 2 run (this repo)
 
 Same Qwen revision as Stage 1B
@@ -404,7 +512,8 @@ The suite fails loudly (`ExactnessError: EXACTNESS FAIL ...`) if any uint16 word
 differs. Cases include special BF16 bit patterns (signed zero, Inf, NaN
 payloads, subnormals) that an FP32 detour would be likely to destroy.
 
-Stage 1B / Stage 2 / PBR-E / blocker-mitigation unit tests write tiny local Safetensors fixtures.
+Stage 1B / Stage 2 / PBR-E / blocker-mitigation / hierarchical / Phase A
+unit tests write tiny local Safetensors fixtures.
 They do **not** download the 988 MB checkpoint. Live download tests are
 skipped unless `PBR_LIVE_HF=1`.
 
@@ -450,13 +559,18 @@ shortest.
 
 ```
 pbr_core/        uint16 views, tiles, container, hashing, Safetensors I/O
-pbr_codecs/      raw, predictors, residuals, dictionaries, exp-Huffman
-pbr_encoder/     cost-based search, decoder, Stage 1A/1B/PBR-E CLIs
+pbr_codecs/      raw, predictors, residuals, dictionaries, exp-Huffman,
+                 bit-planes, grammar, transformed refs, position-value dict
+pbr_encoder/     cost-based search, decoder, Stage 1A/1B/PBR-E/Phase A CLIs
 pbr_qualifier/   Stage 2 inventory, entropy, sample encode, BPW projection
 scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py,
-                 run_blocker_diagnosis.py, run_blocker_ablation.py
-tests/           exactness, codecs, Stage 1B fixtures, qualifier math
-configs/         poc_controlled.yaml, poc_real.yaml, qualifier_default.yaml
+                 run_blocker_diagnosis.py, run_blocker_ablation.py,
+                 run_family_eval.py, run_phase_a_mantissa_audit.py
+tests/           exactness, codecs, Stage 1B fixtures, qualifier math,
+                 hierarchical leftovers, mantissa audit
+configs/         poc_controlled.yaml, poc_real.yaml, poc_llama.yaml,
+                 qualifier_default.yaml
+artifacts/       measured diagnosis / ablation / Phase A reports
 ```
 
 Later stages (full selected-model encode vs projection, fused runtime) are
@@ -470,9 +584,12 @@ check: PBR must not invent compression on unstructured bits.
 
 Stage 1B BPW (13.61, `bf16_components`) and PBR-E BPW (10.87,
 `bf16_exp_huffman`) on real Qwen tensors are measurements of **this encoder
-on those tensors**, including headers. Stage 2 BPW is a **sample
+on those tensors**, including headers. Llama-3.2-1B (unsloth BF16 mirror)
+measured **10.84 BPW** on an 11-tensor sample. Stage 2 BPW is a **sample
 projection** for the whole 16-bit parameter set (pre-PBR-E codecs). None
-of these is a measured 8 GB-model result.
+of these is a measured 8 GB-model result. PBR-E ≈ DF11/ZipNN-class; the
+hierarchical/position program is the distinctive bet and has not won on
+these dense samples.
 
 zlib / zstd columns, when present, are **general-purpose baselines**, not PBR
 modes. Forced uint16-spatial rows in the blocker ablation exist to show
@@ -482,4 +599,5 @@ that predictor on mixed fields still loses; they are not a compression claim.
 
 This PoC is MIT. Research drafts that specify it remain separate documents.
 Third-party checkpoints used in Stage 1B keep their own licenses (Qwen2.5
-Instruct: Apache 2.0; see above).
+Instruct: Apache 2.0; Llama-3.2-1B-Instruct via the unsloth BF16 mirror:
+see that model card / Llama 3.2 license).

@@ -255,7 +255,7 @@ def _summarize(rows: list[dict]) -> dict:
         "weighted_H_exp_prev_row": wavg(["residual_entropy", "exp_prev_row"]),
         "spatial_win_fraction_tile256": win256,
         "note": (
-            "Mantissa entropy stays near 7 bits. On this Qwen sample, uint16 spatial "
+            "Mantissa entropy stays near 7 bits. On this sample, uint16 spatial "
             "residuals are *higher* than H(uint16), and exponent spatial residuals "
             "are *higher* than H(exp). Exact duplicate tiles are zero at 64/256/1024 "
             "(including same-role across layers). uint16 spatial beats raw only in "
@@ -266,8 +266,9 @@ def _summarize(rows: list[dict]) -> dict:
 
 def format_markdown(report: dict) -> str:
     s = report["summary"]
+    repo = report.get("model", {}).get("repo_id", "checkpoint")
     lines = [
-        "# Blocker diagnosis (Qwen Stage 1B set)",
+        f"# Blocker diagnosis ({repo})",
         "",
         "Lossless BF16 only. Not a 1–2 GB / 8 GB claim.",
         "",

@@ -27,6 +27,7 @@ pbr-qualify = "pbr_qualifier.cli:main"
 pbr-e = "pbr_encoder.pbre:main"
 pbr-diagnose-blockers = "pbr_encoder.blocker_diagnosis:main"
 pbr-ablate-blockers = "pbr_encoder.ablation:main"
+pbr-phase-a = "pbr_encoder.mantissa_audit:main"
 pbr-generate-controlled = "pbr_encoder.controlled_data:main"
 
 [project.urls]

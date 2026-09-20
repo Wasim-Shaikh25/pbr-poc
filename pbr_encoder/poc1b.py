@@ -49,6 +49,9 @@ def _aggregate(rows: list[dict], *, model_meta: dict) -> dict:
         for name, info in row.get("mode_usage", {}).items():
             modes[name] += int(info["tiles"])
     exact = all(r["exact"] == "PASS" for r in rows)
+    enc_s = sum(float(r.get("encode_seconds") or 0.0) for r in rows)
+    dec_s = sum(float(r.get("decode_seconds") or 0.0) for r in rows)
+    orig_mb = orig / 1e6
     return {
         "case": "TOTAL",
         "original_bytes": orig,
@@ -65,6 +68,10 @@ def _aggregate(rows: list[dict], *, model_meta: dict) -> dict:
             if r.get("exp_huffman_bound_bytes") is not None
         )
         or None,
+        "encode_seconds": enc_s,
+        "decode_seconds": dec_s,
+        "encode_MB_s": (orig_mb / enc_s) if enc_s > 0 else None,
+        "decode_MB_s": (orig_mb / dec_s) if dec_s > 0 else None,
         "disclaimer": DISCLAIMER,
         "model": model_meta,
         "tensor_count": len(rows),
@@ -79,6 +86,9 @@ def run_poc1b(
     output_dir: Path,
     include_baselines: bool,
     model_meta: dict,
+    codecs=None,
+    whole_codecs=None,
+    enable_whole: bool = True,
 ) -> list[dict]:
     output_dir.mkdir(parents=True, exist_ok=True)
     rows: list[dict] = []
@@ -96,6 +106,9 @@ def run_poc1b(
             include_baselines=include_baselines,
             extra={"stage": "1B", "source": "safetensors_uint16"},
             disclaimer=DISCLAIMER,
+            codecs=codecs,
+            whole_codecs=whole_codecs,
+            enable_whole=enable_whole,
         )
         row["dtype"] = spec.dtype
         row["source_file"] = str(spec.file_path)
@@ -138,6 +151,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--include-embeddings", action="store_true")
     parser.add_argument("--no-fallback", action="store_true")
     parser.add_argument("--no-baselines", action="store_true")
+    parser.add_argument(
+        "--all-16bit",
+        action="store_true",
+        help="Encode every 16-bit tensor (full-checkpoint, not the Stage 1B window).",
+    )
+    parser.add_argument(
+        "--profile",
+        default="default",
+        help="Codec profile from pbr_encoder.profiles (e.g. pbre). default=STAGE1A menu.",
+    )
     args = parser.parse_args(argv)
 
     cfg = _load_config(args.config if args.config.exists() else None)
@@ -199,15 +222,35 @@ def main(argv: list[str] | None = None) -> int:
     n16 = sum(1 for s in specs_all if s.dtype in {"BF16", "F16", "FP16"})
     print(f"inventory: {len(specs_all)} tensors, {n16} 16-bit tensors")
     try:
-        chosen = select_weight_specs(
-            specs_all,
-            min_bytes=min_bytes,
-            max_bytes=max_bytes,
-            include_embeddings=include_embeddings,
-        )
+        if args.all_16bit:
+            chosen = [s for s in specs_all if s.dtype in {"BF16", "F16", "FP16"}]
+            if not chosen:
+                raise ValueError("No 16-bit tensors found in the checkpoint")
+        else:
+            chosen = select_weight_specs(
+                specs_all,
+                min_bytes=min_bytes,
+                max_bytes=max_bytes,
+                include_embeddings=include_embeddings,
+            )
     except ValueError as exc:
         print(f"GATE 1B FAIL: {exc}")
         return 2
+
+    codecs = None
+    whole_codecs = None
+    enable_whole = True
+    if args.profile and args.profile != "default":
+        from pbr_encoder.profiles import PROFILES
+
+        if args.profile not in PROFILES:
+            print(f"GATE 1B FAIL: unknown profile {args.profile}")
+            return 2
+        prof = PROFILES[args.profile]
+        codecs = prof["codecs"]
+        whole_codecs = prof["whole_codecs"]
+        enable_whole = bool(prof["enable_whole"])
+        print(f"profile {args.profile}: {prof['label']}")
 
     selected_bytes = sum(s.nbytes for s in chosen)
     print(
@@ -231,6 +274,9 @@ def main(argv: list[str] | None = None) -> int:
             output_dir=output_dir,
             include_baselines=include_baselines,
             model_meta=model_meta,
+            codecs=codecs,
+            whole_codecs=whole_codecs,
+            enable_whole=enable_whole,
         )
     except ExactnessError as exc:
         print(f"GATE 1B FAIL: {exc}")

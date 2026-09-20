@@ -23,10 +23,15 @@ from pbr_encoder.hf_weights import (
 from pbr_encoder.profiles import PROFILES
 from pbr_encoder.verification import ExactnessError
 
-DISCLAIMER = (
-    "Blocker-fix ablation on the Stage 1B Qwen tensor set. "
-    "Lossless BF16 only. Not a 1–2 GB / 8 GB claim. Success is not ≤4 BPW."
-)
+
+def _disclaimer(label: str = "selected") -> str:
+    return (
+        f"Blocker-fix ablation on the {label} tensor set. "
+        "Lossless BF16 only. Not a 1–2 GB / 8 GB claim. Success is not ≤4 BPW."
+    )
+
+
+DISCLAIMER = _disclaimer("selected")
 
 
 def _load_config(path: Path | None) -> dict:
@@ -106,9 +111,10 @@ def run_profile(
     return rows, total
 
 
-def format_ablation(totals: list[dict]) -> str:
+def format_ablation(totals: list[dict], *, title: str | None = None) -> str:
+    heading = title or "Blocker-fix ablation"
     lines = [
-        "# Blocker-fix ablation (same 42-tensor Qwen set)",
+        f"# {heading}",
         "",
         DISCLAIMER,
         "",
@@ -140,6 +146,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
     cfg = _load_config(args.config if args.config.exists() else None)
+    global DISCLAIMER
+    label = str(cfg.get("repo", args.tag))
+    DISCLAIMER = _disclaimer(label)
     specs = select_weight_specs(
         inventory_from_dir(args.model_dir),
         min_bytes=int(cfg.get("min_bytes", 100 * 1024 * 1024)),
@@ -203,7 +212,10 @@ def main(argv: list[str] | None = None) -> int:
     (args.output_dir / f"blocker_ablation_{args.tag}.json").write_text(
         json.dumps(payload, indent=2) + "\n", encoding="utf-8"
     )
-    md = format_ablation(totals)
+    md = format_ablation(
+        totals,
+        title=f"Blocker-fix ablation ({cfg.get('repo', args.tag)} / {args.tag})",
+    )
     (args.output_dir / f"blocker_ablation_{args.tag}.md").write_text(md, encoding="utf-8")
     print()
     print(md)
