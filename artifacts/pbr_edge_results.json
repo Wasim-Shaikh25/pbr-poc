@@ -5,61 +5,61 @@
       "name": "Residual arithmetic exhaustive",
       "status": "PASS",
       "detail": "16,384 predictor/actual pairs",
-      "seconds": 0.000864
+      "seconds": 0.000908
     },
     {
       "name": "BF16 split/reassembly exhaustive",
       "status": "PASS",
       "detail": "65,536 BF16 bit patterns",
-      "seconds": 0.000653
+      "seconds": 0.001091
     },
     {
       "name": "7-bit packing boundaries",
       "status": "PASS",
       "detail": "26 lengths including empty and partial-byte tails",
-      "seconds": 0.007272
+      "seconds": 0.00831
     },
     {
       "name": "Special BF16 values",
       "status": "PASS",
       "detail": "13 signed-zero/subnormal/normal/Inf/NaN cases",
-      "seconds": 1.7e-05
+      "seconds": 1.9e-05
     },
     {
       "name": "All matrix candidates round-trip",
       "status": "PASS",
       "detail": "174 version/shape/predictor/traversal combinations",
-      "seconds": 0.079601
+      "seconds": 0.074627
     },
     {
       "name": "Overflow and exponent edges",
       "status": "PASS",
       "detail": "1176 wraparound/exponent boundary combinations",
-      "seconds": 0.363566
+      "seconds": 0.355937
     },
     {
       "name": "Synthetic selection and accounting",
       "status": "PASS",
       "detail": "{\"checker\": [\"matrix:(16, 16):col_serp:paeth\", 23, 229], \"constant\": [\"symbol_zlib\", 17, 229], \"horizontal\": [\"matrix:(16, 16):col:exp_left\", 25, 229], \"plane\": [\"matrix:(16, 16):col:paeth\", 25, 229], \"repeated_rows\": [\"matrix:(16, 16):col:exp_left\", 25, 229], \"uniform_random\": [\"raw\", 229, 229], \"vertical\": [\"matrix:(16, 16):col:paeth\", 25, 229]}",
-      "seconds": 0.052452
+      "seconds": 0.051806
     },
     {
       "name": "Determinism",
       "status": "PASS",
       "detail": "5cab1374c1365378c869e119679890e45a4ce4187eae97091cf78607cd9b1d6f",
-      "seconds": 0.042525
+      "seconds": 0.041192
     },
     {
       "name": "Tie-policy observation",
       "status": "PASS",
       "detail": "current tie rule lexical; candidates=['matrix:(16, 16):row:previous']",
-      "seconds": 0.007379
+      "seconds": 0.007281
     },
     {
-      "name": "Malformed framing observation",
+      "name": "Gate D standalone decoder + corruption",
       "status": "PASS",
-      "detail": "local framing checked; standalone corruption decoder remains REQUIRED",
-      "seconds": 2.8e-05
+      "detail": "standalone decoder round-trip+corruption OK on 3 tiles; SHA samples=432a63ef611f\u2026",
+      "seconds": 0.033169
     }
   ]
 }

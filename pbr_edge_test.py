@@ -13,6 +13,7 @@ from pbr_poc import (
     bits7_pack, bits7_unpack, matrix_residual,
     evaluate_tile, raw_candidate, context_candidate,
     SHAPES, PRED, TRAV,
+    CodecError, encode_tile_blob, decode_tile_blob, roundtrip_tile_sha,
 )
 
 RESULTS=[]
@@ -132,17 +133,111 @@ def tie_policy_observation():
     assert chosen[0]==tied[0]
     return f"current tie rule lexical; candidates={tied}"
 
-def malformed_local_payloads():
-    # Current PoC is a predictor benchmark and has no standalone container decoder.
-    # Validate length prefixes are internally bounded; corruption rejection becomes a release gate.
-    a=np.arange(256,dtype=np.uint8)&127
-    p=raw_candidate(a)
-    declared=int.from_bytes(p[1:5],'little')
-    assert declared==len(p)-5
-    for cut in [0,1,4,len(p)-1]:
-        truncated=p[:cut]
-        assert len(truncated)<len(p)
-    return "local framing checked; standalone corruption decoder remains REQUIRED"
+def gate_d_standalone_decoder():
+    """Gate D: standalone decoder reads only serialized bytes; rejects corruption."""
+    import struct, zlib
+    rng = np.random.default_rng(20260920)
+    y, x = np.indices((16, 16))
+    tiles = {
+        'random': rng.integers(0, 128, (16, 16), dtype=np.uint8),
+        'plane': ((3 * x + 5 * y) & 127).astype(np.uint8),
+        'constant': np.full((16, 16), 63, dtype=np.uint8),
+    }
+    e = np.full((16, 16), 127, dtype=np.uint8)
+    shas = []
+    for name, tile in tiles.items():
+        ok, blob, s1, s2 = roundtrip_tile_sha(tile.ravel(), e.ravel(), 3, (16, 16))
+        assert ok and s1 == s2, name
+        assert len(blob) > 0
+        md, ed, info = decode_tile_blob(blob)
+        assert info['complete_bytes'] == len(blob)
+        assert np.array_equal(md, tile.ravel()) and np.array_equal(ed, e.ravel())
+        shas.append(s1)
+
+        # Truncated header / payload
+        for cut in [0, 4, 10, 20, max(1, len(blob) // 3), len(blob) - 1]:
+            try:
+                decode_tile_blob(blob[:cut])
+                raise AssertionError(f'truncate accepted cut={cut}')
+            except CodecError:
+                pass
+
+        # Trailing bytes (strict policy)
+        try:
+            decode_tile_blob(blob + b'\x00')
+            raise AssertionError('trailing accepted')
+        except CodecError:
+            pass
+
+        # Checksum mismatch
+        bad = bytearray(blob)
+        bad[-1] ^= 0xFF
+        try:
+            decode_tile_blob(bytes(bad))
+            raise AssertionError('bad crc accepted')
+        except CodecError:
+            pass
+
+        # Invalid mode id (re-CRC so we exercise mode check)
+        bad = bytearray(blob)
+        bad[12] = 99
+        core = bytes(bad[:-4])
+        fixed = core + struct.pack('<I', zlib.crc32(core) & 0xFFFFFFFF)
+        try:
+            decode_tile_blob(fixed)
+            raise AssertionError('bad mode accepted')
+        except CodecError:
+            pass
+
+        # Impossible dimensions vs n
+        bad = bytearray(blob)
+        bad[9], bad[10] = 3, 3
+        core = bytes(bad[:-4])
+        fixed = core + struct.pack('<I', zlib.crc32(core) & 0xFFFFFFFF)
+        try:
+            decode_tile_blob(fixed)
+            raise AssertionError('bad dims accepted')
+        except CodecError:
+            pass
+
+        # Corrupt entropy stream (zlib body) with CRC repaired
+        meta_len = struct.unpack_from('<I', blob, 13)[0]
+        body_len = struct.unpack_from('<I', blob, 17)[0]
+        body_start = 13 + 4 + 4 + 4 + meta_len
+        if body_len > 5 and blob[body_start] in (1, 2):  # zlib-tagged bodies
+            bad = bytearray(blob)
+            bad[body_start + 5] ^= 0xFF
+            core = bytes(bad[:-4])
+            fixed = core + struct.pack('<I', zlib.crc32(core) & 0xFFFFFFFF)
+            try:
+                decode_tile_blob(fixed)
+                raise AssertionError('zlib corruption accepted')
+            except CodecError:
+                pass
+
+    # Invalid predictor / traversal ids inside matrix meta
+    tile = tiles['plane']
+    blob = encode_tile_blob(tile.ravel(), e.ravel(), 3, (16, 16))
+    md, ed, info = decode_tile_blob(blob)
+    if info['mode'] == 'matrix':
+        meta_len = struct.unpack_from('<I', blob, 13)[0]
+        assert meta_len == 5
+        bad = bytearray(blob)
+        # meta starts at 25
+        meta_off = 13 + 12
+        bad[meta_off + 1] = 200  # predictor index
+        core = bytes(bad[:-4])
+        fixed = core + struct.pack('<I', zlib.crc32(core) & 0xFFFFFFFF)
+        try:
+            decode_tile_blob(fixed)
+            raise AssertionError('bad predictor id accepted')
+        except CodecError:
+            pass
+
+    return (
+        f"standalone decoder round-trip+corruption OK on {len(tiles)} tiles; "
+        f"SHA samples={shas[0][:12]}…"
+    )
 
 TESTS=[
  ('Residual arithmetic exhaustive',residual_exhaustive),
@@ -154,7 +249,7 @@ TESTS=[
  ('Synthetic selection and accounting',synthetic_selection),
  ('Determinism',deterministic_output),
  ('Tie-policy observation',tie_policy_observation),
- ('Malformed framing observation',malformed_local_payloads),
+ ('Gate D standalone decoder + corruption',gate_d_standalone_decoder),
 ]
 
 for name,fn in TESTS: check(name,fn)
