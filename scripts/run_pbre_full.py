@@ -15,11 +15,11 @@ from pbr_encoder.pbre import main as pbre_main
 
 def main(argv: list[str] | None = None) -> int:
     args = list(argv) if argv is not None else sys.argv[1:]
-    extra = ["--all-16bit", "--profile", "pbre", "--no-baselines"]
+    extra = ["--all-16bit", "--profile", "pbre_whole", "--no-baselines", "--block-sizes", "65535"]
     if "--output-dir" not in args:
         extra.extend(["--output-dir", "outputs/reports/pbre_full"])
     print(
-        "PBR-E full-checkpoint: every 16-bit tensor, profile=pbre, no zlib. "
+        "PBR-E full-checkpoint: every 16-bit tensor, profile=pbre_whole, no zlib. "
         "Not a 1–2 GB / 8 GB claim. Success is not ≤4 BPW."
     )
     return pbre_main(extra + args)

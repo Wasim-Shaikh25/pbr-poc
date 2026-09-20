@@ -1,0 +1,25 @@
+{
+  "disclaimer": "Full-checkpoint PBR-E. Lossless BF16 only. Not a 1-2 GB / 8 GB claim. Success is not <=4 BPW.",
+  "model": {
+    "repo_id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "license": "Apache-2.0",
+    "inventory_16bit": 290,
+    "selected_bytes": 988065536
+  },
+  "profile": "pbre_whole",
+  "total": {
+    "tensor_count": 290,
+    "original_bytes": 988065536,
+    "encoded_bytes": 659740226,
+    "n_words": 494032768,
+    "bpw": 10.68334359554061,
+    "ratio_vs_raw_bf16": 0.6677089747212881,
+    "exact": "PASS",
+    "winning_modes": "bf16_exp_huffman:7779",
+    "encode_seconds": 149.22209832999488,
+    "decode_seconds": 133.15200048100724,
+    "encode_MB_s": 6.621442447585463,
+    "decode_MB_s": 7.420583486771852
+  }
+}

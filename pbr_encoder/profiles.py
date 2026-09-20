@@ -57,6 +57,7 @@ WHOLE_NEW = [
     CrossLayerTileXorCodec(),
 ]
 WHOLE_HIER = [*WHOLE_NEW, BitPlanesCodec()]
+PBRE_WHOLE_CODECS = [RawCodec(), Bf16ExpHuffmanCodec()]
 
 PROFILES = {
     "pbre": {
@@ -79,6 +80,13 @@ PROFILES = {
         "enable_whole": False,
         "use_refs": False,
         "label": "Forced spatial-on-uint16 only (documents the blocker)",
+    },
+    "pbre_whole": {
+        "codecs": PBRE_WHOLE_CODECS,
+        "whole_codecs": WHOLE_PBRE,
+        "enable_whole": True,
+        "use_refs": False,
+        "label": "PBR-E whole-tensor (fast full-checkpoint: raw + exp-Huffman only)",
     },
     "hierarchical": {
         "codecs": HIER_CODECS,

@@ -471,7 +471,57 @@ unconditional H(M) including tables is rejected.
 python scripts/run_phase_a_mantissa_audit.py --tag qwen
 ```
 
-Reports: `artifacts/phase_a_mantissa_audit_qwen.{json,md}`.
+Reports: `artifacts/phase_a_mantissa_audit_qwen.{json,md}` (and
+`artifacts/phase_a_mantissa_audit_llama.{json,md}` for a Llama-3.2-1B lite
+snapshot).
+
+### Measured Phase A (Qwen Stage 1B 42 tensors)
+
+Same 42-tensor / 167,673,856 B Qwen sample. Held-out last 20% of rows.
+Tables counted. Gate: mantissa complete BPW **< 6.5**.
+
+| method | ideal BPW | complete BPW | MI vs H(M) | beats 6.5? |
+| --- | ---: | ---: | ---: | --- |
+| H(M\|exp) | 6.933 | **6.955** | 0.039 | no |
+| H(M\|sign,exp) | 6.938 | 6.962 | 0.034 | no |
+| H(M) uncond | 6.972 | 6.977 | 0 | no |
+| prev M / prev row / prev layer | ~6.98 | 6.977 | ≤0 | no |
+| gray / mod-delta / bit-plane / Haar | ≥6.97 | ≥6.977 | ≤0 | no |
+
+H(sign)=1.00, H(exp)=2.61, H(M)=6.97. Best implied total ≈ **10.57 BPW**.
+**Gate MISS.** Spatial / combined contexts and cheap reversible transforms
+are rejected (they do not beat unconditional H(M) after tables). Not ≤4 BPW.
+
+Llama-3.2-1B lite (11 tensors, 167,772,160 B): best `H(M|exp)` complete
+**6.932** mantissa BPW, implied total ≈ 10.53, same **MISS**.
+
+Full-checkpoint PBR-E (every 16-bit tensor, `pbre_whole`):
+
+```bash
+python scripts/run_pbre_full.py --model-dir /path/to/Qwen2.5-0.5B-Instruct
+```
+
+### Measured full-checkpoint PBR-E (this repo)
+
+Same Qwen revision. **290 / 290** 16-bit tensors, **988,065,536 B** original
+(the whole 0.5B Instruct weight set). Profile `pbre_whole`. **Every tensor
+PASS** (uint16 / SHA-256). Winning mode: `bf16_exp_huffman`.
+
+| | value |
+| --- | ---: |
+| original bytes | 988065536 |
+| encoded bytes | 659740226 |
+| complete-container BPW | **10.68** |
+| ratio vs raw BF16 | 0.668 |
+| encode | 6.62 MB/s (149 s) |
+| decode | 7.42 MB/s (133 s) |
+
+DF11/ZipNN-class on the complete checkpoint (~33% size cut). Tile headers
+store rows/cols as uint16, so large tensors are Huffman-coded in stripes
+(7779 tiles total) rather than one codebook each; the rate is still ~10.7
+BPW. **Not ≤4 BPW. Not a 1–2 GB / 8 GB claim.**
+
+Reports: `artifacts/pbre_full_qwen.{json,md}`.
 
 ### Measured Stage 2 run (this repo)
 
