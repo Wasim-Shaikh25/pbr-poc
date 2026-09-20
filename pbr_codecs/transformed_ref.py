@@ -18,15 +18,20 @@ from pbr_core.types import (
 )
 
 
-def _index_transforms(context: EncodeContext) -> None:
-    if len(context.seen_xf) >= len(context.seen_tiles) * 4:
+def _index_latest(context: EncodeContext) -> None:
+    """Index only the newest stored tile (O(1) per tile, not O(n²))."""
+    if not context.seen_tiles:
         return
-    for idx, tile in enumerate(context.seen_tiles):
-        for xf_id in XF_NAMES:
-            xf = apply_transform(tile, xf_id)
-            if xf is None:
-                continue
-            context.seen_xf.setdefault(words_to_bytes(xf), (idx, xf_id))
+    idx = len(context.seen_tiles) - 1
+    tile = context.seen_tiles[idx]
+    ident = apply_transform(tile, 0)
+    if ident is not None and context.seen_xf.get(words_to_bytes(ident)) == (idx, 0):
+        return
+    for xf_id in XF_NAMES:
+        xf = apply_transform(tile, xf_id)
+        if xf is None:
+            continue
+        context.seen_xf.setdefault(words_to_bytes(xf), (idx, xf_id))
 
 
 class TransformedRefCodec:
@@ -36,7 +41,7 @@ class TransformedRefCodec:
     def encode(self, words: np.ndarray, context: EncodeContext | None = None) -> EncodedBlock | None:
         if context is None or not context.seen_tiles:
             return None
-        _index_transforms(context)
+        _index_latest(context)
         matrix = np.ascontiguousarray(words, dtype=np.uint16)
         raw_cost = TILE_HEADER_BYTES + matrix.size * 2
         best: EncodedBlock | None = None
