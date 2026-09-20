@@ -542,6 +542,33 @@ BPW. **Not ≤4 BPW. Not a 1–2 GB / 8 GB claim.**
 
 Reports: `artifacts/pbre_full_qwen.{json,md}`.
 
+### Exact base→finetune delta (related-checkpoint residual)
+
+Bit-exact uint16 residual of a finetune relative to a same-arch base.
+Qwen2.5-0.5B and Instruct share config (qwen2, hidden 896, 24 layers,
+14 heads, intermediate 4864, vocab 151936, BF16) and all 290 tensor
+names/shapes, so this pair is used as-is.
+
+| | HF id | revision |
+| --- | --- | --- |
+| Base | `Qwen/Qwen2.5-0.5B` | `060db6499f32faf8b98477b0a26969ef7d8b9987` |
+| Finetune | `Qwen/Qwen2.5-0.5B-Instruct` | `7ae557604adf67be50417f59c2c2f167def9a775` |
+
+Comparisons (complete container bytes, all metadata): (1) target PBR-E
+rANS standalone, (2) uint16 XOR then zlib / rANS, (3) sign/exp/mantissa
+field deltas, (4) sparse changed-position patches, (5) default XOR
+residual + dict/raw. Reports **standalone BPW**, **delta-only BPW**
+(base already present), and **bundle = base PBR-E + delta** if the base
+must be shipped too. Success is SHA-256 exact restore of the target, not
+≤4 BPW.
+
+```bash
+python scripts/run_checkpoint_delta.py --tag qwen
+```
+
+Reports: `artifacts/checkpoint_delta_qwen.{json,md}` (measured tables
+are filled by that run). Config: `configs/poc_delta.yaml`.
+
 ### Measured Stage 2 run (this repo)
 
 Same Qwen revision as Stage 1B
@@ -581,8 +608,8 @@ The suite fails loudly (`ExactnessError: EXACTNESS FAIL ...`) if any uint16 word
 differs. Cases include special BF16 bit patterns (signed zero, Inf, NaN
 payloads, subnormals) that an FP32 detour would be likely to destroy.
 
-Stage 1B / Stage 2 / PBR-E / blocker-mitigation / hierarchical / Phase A
-unit tests write tiny local Safetensors fixtures.
+Stage 1B / Stage 2 / PBR-E / blocker-mitigation / hierarchical / Phase A /
+checkpoint-delta unit tests write tiny local Safetensors fixtures.
 They do **not** download the 988 MB checkpoint. Live download tests are
 skipped unless `PBR_LIVE_HF=1`.
 
@@ -635,12 +662,13 @@ pbr_qualifier/   Stage 2 inventory, entropy, sample encode, BPW projection
 scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py,
                  run_blocker_diagnosis.py, run_blocker_ablation.py,
                  run_family_eval.py, run_phase_a_mantissa_audit.py,
-                 run_pbre_full.py, run_exp_coder_ablation.py
+                 run_pbre_full.py, run_exp_coder_ablation.py,
+                 run_checkpoint_delta.py
 tests/           exactness, codecs, Stage 1B fixtures, qualifier math,
-                 hierarchical leftovers, mantissa audit
+                 hierarchical leftovers, mantissa audit, checkpoint delta
 configs/         poc_controlled.yaml, poc_real.yaml, poc_llama.yaml,
-                 qualifier_default.yaml
-artifacts/       measured diagnosis / ablation / Phase A reports
+                 qualifier_default.yaml, poc_delta.yaml
+artifacts/       measured diagnosis / ablation / Phase A / delta reports
 ```
 
 Later stages (full selected-model encode vs projection, fused runtime) are

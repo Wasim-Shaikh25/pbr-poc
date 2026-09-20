@@ -96,10 +96,12 @@ def load_freq_table(data: bytes, offset: int = 0) -> tuple[np.ndarray, int]:
 def rans_encode(symbols: np.ndarray, freq: np.ndarray) -> bytes:
     """Encode ``symbols`` (uint8). Layout: little-endian state then overflow bytes."""
     cumul = _cumul(freq)
-    overflow: list[int] = []
+    overflow = bytearray()
     x = RANS_L
-    flat = np.ascontiguousarray(symbols, dtype=np.uint8).ravel()
-    for s in reversed(flat.tolist()):
+    # Iterate the compact byte buffer so large tensors do not materialize a
+    # Python list of symbols (embedding-scale streams are 1e8+ bytes).
+    raw = np.ascontiguousarray(symbols, dtype=np.uint8).ravel().tobytes()
+    for s in reversed(raw):
         f = int(freq[s])
         start = int(cumul[s])
         x_max = ((RANS_L >> SCALE_BITS) << 8) * f
@@ -108,7 +110,8 @@ def rans_encode(symbols: np.ndarray, freq: np.ndarray) -> bytes:
             x >>= 8
         x = ((x // f) << SCALE_BITS) + (x % f) + start
     state = struct.pack("<I", x & 0xFFFFFFFF)
-    return state + bytes(reversed(overflow))
+    overflow.reverse()
+    return state + bytes(overflow)
 
 
 def rans_decode(blob: bytes, count: int, freq: np.ndarray) -> np.ndarray:

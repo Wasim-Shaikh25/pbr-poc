@@ -29,6 +29,7 @@ pbr-diagnose-blockers = "pbr_encoder.blocker_diagnosis:main"
 pbr-ablate-blockers = "pbr_encoder.ablation:main"
 pbr-phase-a = "pbr_encoder.mantissa_audit:main"
 pbr-exp-ablate = "pbr_encoder.exp_coder_ablation:main"
+pbr-delta = "pbr_encoder.checkpoint_delta:main"
 pbr-generate-controlled = "pbr_encoder.controlled_data:main"
 
 [project.urls]

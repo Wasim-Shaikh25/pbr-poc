@@ -1,0 +1,24 @@
+# Exact base→finetune delta (related-checkpoint residual)
+# Bit-exact uint16. Not a production ratio claim. Success is not ≤4 BPW.
+stage: delta
+base_repo: Qwen/Qwen2.5-0.5B
+base_revision: 060db6499f32faf8b98477b0a26969ef7d8b9987
+base_license: Apache-2.0
+target_repo: Qwen/Qwen2.5-0.5B-Instruct
+target_revision: 7ae557604adf67be50417f59c2c2f167def9a775
+target_license: Apache-2.0
+attribution: >
+  Qwen2.5-0.5B and Qwen2.5-0.5B-Instruct, © 2024 Alibaba Cloud, Apache License 2.0.
+  https://huggingface.co/Qwen/Qwen2.5-0.5B
+  https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct
+  Same Qwen2 architecture (hidden 896, 24 layers, 14 heads, intermediate 4864,
+  vocab 151936, BF16). Weights are downloaded at run time and are not
+  redistributed by this repo.
+base_dir: outputs/models/Qwen__Qwen2.5-0.5B
+target_dir: outputs/models/Qwen__Qwen2.5-0.5B-Instruct
+output_dir: outputs/reports/checkpoint_delta
+disclaimer: >
+  Exact related-checkpoint delta only. Count every metadata byte.
+  Delta-only BPW assumes the base is already present.
+  If the base must be shipped too, total = base PBR-E + delta.
+  Do not present these numbers as 1–2 GB / 8 GB or ≤4 BPW evidence.
