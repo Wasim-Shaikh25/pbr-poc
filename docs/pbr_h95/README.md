@@ -288,3 +288,13 @@ PYTHONPATH=. python scripts/run_pbr_q4_s1_xy.py \
   --s1-container artifacts/pbr_h95/containers/H95Q-S1-v2.h95q
 ```
 
+## Hybrid H95 + groupwise INT (≤5 BPW attempt)
+
+New Q-ref after PR #17: H95 mantissa-keep on late MLP / attention / norms,
+groupwise Q4/Q5 INT on mid MLP / embed, then selective X/Y. See
+`docs/pbr_q4/HYBRID.md`.
+
+```bash
+PYTHONPATH=. python scripts/run_pbr_q4_hybrid.py
+```
+
