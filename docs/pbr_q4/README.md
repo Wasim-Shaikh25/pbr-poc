@@ -42,6 +42,15 @@ PYTHONPATH=. python scripts/run_pbr_q4_s1_xy.py \
 
 Artifacts: `artifacts/pbr_q4/s1_xy_qwen.{json,md}`. Large `.h95x` blobs are gitignored.
 
+## Measured (Qwen2.5-0.5B-Instruct, frozen S1 SHA)
+
+| Container | file_bytes | actual_bpw | exact Q(W)? |
+| --- | ---: | ---: | --- |
+| H95Q-S1 v2 (PR #14) | 458,266,017 | **7.420820** | yes |
+| H95Q-S1 + X/Y | 460,308,254 | **7.453890** | yes (SHA `eda64747…`) |
+
+Δ = **+0.033070 BPW** / +2,042,237 bytes. X/Y mantissa payload is 891,963 B *smaller* than the padded packed-K baseline (5,704 RUN/rANS tiles win; 1,928,416 MATRIX tiles tie). Physical file is larger because every tile stores a 1-byte flag (1,934,120 B ≈ 0.031 BPW) and arrays are padded to 16×16. Quality not re-run: Q(W) is bit-identical to S1, prior heldout proxy **0.990**.
+
 ## Honesty
 
 - Not a production mobile runtime.
