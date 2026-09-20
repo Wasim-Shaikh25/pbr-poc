@@ -1,0 +1,231 @@
+{
+  "phase": "H95Q-container-v2",
+  "model_dir": "outputs/models/Qwen__Qwen2.5-0.5B-Instruct",
+  "container_version": 2,
+  "magic": "H95Q",
+  "exp_packing": "adaptive_exact_v2",
+  "honesty": [
+    "actual_bpw = physical file_bytes * 8 / n_weights (includes header/metadata) \u2014 file size only.",
+    "v2 replaces only the raw-u8 exponent stream with adaptive exact coding (RAW8/rANS/Huffman/delta-rANS/run-rANS).",
+    "Complete exponent cost = payload + probability table + mode_id + stream_length + final_state (+ section bytes).",
+    "Reported exp section bytes == physical sum(exp_len); reported file bytes == physical file size.",
+    "S1 precision policy / embed tiers / mid-MLP K3 / mantissa / signs / tensor order FROZEN \u2014 Q(W) SHA must match v1.",
+    "Prior heldout retention 0.990 is proxy from prior stack \u2014 not re-evaluated here.",
+    "Not production quality / multilingual / runtime RAM == BPW. Large .h95q blobs are gitignored."
+  ],
+  "wall_seconds": 360.92,
+  "candidates": [
+    {
+      "name": "H95Q-Conservative",
+      "stack_name": "T1_B1_embed_conservative",
+      "precision_map": {
+        "body": "B1",
+        "embed_schedule": "conservative",
+        "keep_hist_rows": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 271,
+          "4": 149651,
+          "5": 0,
+          "6": 0,
+          "7": 2014
+        },
+        "mlp_k3_bands": [],
+        "tier_schedule": "conservative"
+      },
+      "container_version": 2,
+      "est_bpw": 7.8937,
+      "actual_bpw": 7.912782,
+      "v1_actual_bpw": 13.293241,
+      "delta_vs_v1_bpw": -5.380459,
+      "stream_bpw": 7.895376,
+      "exp_complete_bpw": 2.619225,
+      "exp_section_bytes": 161747843,
+      "exp_mode_histogram": {
+        "EXP_RANS": 205,
+        "EXP_HUFFMAN": 85
+      },
+      "file_bytes": 488646675,
+      "overhead_bytes": 1074880,
+      "header_bytes": 1074880,
+      "payload_stream_bytes": 487571795,
+      "n_weights": 494032768,
+      "n_tensors": 290,
+      "exact_match": true,
+      "sha_ok": true,
+      "word_diffs_vs_v1": 0,
+      "sha256_quantized_reference": "9c0247096cdcaeee1e0cedc4d734396962aa0e43fc2959b602d8ba749479bc1a",
+      "sha256_file": "75b09e42acaea15e8152be0813b66e5243da1c77f3f524110b78f6f29d86b701",
+      "container_path": "artifacts/pbr_h95/containers/H95Q-Conservative-v2.h95q",
+      "source_v1_path": "artifacts/pbr_h95/containers/H95Q-Conservative.h95q",
+      "exp_packing": "adaptive_exact_v2",
+      "prior_heldout_retention": 0.9923,
+      "prior_proxy_gate": "proxy_GO",
+      "actual_bpw_le_8": true,
+      "exp_bpw_le_3_2": true,
+      "idempotence": {
+        "checked": 18,
+        "all_idempotent": true,
+        "failures": []
+      },
+      "subprocess_decode": {
+        "returncode": 0,
+        "sha_ok": true
+      },
+      "wall_build_s": 7.71,
+      "wall_v1_decode_s": 7.18,
+      "wall_encode_s": 92.19,
+      "wall_decode_verify_s": 12.69,
+      "note": "Transcoded from frozen v1 container; Q(W) SHA frozen. Quality retention is prior proxy (0.99), not re-eval'd."
+    },
+    {
+      "name": "H95Q-Balanced",
+      "stack_name": "T1_B1_embed_aggressive",
+      "precision_map": {
+        "body": "B1",
+        "embed_schedule": "aggressive",
+        "keep_hist_rows": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 150925,
+          "4": 0,
+          "5": 397,
+          "6": 100,
+          "7": 514
+        },
+        "mlp_k3_bands": [],
+        "note": "NO mid-MLP K3",
+        "tier_schedule": "aggressive"
+      },
+      "container_version": 2,
+      "est_bpw": 7.6134,
+      "actual_bpw": 7.632544,
+      "v1_actual_bpw": 13.012932,
+      "delta_vs_v1_bpw": -5.380388,
+      "stream_bpw": 7.615136,
+      "exp_complete_bpw": 2.619297,
+      "exp_section_bytes": 161752299,
+      "exp_mode_histogram": {
+        "EXP_RANS": 205,
+        "EXP_HUFFMAN": 85
+      },
+      "file_bytes": 471340875,
+      "overhead_bytes": 1075008,
+      "header_bytes": 1075008,
+      "payload_stream_bytes": 470265867,
+      "n_weights": 494032768,
+      "n_tensors": 290,
+      "exact_match": true,
+      "sha_ok": true,
+      "word_diffs_vs_v1": 0,
+      "sha256_quantized_reference": "3610ea3ccac36ac646bea028222e3900ca75448989f869b6165e297a50461ef8",
+      "sha256_file": "f17c34b124762d15b35e99f53e6338366454e91000a9803af1f97875d38f7887",
+      "container_path": "artifacts/pbr_h95/containers/H95Q-Balanced-v2.h95q",
+      "source_v1_path": "artifacts/pbr_h95/containers/H95Q-Balanced.h95q",
+      "exp_packing": "adaptive_exact_v2",
+      "prior_heldout_retention": 0.9897,
+      "prior_proxy_gate": "proxy_GO",
+      "actual_bpw_le_8": true,
+      "exp_bpw_le_3_2": true,
+      "idempotence": {
+        "checked": 18,
+        "all_idempotent": true,
+        "failures": []
+      },
+      "subprocess_decode": {
+        "returncode": 0,
+        "sha_ok": true
+      },
+      "wall_build_s": 6.7,
+      "wall_v1_decode_s": 6.2,
+      "wall_encode_s": 90.76,
+      "wall_decode_verify_s": 11.65,
+      "note": "Transcoded from frozen v1 container; Q(W) SHA frozen. Quality retention is prior proxy (0.99), not re-eval'd."
+    },
+    {
+      "name": "H95Q-S1",
+      "stack_name": "S1_B1_aggr_embed_band815_k3",
+      "precision_map": {
+        "body": "B1",
+        "embed_schedule": "aggressive",
+        "k3_variant": {
+          "band": "mlp_band_8_15",
+          "variant": "band_8_15"
+        },
+        "keep_hist_rows": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 150925,
+          "4": 0,
+          "5": 397,
+          "6": 100,
+          "7": 514
+        },
+        "mlp_k3_bands": [
+          "mlp_band_8_15"
+        ],
+        "tier_schedule": "aggressive"
+      },
+      "container_version": 2,
+      "est_bpw": 7.4017,
+      "actual_bpw": 7.42082,
+      "v1_actual_bpw": 12.801215,
+      "delta_vs_v1_bpw": -5.380395,
+      "stream_bpw": 7.403411,
+      "exp_complete_bpw": 2.619289,
+      "exp_section_bytes": 161751809,
+      "exp_mode_histogram": {
+        "EXP_RANS": 205,
+        "EXP_HUFFMAN": 85
+      },
+      "file_bytes": 458266017,
+      "overhead_bytes": 1075072,
+      "header_bytes": 1075072,
+      "payload_stream_bytes": 457190945,
+      "n_weights": 494032768,
+      "n_tensors": 290,
+      "exact_match": true,
+      "sha_ok": true,
+      "word_diffs_vs_v1": 0,
+      "sha256_quantized_reference": "eda64747928dd533596a3f790229ebc65143decc5666729fa6bbe953f2afd3de",
+      "sha256_file": "b75b8c229bef50f474a625a176fbf70270631239155d8ca8de00cf31ad4b992f",
+      "container_path": "artifacts/pbr_h95/containers/H95Q-S1-v2.h95q",
+      "source_v1_path": "artifacts/pbr_h95/containers/H95Q-S1.h95q",
+      "exp_packing": "adaptive_exact_v2",
+      "prior_heldout_retention": 0.99,
+      "prior_proxy_gate": "proxy_GO",
+      "actual_bpw_le_8": true,
+      "exp_bpw_le_3_2": true,
+      "idempotence": {
+        "checked": 18,
+        "all_idempotent": true,
+        "failures": []
+      },
+      "subprocess_decode": {
+        "returncode": 0,
+        "sha_ok": true
+      },
+      "wall_build_s": 6.32,
+      "wall_v1_decode_s": 5.89,
+      "wall_encode_s": 89.81,
+      "wall_decode_verify_s": 12.48,
+      "note": "Transcoded from frozen v1 container; Q(W) SHA frozen. Quality retention is prior proxy (0.99), not re-eval'd."
+    }
+  ],
+  "summary": {
+    "all_exact_match": true,
+    "all_sha_ok": true,
+    "s1_actual_bpw_le_8": true,
+    "s1_actual_bpw": 7.42082,
+    "s1_exp_complete_bpw": 2.619289,
+    "s1_v1_actual_bpw": 12.801215,
+    "s1_mode_histogram": {
+      "EXP_RANS": 205,
+      "EXP_HUFFMAN": 85
+    },
+    "physical_le_8_gate": "PASS"
+  }
+}

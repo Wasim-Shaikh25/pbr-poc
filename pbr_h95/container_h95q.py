@@ -1,11 +1,11 @@
-"""H95Q physical container — magic ``H95Q``, version 1.
+"""H95Q physical container — magic ``H95Q``, versions 1 and 2.
 
 Physical layout
 ---------------
 ::
 
     [0:4]   magic b"H95Q"
-    [4:6]   version u16le = 1
+    [4:6]   version u16le (1 = raw-u8 exp, 2 = adaptive exact exp)
     [6:8]   flags u16le (bit0 = little-endian)
     [8:9]   checksum_algo u8 (1 = SHA-256)
     [9:12]  reserved
@@ -17,13 +17,16 @@ Physical layout
 Streams per unique tensor
 -------------------------
 * sign bitplane (1 bit/weight)
-* exponent **raw u8** (8 bits/weight) — exactness preferred over the ~2.62 BPW
-  entropy reference used in prior *estimated* packed BPW
+* exponents:
+    - v1: **raw u8** (8 bits/weight)
+    - v2: adaptive exact coding (RAW8 / rANS / Huffman / delta-rANS / run-rANS)
+      selected per tensor by minimum complete physical section bytes
 * mantissa K-bit packed (K in 0..7), MSB-first, pad to byte per stream
 * embed tiers: int8 row-keep table + mantissa groups keyed by K
 * optional raw-u16 exception words when low mantissa bits survive (NaN payloads)
 
-Decode-only imports: numpy, this module, ``pbr_h95.bitpack``, ``pbr_core.bf16``.
+Decode-only imports: numpy, this module, ``pbr_h95.bitpack``, ``pbr_h95.exp_codec`` (v2),
+``pbr_core.bf16``.
 """
 from __future__ import annotations
 
@@ -44,9 +47,19 @@ from pbr_h95.bitpack import (
     unpack_kept_mantissas,
     unpack_sign_bitplane,
 )
+from pbr_h95.exp_codec import (
+    EXP_RAW8,
+    MODE_NAMES,
+    decode_exp_blob,
+    encode_exp_adaptive,
+    encode_raw8,
+)
 
 MAGIC = b"H95Q"
-VERSION = 1
+VERSION = 2
+VERSION_V1 = 1
+VERSION_V2 = 2
+SUPPORTED_VERSIONS = {VERSION_V1, VERSION_V2}
 CHECKSUM_SHA256 = 1
 FLAGS_LITTLE_ENDIAN = 0x0001
 ALIGN = 64
@@ -95,17 +108,36 @@ def _encode_one(
     *,
     keep: int | None = None,
     row_keeps: np.ndarray | None = None,
+    version: int = VERSION,
 ) -> dict[str, Any]:
     w = np.ascontiguousarray(words, dtype=np.uint16)
     shape = tuple(int(x) for x in w.shape)
     flat = w.ravel()
     n = int(flat.size)
     sign, exp, mant = split_components(flat)
+    if int(version) >= VERSION_V2:
+        exp_res = encode_exp_adaptive(exp)
+        exp_blob = exp_res.blob
+        exp_meta = exp_res.as_dict()
+    else:
+        exp_blob = pack_exp_u8(exp)
+        exp_meta = {
+            "mode": EXP_RAW8,
+            "mode_name": "EXP_RAW8",
+            "n_weights": n,
+            "complete_bytes": len(exp_blob),
+            "complete_bpw": 8.0 if n else 0.0,
+            "table_bytes": 0,
+            "stream_bytes": len(exp_blob),
+            "mode_id_bytes": 0,
+            "length_field_bytes": 0,
+        }
     out: dict[str, Any] = {
         "shape": shape,
         "n_weights": n,
         "sign": pack_sign_bitplane(sign),
-        "exp": pack_exp_u8(exp),
+        "exp": exp_blob,
+        "exp_meta": exp_meta,
     }
 
     if row_keeps is not None:
@@ -186,11 +218,15 @@ def _encode_one(
     return out
 
 
-def _decode_one(spec: dict[str, Any], data: memoryview) -> np.ndarray:
+def _decode_one(spec: dict[str, Any], data: memoryview, *, version: int = VERSION_V1) -> np.ndarray:
     n = int(spec["n_weights"])
     shape = tuple(spec["shape"])
     sign = unpack_sign_bitplane(bytes(data[spec["sign_off"] : spec["sign_off"] + spec["sign_len"]]), n)
-    exp = unpack_exp_u8(bytes(data[spec["exp_off"] : spec["exp_off"] + spec["exp_len"]]), n)
+    exp_blob = bytes(data[spec["exp_off"] : spec["exp_off"] + spec["exp_len"]])
+    if int(version) >= VERSION_V2:
+        exp, _mode = decode_exp_blob(exp_blob, n)
+    else:
+        exp = unpack_exp_u8(exp_blob, n)
 
     if spec["mode"] == "uniform":
         k = int(spec["base_keep"])
@@ -257,9 +293,13 @@ def encode_container(
     embed_name: str | None = None,
     embed_row_keeps: np.ndarray | None = None,
     dtype_tag: str = "bf16",
+    version: int = VERSION,
 ) -> dict[str, Any]:
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    version = int(version)
+    if version not in SUPPORTED_VERSIONS:
+        raise ValueError(f"unsupported H95Q version {version}")
 
     unique: list[tuple[str, np.ndarray]] = []
     seen: set[int] = set()
@@ -278,10 +318,10 @@ def encode_container(
     encoded: list[dict[str, Any]] = []
     for name, w in unique:
         if embed_name and name == embed_name and embed_row_keeps is not None:
-            enc = _encode_one(w, row_keeps=embed_row_keeps)
+            enc = _encode_one(w, row_keeps=embed_row_keeps, version=version)
         else:
             k = int(keep_map.get(name, 7))
-            enc = _encode_one(w, keep=max(k, 0))
+            enc = _encode_one(w, keep=max(k, 0), version=version)
         enc["name"] = name
         enc["sha256"] = sha256_u16(w)
         encoded.append(enc)
@@ -306,11 +346,15 @@ def encode_container(
             "base_keep": enc.get("base_keep"),
             "n_weights": enc["n_weights"],
             "sha256_q_ref": enc["sha256"],
+            "exp_meta": enc.get("exp_meta") or {},
         }
         so, sl = add(enc["sign"])
         eo, el = add(enc["exp"])
         spec["sign_rel"], spec["sign_len"] = so, sl
         spec["exp_rel"], spec["exp_len"] = eo, el
+        if version >= VERSION_V2:
+            spec["exp_mode"] = int(spec["exp_meta"].get("mode", EXP_RAW8))
+            spec["exp_mode_name"] = str(spec["exp_meta"].get("mode_name", "EXP_RAW8"))
 
         if enc["mode"] == "uniform":
             mo, ml = add(enc["mant"])
@@ -387,6 +431,10 @@ def encode_container(
                 "exp_off": payload_start + spec["exp_rel"],
                 "exp_len": spec["exp_len"],
             }
+            if version >= VERSION_V2:
+                item["exp_mode"] = spec.get("exp_mode", EXP_RAW8)
+                item["exp_mode_name"] = spec.get("exp_mode_name", "EXP_RAW8")
+                item["exp_complete_bytes"] = int(spec["exp_meta"].get("complete_bytes", spec["exp_len"]))
             if spec["mode"] == "uniform":
                 item["mant_off"] = payload_start + spec["mant_rel"]
                 item["mant_len"] = spec["mant_len"]
@@ -429,9 +477,23 @@ def encode_container(
                     item["exceptions"] = {"n": 0}
             tensors_out.append(item)
 
+        if version >= VERSION_V2:
+            exp_packing = "adaptive_exact_v2"
+            exp_note = (
+                "Per-tensor adaptive exact exponent coding (RAW8/rANS/Huffman/delta-rANS/run-rANS); "
+                "mode chosen by minimum complete physical section bytes "
+                "(payload+table+mode_id+length fields). Decoder reconstructs bit-identical Q(W)."
+            )
+        else:
+            exp_packing = "raw_u8"
+            exp_note = (
+                "Exponents stored as raw 8 bits/weight for bit-exact decode. "
+                "Prior estimated packed BPW used EXP_BPW_REF≈2.62; physical raw_u8 "
+                "therefore sits ~5.38 BPW higher on the exponent term alone before metadata."
+            )
         header_obj = {
             "format": "H95Q",
-            "version": VERSION,
+            "version": version,
             "model_id": model_id,
             "model_hash": model_hash,
             "candidate": candidate,
@@ -441,12 +503,8 @@ def encode_container(
             "total_weights": total_weights,
             "endianness": "little",
             "checksum_algo": "sha256",
-            "exp_packing": "raw_u8",
-            "exp_packing_note": (
-                "Exponents stored as raw 8 bits/weight for bit-exact decode. "
-                "Prior estimated packed BPW used EXP_BPW_REF≈2.62; physical raw_u8 "
-                "therefore sits ~5.38 BPW higher on the exponent term alone before metadata."
-            ),
+            "exp_packing": exp_packing,
+            "exp_packing_note": exp_note,
             "sign_packing": "bitplane",
             "mantissa_packing": "kbit_msb_first",
             "sha256_quantized_reference": ref_sha,
@@ -463,7 +521,7 @@ def encode_container(
     for _ in range(6):
         header_json = build_header_json(payload_start)
         prefix = _PREFIX.pack(
-            MAGIC, VERSION, FLAGS_LITTLE_ENDIAN, CHECKSUM_SHA256, b"\x00\x00\x00", len(header_json)
+            MAGIC, version, FLAGS_LITTLE_ENDIAN, CHECKSUM_SHA256, b"\x00\x00\x00", len(header_json)
         )
         header_end = len(prefix) + len(header_json)
         new_start = _align(header_end, ALIGN)
@@ -479,6 +537,13 @@ def encode_container(
     file_bytes = len(blob)
     actual_bpw = (file_bytes * 8.0 / total_weights) if total_weights else 0.0
     stream_bpw = (payload_stream_bytes * 8.0 / total_weights) if total_weights else 0.0
+    exp_bytes = sum(int(s["exp_len"]) for s in specs)
+    exp_bpw = (exp_bytes * 8.0 / total_weights) if total_weights else 0.0
+    mode_hist: dict[str, int] = {}
+    for s in specs:
+        name = str((s.get("exp_meta") or {}).get("mode_name") or s.get("exp_mode_name") or "EXP_RAW8")
+        mode_hist[name] = mode_hist.get(name, 0) + 1
+    exp_packing = "adaptive_exact_v2" if version >= VERSION_V2 else "raw_u8"
     return {
         "path": str(out_path),
         "file_bytes": file_bytes,
@@ -491,7 +556,11 @@ def encode_container(
         "stream_bpw": round(stream_bpw, 6),
         "sha256_quantized_reference": ref_sha,
         "sha256_file": _sha256_hex(blob),
-        "exp_packing": "raw_u8",
+        "exp_packing": exp_packing,
+        "container_version": version,
+        "exp_section_bytes": exp_bytes,
+        "exp_complete_bpw": round(exp_bpw, 6),
+        "exp_mode_histogram": mode_hist,
         "candidate": candidate,
     }
 
@@ -503,7 +572,7 @@ def read_header(path: str | Path) -> dict[str, Any]:
         magic, ver, _flags, _algo, _res, hdr_len = _PREFIX.unpack(prefix)
         if magic != MAGIC:
             raise ValueError(f"bad magic {magic!r}")
-        if ver != VERSION:
+        if ver not in SUPPORTED_VERSIONS:
             raise ValueError(f"unsupported version {ver}")
         return json.loads(f.read(hdr_len).decode("utf-8"))
 
@@ -514,13 +583,18 @@ def decode_container(path: str | Path) -> dict[str, Any]:
     magic, ver, _flags, _algo, _res, hdr_len = _PREFIX.unpack_from(data, 0)
     if magic != MAGIC:
         raise ValueError(f"bad magic {magic!r}")
-    if ver != VERSION:
+    if ver not in SUPPORTED_VERSIONS:
         raise ValueError(f"unsupported version {ver}")
     header = json.loads(data[16 : 16 + hdr_len].decode("utf-8"))
+    # Prefer on-wire version; header JSON version should match.
+    wire_ver = int(ver)
+    hdr_ver = int(header.get("version", wire_ver))
+    if hdr_ver != wire_ver:
+        raise ValueError(f"header/wire version mismatch {hdr_ver} vs {wire_ver}")
     mv = memoryview(data)
     tensors: dict[str, np.ndarray] = {}
     for spec in header["tensors"]:
-        tensors[spec["name"]] = _decode_one(spec, mv)
+        tensors[spec["name"]] = _decode_one(spec, mv, version=wire_ver)
     for alias, canon in (header.get("aliases") or {}).items():
         if canon in tensors:
             tensors[alias] = tensors[canon]

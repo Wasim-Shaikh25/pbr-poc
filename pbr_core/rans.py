@@ -93,7 +93,7 @@ def load_freq_table(data: bytes, offset: int = 0) -> tuple[np.ndarray, int]:
     return freq, offset
 
 
-def rans_encode(symbols: np.ndarray, freq: np.ndarray) -> bytes:
+def rans_encode_python(symbols: np.ndarray, freq: np.ndarray) -> bytes:
     """Encode ``symbols`` (uint8). Layout: little-endian state then overflow bytes."""
     cumul = _cumul(freq)
     overflow = bytearray()
@@ -112,6 +112,46 @@ def rans_encode(symbols: np.ndarray, freq: np.ndarray) -> bytes:
     state = struct.pack("<I", x & 0xFFFFFFFF)
     overflow.reverse()
     return state + bytes(overflow)
+
+
+def rans_encode_c(symbols: np.ndarray, freq: np.ndarray) -> bytes | None:
+    lib = _c_lib()
+    if lib is None or not hasattr(lib, "pbr_rans_encode"):
+        return None
+    sym = np.ascontiguousarray(symbols, dtype=np.uint8).ravel()
+    n = int(sym.size)
+    freq64 = np.ascontiguousarray(freq, dtype=np.int64)
+    if freq64.size < 256:
+        padded = np.zeros(256, dtype=np.int64)
+        padded[: freq64.size] = freq64
+        freq64 = padded
+    cumul = _cumul(freq64)
+    freq32 = np.ascontiguousarray(freq64, dtype=np.uint32)
+    cumul32 = np.ascontiguousarray(cumul, dtype=np.uint32)
+    # 4 + n + slack for renormalization bursts
+    out_cap = 4 + n + max(n // 8, 64) + 1024
+    out = np.empty(out_cap, dtype=np.uint8)
+    import ctypes
+
+    rc = lib.pbr_rans_encode(
+        sym.ctypes.data_as(ctypes.c_void_p),
+        ctypes.c_int(n),
+        freq32.ctypes.data_as(ctypes.c_void_p),
+        cumul32.ctypes.data_as(ctypes.c_void_p),
+        out.ctypes.data_as(ctypes.c_void_p),
+        ctypes.c_int(out_cap),
+    )
+    if rc < 0:
+        return None
+    return bytes(out[:rc])
+
+
+def rans_encode(symbols: np.ndarray, freq: np.ndarray) -> bytes:
+    if rans_impl() == "c":
+        blob = rans_encode_c(symbols, freq)
+        if blob is not None:
+            return blob
+    return rans_encode_python(symbols, freq)
 
 
 def rans_decode_python(blob: bytes, count: int, freq: np.ndarray) -> np.ndarray:
@@ -229,6 +269,16 @@ def _c_lib():
             ctypes.c_void_p,
         ]
         lib.pbr_decode_exp_rans_tile.restype = ctypes.c_int
+    if hasattr(lib, "pbr_rans_encode"):
+        lib.pbr_rans_encode.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_int,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_int,
+        ]
+        lib.pbr_rans_encode.restype = ctypes.c_int
     _C_LIB = lib
     _C_LIB_KEY = key
     return lib
