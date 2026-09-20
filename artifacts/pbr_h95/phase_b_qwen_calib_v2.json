@@ -1,0 +1,467 @@
+{
+  "phase": "H95-B",
+  "model_dir": "outputs/models/Qwen__Qwen2.5-0.5B-Instruct",
+  "repo": "Qwen/Qwen2.5-0.5B-Instruct",
+  "tie_word_embeddings": true,
+  "calibration": {
+    "version": "calib-v2",
+    "path": "docs/pbr_h95/calibration_v2.json",
+    "n_texts": 58,
+    "max_length": 256,
+    "metric": "mean_token_nll_teacher_forcing",
+    "ppl": "exp(mean_nll)",
+    "ppl_retention": "bf16_ppl / quant_ppl"
+  },
+  "baseline": {
+    "mean_nll": 3.160408227103097,
+    "ppl": 23.580220049442257,
+    "n_tokens": 1925,
+    "wall_seconds": 12.23
+  },
+  "family_tensor_counts": {
+    "embed": 2,
+    "first_block": 10,
+    "norm": 49,
+    "attn_mid": 154,
+    "mlp_mid": 66,
+    "last_block": 10
+  },
+  "candidates": [
+    {
+      "name": "policy_7_5",
+      "kind": "policy",
+      "mean_nll": 3.1603780127190926,
+      "ppl": 23.57950759838196,
+      "n_tokens": 1925,
+      "delta_nll": -3.0214384004523254e-05,
+      "ppl_retention": 1.0000302148404638,
+      "bytes_saved_vs_bf16_mantissa": 82001920.0,
+      "utility_bytes_per_delta_nll": 8.200192e+16,
+      "utility_bytes_per_abs_delta_nll": 2714002707707.8213,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 154,
+        "6": 0,
+        "7": 137
+      },
+      "wall_seconds": 19.4
+    },
+    {
+      "name": "uniform_mid_k6",
+      "kind": "uniform_mid",
+      "mean_nll": 3.161691624034535,
+      "ppl": 23.610502259387495,
+      "n_tokens": 1925,
+      "delta_nll": 0.0012833969314378635,
+      "ppl_retention": 0.9987174262702015,
+      "bytes_saved_vs_bf16_mantissa": 41000960.0,
+      "utility_bytes_per_delta_nll": 31947216792.909317,
+      "utility_bytes_per_abs_delta_nll": 31947216792.909317,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 154,
+        "7": 137
+      },
+      "wall_seconds": 17.92
+    },
+    {
+      "name": "uniform_mid_k5",
+      "kind": "uniform_mid",
+      "mean_nll": 3.160070593697684,
+      "ppl": 23.572259923324438,
+      "n_tokens": 1925,
+      "delta_nll": -0.0003376334054130403,
+      "ppl_retention": 1.0003376904099865,
+      "bytes_saved_vs_bf16_mantissa": 82001920.0,
+      "utility_bytes_per_delta_nll": 8.200192e+16,
+      "utility_bytes_per_abs_delta_nll": 242872650292.65634,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 154,
+        "6": 0,
+        "7": 137
+      },
+      "wall_seconds": 18.36
+    },
+    {
+      "name": "uniform_mid_k4",
+      "kind": "uniform_mid",
+      "mean_nll": 3.1671586569253503,
+      "ppl": 23.739935136327095,
+      "n_tokens": 1925,
+      "delta_nll": 0.006750429822253157,
+      "ppl_retention": 0.9932723031479375,
+      "bytes_saved_vs_bf16_mantissa": 123002880.0,
+      "utility_bytes_per_delta_nll": 18221488592.40257,
+      "utility_bytes_per_abs_delta_nll": 18221488592.40257,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 154,
+        "5": 0,
+        "6": 0,
+        "7": 137
+      },
+      "wall_seconds": 18.07
+    },
+    {
+      "name": "family_embed_k5",
+      "kind": "family_ablation",
+      "mean_nll": 3.1613601882736404,
+      "ppl": 23.60267819126566,
+      "n_tokens": 1925,
+      "delta_nll": 0.0009519611705433029,
+      "ppl_retention": 0.9990484918007434,
+      "bytes_saved_vs_bf16_mantissa": 34033664.0,
+      "utility_bytes_per_delta_nll": 35751105247.89191,
+      "utility_bytes_per_abs_delta_nll": 35751105247.89191,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 2,
+        "6": 0,
+        "7": 289
+      },
+      "wall_seconds": 19.46,
+      "family": "embed"
+    },
+    {
+      "name": "family_lm_head_tied_k5",
+      "kind": "family_ablation",
+      "mean_nll": 3.161431627149706,
+      "ppl": 23.6043644002975,
+      "n_tokens": 1925,
+      "delta_nll": 0.0010234000466087245,
+      "ppl_retention": 0.9989771234486222,
+      "bytes_saved_vs_bf16_mantissa": 34033664.0,
+      "utility_bytes_per_delta_nll": 33255484121.559803,
+      "utility_bytes_per_abs_delta_nll": 33255484121.559803,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 2,
+        "6": 0,
+        "7": 289
+      },
+      "wall_seconds": 18.8,
+      "family": "lm_head_tied",
+      "note": "tie_word_embeddings=true: lm_head shares embed_tokens; ablation identical to family_embed_k5"
+    },
+    {
+      "name": "family_norm_k5",
+      "kind": "family_ablation",
+      "mean_nll": 3.1634030309900063,
+      "ppl": 23.65094403347224,
+      "n_tokens": 1925,
+      "delta_nll": 0.002994803886909203,
+      "ppl_retention": 0.9970096760649432,
+      "bytes_saved_vs_bf16_mantissa": 10976.0,
+      "utility_bytes_per_delta_nll": 3665014.610131222,
+      "utility_bytes_per_abs_delta_nll": 3665014.610131222,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 49,
+        "6": 0,
+        "7": 242
+      },
+      "wall_seconds": 13.46,
+      "family": "norm"
+    },
+    {
+      "name": "family_attn_mid_k5",
+      "kind": "family_ablation",
+      "mean_nll": 3.1661719473306236,
+      "ppl": 23.716522267300704,
+      "n_tokens": 1925,
+      "delta_nll": 0.00576372022752647,
+      "ppl_retention": 0.9942528581415845,
+      "bytes_saved_vs_bf16_mantissa": 10098880.0,
+      "utility_bytes_per_delta_nll": 1752146114.200617,
+      "utility_bytes_per_abs_delta_nll": 1752146114.200617,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 154,
+        "6": 0,
+        "7": 137
+      },
+      "wall_seconds": 14.46,
+      "family": "attn_mid"
+    },
+    {
+      "name": "family_mlp_mid_k5",
+      "kind": "family_ablation",
+      "mean_nll": 3.1586208145339767,
+      "ppl": 23.538110112869436,
+      "n_tokens": 1925,
+      "delta_nll": -0.0017874125691204057,
+      "ppl_retention": 1.0017890109431427,
+      "bytes_saved_vs_bf16_mantissa": 71909376.0,
+      "utility_bytes_per_delta_nll": 7.190937599999999e+16,
+      "utility_bytes_per_abs_delta_nll": 40230989331.907265,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 66,
+        "6": 0,
+        "7": 225
+      },
+      "wall_seconds": 17.01,
+      "family": "mlp_mid"
+    },
+    {
+      "name": "family_first_block_k5",
+      "kind": "family_ablation",
+      "mean_nll": 3.1617481340680804,
+      "ppl": 23.611836527361607,
+      "n_tokens": 1925,
+      "delta_nll": 0.0013399069649833173,
+      "ppl_retention": 0.9986609903095546,
+      "bytes_saved_vs_bf16_mantissa": 3727648.0,
+      "utility_bytes_per_delta_nll": 2782020018.8648257,
+      "utility_bytes_per_abs_delta_nll": 2782020018.8648257,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 10,
+        "6": 0,
+        "7": 281
+      },
+      "wall_seconds": 13.33,
+      "family": "first_block"
+    },
+    {
+      "name": "family_last_block_k5",
+      "kind": "family_ablation",
+      "mean_nll": 3.1566865846708225,
+      "ppl": 23.492625999912306,
+      "n_tokens": 1925,
+      "delta_nll": -0.0037216424322745745,
+      "ppl_retention": 1.003728576342648,
+      "bytes_saved_vs_bf16_mantissa": 3727648.0,
+      "utility_bytes_per_delta_nll": 3727648000000000.0,
+      "utility_bytes_per_abs_delta_nll": 1001613687.4604998,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 10,
+        "6": 0,
+        "7": 281
+      },
+      "wall_seconds": 13.63,
+      "family": "last_block"
+    },
+    {
+      "name": "policy_7_5_mlp_mid_k4",
+      "kind": "policy_variant",
+      "mean_nll": 3.1677026941869166,
+      "ppl": 23.752854059497576,
+      "n_tokens": 1925,
+      "delta_nll": 0.007294467083819534,
+      "ppl_retention": 0.992732072970141,
+      "bytes_saved_vs_bf16_mantissa": 117956608.0,
+      "utility_bytes_per_delta_nll": 16170695767.7072,
+      "utility_bytes_per_abs_delta_nll": 16170695767.7072,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 66,
+        "5": 88,
+        "6": 0,
+        "7": 137
+      },
+      "wall_seconds": 18.67
+    }
+  ],
+  "rankings": {
+    "families_by_delta_nll_desc": [
+      {
+        "family": "attn_mid",
+        "delta_nll": 0.00576372022752647,
+        "bytes_saved": 10098880.0
+      },
+      {
+        "family": "norm",
+        "delta_nll": 0.002994803886909203,
+        "bytes_saved": 10976.0
+      },
+      {
+        "family": "first_block",
+        "delta_nll": 0.0013399069649833173,
+        "bytes_saved": 3727648.0
+      },
+      {
+        "family": "embed",
+        "delta_nll": 0.0009519611705433029,
+        "bytes_saved": 34033664.0
+      },
+      {
+        "family": "mlp_mid",
+        "delta_nll": -0.0017874125691204057,
+        "bytes_saved": 71909376.0
+      },
+      {
+        "family": "last_block",
+        "delta_nll": -0.0037216424322745745,
+        "bytes_saved": 3727648.0
+      }
+    ],
+    "families_by_utility_desc": [
+      {
+        "family": "mlp_mid",
+        "utility_bytes_per_delta_nll": 7.190937599999999e+16,
+        "delta_nll": -0.0017874125691204057,
+        "bytes_saved": 71909376.0
+      },
+      {
+        "family": "last_block",
+        "utility_bytes_per_delta_nll": 3727648000000000.0,
+        "delta_nll": -0.0037216424322745745,
+        "bytes_saved": 3727648.0
+      },
+      {
+        "family": "embed",
+        "utility_bytes_per_delta_nll": 35751105247.89191,
+        "delta_nll": 0.0009519611705433029,
+        "bytes_saved": 34033664.0
+      },
+      {
+        "family": "first_block",
+        "utility_bytes_per_delta_nll": 2782020018.8648257,
+        "delta_nll": 0.0013399069649833173,
+        "bytes_saved": 3727648.0
+      },
+      {
+        "family": "attn_mid",
+        "utility_bytes_per_delta_nll": 1752146114.200617,
+        "delta_nll": 0.00576372022752647,
+        "bytes_saved": 10098880.0
+      },
+      {
+        "family": "norm",
+        "utility_bytes_per_delta_nll": 3665014.610131222,
+        "delta_nll": 0.002994803886909203,
+        "bytes_saved": 10976.0
+      }
+    ],
+    "families_by_utility_among_positive_delta_nll_desc": [
+      {
+        "family": "embed",
+        "utility_bytes_per_delta_nll": 35751105247.89191,
+        "delta_nll": 0.0009519611705433029,
+        "bytes_saved": 34033664.0
+      },
+      {
+        "family": "first_block",
+        "utility_bytes_per_delta_nll": 2782020018.8648257,
+        "delta_nll": 0.0013399069649833173,
+        "bytes_saved": 3727648.0
+      },
+      {
+        "family": "attn_mid",
+        "utility_bytes_per_delta_nll": 1752146114.200617,
+        "delta_nll": 0.00576372022752647,
+        "bytes_saved": 10098880.0
+      },
+      {
+        "family": "norm",
+        "utility_bytes_per_delta_nll": 3665014.610131222,
+        "delta_nll": 0.002994803886909203,
+        "bytes_saved": 10976.0
+      }
+    ],
+    "note": "utility = bytes_saved / max(delta_nll, 1e-9). delta_nll <= 0 yields huge utility (no measured calib loss); also see families_by_utility_among_positive_delta_nll_desc."
+  },
+  "policy_7_5_summary": {
+    "ppl_retention": 1.0000302148404638,
+    "delta_nll": -3.0214384004523254e-05,
+    "bytes_saved_vs_bf16_mantissa": 82001920.0
+  },
+  "disclaimer": "CALIBRATION PROXY ONLY \u2014 not held-out evaluation. Scores use the fixed in-repo corpus calib-v2 under teacher-forcing mean token NLL / perplexity. Larger corpora (e.g. calib-v2) reduce noise relative to calib-v1 but remain calibration proxies. Phase C owns the \u226595% held-out quality gate. Do NOT claim \u226595% GO from Phase B. ppl_retention = bf16_ppl / quant_ppl is reported for ranking, not acceptance.",
+  "wall_seconds": 216.62,
+  "env": {
+    "torch": "2.6.0+cpu",
+    "device": "cpu",
+    "dtype": "bfloat16"
+  },
+  "compare_to_calib_v1": {
+    "v1_tokens": 155,
+    "v2_tokens": 1925,
+    "v1_policy_retention": 1.0048726184829082,
+    "v2_policy_retention": 1.0000302148404638,
+    "v1_top_sensitive_delta": [
+      {
+        "family": "attn_mid",
+        "delta_nll": 0.004943306215347665,
+        "bytes_saved": 10098880.0
+      },
+      {
+        "family": "embed",
+        "delta_nll": 0.0006838275540257399,
+        "bytes_saved": 34033664.0
+      },
+      {
+        "family": "norm",
+        "delta_nll": 0.000625647267987528,
+        "bytes_saved": 10976.0
+      }
+    ],
+    "v2_top_sensitive_delta": [
+      {
+        "family": "attn_mid",
+        "delta_nll": 0.00576372022752647,
+        "bytes_saved": 10098880.0
+      },
+      {
+        "family": "norm",
+        "delta_nll": 0.002994803886909203,
+        "bytes_saved": 10976.0
+      },
+      {
+        "family": "first_block",
+        "delta_nll": 0.0013399069649833173,
+        "bytes_saved": 3727648.0
+      }
+    ],
+    "note": "Still calibration proxy; larger corpus to reduce noise vs calib-v1."
+  }
+}

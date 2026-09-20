@@ -127,3 +127,87 @@ def policy_then_mlp_mid_keep_fn(
         return base
 
     return _fn
+
+
+# --- Phase C decision units (layer bands / families) ---
+
+BAND_SPECS = (
+    ("mlp_band_1_7", "mlp", range(1, 8)),
+    ("mlp_band_8_15", "mlp", range(8, 16)),
+    ("mlp_band_16_22", "mlp", range(16, 23)),
+    ("attn_band_1_7", "attn", range(1, 8)),
+    ("attn_band_8_15", "attn", range(8, 16)),
+    ("attn_band_16_22", "attn", range(16, 23)),
+)
+
+FAMILY_UNIT_SPECS = (
+    ("mlp_mid", "mlp", range(1, 23)),
+    ("attn_mid", "attn", range(1, 23)),
+)
+
+
+def _name_in_unit(name: str, kind: str, layers: range, *, num_layers: int = 24) -> bool:
+    """True if *name* is a non-bias weight in the given mid-layer unit."""
+    n = name.lower()
+    if "bias" in n:
+        return False
+    li = layer_index(n)
+    if li is None or li not in layers:
+        return False
+    # never treat first/last as mid units (bands already exclude 0 and 23)
+    if li == 0 or li == num_layers - 1:
+        return False
+    if kind == "mlp":
+        return "mlp." in n
+    if kind == "attn":
+        return ("self_attn" in n) or bool(re.search(r"\.attn\.", n))
+    return False
+
+
+def unit_keep_fn(
+    unit_keeps: dict[str, int],
+    unit_specs: tuple,
+    *,
+    protected: int = 7,
+    num_layers: int = 24,
+):
+    """Build keep_fn from per-unit keep values; emb/norm/bias/first/last stay protected."""
+
+    def _fn(name: str) -> int:
+        # protected families always
+        base = default_keep_bits(name, default_large=protected)
+        if base == protected and (
+            any(x in name.lower() for x in ("embed", "lm_head", "norm", "bias"))
+            or FIRST_LAYER_RE.search(name)
+            or LAST_LAYER_RE.search(name)
+        ):
+            return protected
+        for uname, kind, layers in unit_specs:
+            if _name_in_unit(name, kind, layers, num_layers=num_layers):
+                return int(unit_keeps.get(uname, protected))
+        return protected
+
+    return _fn
+
+
+def avg_keep_bits(keep_map: dict[str, int], state_dict) -> float:
+    """Unique-storage average mantissa keep bits (word-weighted)."""
+    seen: set[int] = set()
+    total_w = 0
+    total_k = 0.0
+    for name, keep in keep_map.items():
+        if name not in state_dict:
+            continue
+        t = state_dict[name]
+        if not hasattr(t, "data_ptr"):
+            continue
+        ptr = t.data_ptr()
+        if ptr in seen:
+            continue
+        seen.add(ptr)
+        n = int(t.numel())
+        total_w += n
+        total_k += int(keep) * n
+    if total_w == 0:
+        return 7.0
+    return total_k / total_w

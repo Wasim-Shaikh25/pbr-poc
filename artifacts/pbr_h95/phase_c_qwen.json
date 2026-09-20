@@ -1,0 +1,768 @@
+{
+  "phase": "H95-C",
+  "model_dir": "outputs/models/Qwen__Qwen2.5-0.5B-Instruct",
+  "repo": "Qwen/Qwen2.5-0.5B-Instruct",
+  "calibration": {
+    "version": "calib-v2",
+    "path": "docs/pbr_h95/calibration_v2.json",
+    "n_texts": 58,
+    "n_tokens_scored": 1925,
+    "max_length": 256
+  },
+  "heldout": {
+    "version": "heldout-v1",
+    "path": "docs/pbr_h95/heldout_v1.json",
+    "n_texts": 32,
+    "n_tokens_scored": 1094,
+    "max_length": 256,
+    "note": "Held-out only; never use for greedy search / precision allocation. Small in-repo proxy set \u2014 not a production LM benchmark."
+  },
+  "search": {
+    "unit_mode": "bands",
+    "units": [
+      "mlp_band_1_7",
+      "mlp_band_8_15",
+      "mlp_band_16_22",
+      "attn_band_1_7",
+      "attn_band_8_15",
+      "attn_band_16_22"
+    ],
+    "calib_floor": 0.97,
+    "soft_calib_floor": 0.98,
+    "candidate_keeps": [
+      6,
+      5,
+      4
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "accepted": {
+          "unit": "mlp_band_16_22",
+          "from_keep": 7,
+          "to_keep": 6,
+          "calib_ppl_retention": 0.99987050089981,
+          "delta_nll": 0.0001295074859224421,
+          "bytes_saved_vs_bf16_mantissa": 11440128.0,
+          "utility": 88335650395.15266
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 7,
+          "attn_band_1_7": 7,
+          "attn_band_8_15": 7,
+          "mlp_band_16_22": 6,
+          "mlp_band_1_7": 7,
+          "mlp_band_8_15": 7
+        },
+        "n_trials": 6
+      },
+      {
+        "step": 2,
+        "accepted": {
+          "unit": "attn_band_16_22",
+          "from_keep": 7,
+          "to_keep": 6,
+          "calib_ppl_retention": 0.9995035230229713,
+          "delta_nll": 0.0004966002625304,
+          "bytes_saved_vs_bf16_mantissa": 13045760.0,
+          "utility": 26270143180.202984
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 6,
+          "attn_band_1_7": 7,
+          "attn_band_8_15": 7,
+          "mlp_band_16_22": 6,
+          "mlp_band_1_7": 7,
+          "mlp_band_8_15": 7
+        },
+        "n_trials": 6
+      },
+      {
+        "step": 3,
+        "accepted": {
+          "unit": "attn_band_1_7",
+          "from_keep": 7,
+          "to_keep": 6,
+          "calib_ppl_retention": 0.9972214272133793,
+          "delta_nll": 0.002782440185546964,
+          "bytes_saved_vs_bf16_mantissa": 14651392.0,
+          "utility": 5265662879.69273
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 6,
+          "attn_band_1_7": 6,
+          "attn_band_8_15": 7,
+          "mlp_band_16_22": 6,
+          "mlp_band_1_7": 7,
+          "mlp_band_8_15": 7
+        },
+        "n_trials": 6
+      },
+      {
+        "step": 4,
+        "accepted": {
+          "unit": "attn_band_1_7",
+          "from_keep": 6,
+          "to_keep": 5,
+          "calib_ppl_retention": 0.9984611879378363,
+          "delta_nll": 0.0015399972494547498,
+          "bytes_saved_vs_bf16_mantissa": 16257024.0,
+          "utility": 10556527945.58948
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 6,
+          "attn_band_1_7": 5,
+          "attn_band_8_15": 7,
+          "mlp_band_16_22": 6,
+          "mlp_band_1_7": 7,
+          "mlp_band_8_15": 7
+        },
+        "n_trials": 6
+      },
+      {
+        "step": 5,
+        "accepted": {
+          "unit": "mlp_band_8_15",
+          "from_keep": 7,
+          "to_keep": 6,
+          "calib_ppl_retention": 0.9982177474946077,
+          "delta_nll": 0.0017838426069780589,
+          "bytes_saved_vs_bf16_mantissa": 29331456.0,
+          "utility": 16442849770.075468
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 6,
+          "attn_band_1_7": 5,
+          "attn_band_8_15": 7,
+          "mlp_band_16_22": 6,
+          "mlp_band_1_7": 7,
+          "mlp_band_8_15": 6
+        },
+        "n_trials": 6
+      },
+      {
+        "step": 6,
+        "accepted": {
+          "unit": "mlp_band_8_15",
+          "from_keep": 6,
+          "to_keep": 5,
+          "calib_ppl_retention": 0.998859917190099,
+          "delta_nll": 0.001140733198686128,
+          "bytes_saved_vs_bf16_mantissa": 42405888.0,
+          "utility": 37174238506.28893
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 6,
+          "attn_band_1_7": 5,
+          "attn_band_8_15": 7,
+          "mlp_band_16_22": 6,
+          "mlp_band_1_7": 7,
+          "mlp_band_8_15": 5
+        },
+        "n_trials": 6
+      },
+      {
+        "step": 7,
+        "accepted": {
+          "unit": "mlp_band_1_7",
+          "from_keep": 7,
+          "to_keep": 6,
+          "calib_ppl_retention": 0.9987837556870829,
+          "delta_nll": 0.001216984538289001,
+          "bytes_saved_vs_bf16_mantissa": 53846016.0,
+          "utility": 44245439696.139366
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 6,
+          "attn_band_1_7": 5,
+          "attn_band_8_15": 7,
+          "mlp_band_16_22": 6,
+          "mlp_band_1_7": 6,
+          "mlp_band_8_15": 5
+        },
+        "n_trials": 6
+      },
+      {
+        "step": 8,
+        "accepted": {
+          "unit": "mlp_band_1_7",
+          "from_keep": 6,
+          "to_keep": 5,
+          "calib_ppl_retention": 0.9974891540531843,
+          "delta_nll": 0.002514003406871357,
+          "bytes_saved_vs_bf16_mantissa": 65286144.0,
+          "utility": 25968995834.11771
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 6,
+          "attn_band_1_7": 5,
+          "attn_band_8_15": 7,
+          "mlp_band_16_22": 6,
+          "mlp_band_1_7": 5,
+          "mlp_band_8_15": 5
+        },
+        "n_trials": 6
+      },
+      {
+        "step": 9,
+        "accepted": {
+          "unit": "mlp_band_8_15",
+          "from_keep": 5,
+          "to_keep": 4,
+          "calib_ppl_retention": 0.9986995935750389,
+          "delta_nll": 0.001301252687132326,
+          "bytes_saved_vs_bf16_mantissa": 78360576.0,
+          "utility": 60219338468.90986
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 6,
+          "attn_band_1_7": 5,
+          "attn_band_8_15": 7,
+          "mlp_band_16_22": 6,
+          "mlp_band_1_7": 5,
+          "mlp_band_8_15": 4
+        },
+        "n_trials": 6
+      },
+      {
+        "step": 10,
+        "accepted": {
+          "unit": "attn_band_8_15",
+          "from_keep": 7,
+          "to_keep": 6,
+          "calib_ppl_retention": 0.9982128654839347,
+          "delta_nll": 0.0017887333461215071,
+          "bytes_saved_vs_bf16_mantissa": 80195584.0,
+          "utility": 44833727829.744606
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 6,
+          "attn_band_1_7": 5,
+          "attn_band_8_15": 6,
+          "mlp_band_16_22": 6,
+          "mlp_band_1_7": 5,
+          "mlp_band_8_15": 4
+        },
+        "n_trials": 5
+      },
+      {
+        "step": 11,
+        "accepted": {
+          "unit": "attn_band_8_15",
+          "from_keep": 6,
+          "to_keep": 5,
+          "calib_ppl_retention": 0.997839645345481,
+          "delta_nll": 0.002162691586977683,
+          "bytes_saved_vs_bf16_mantissa": 82030592.0,
+          "utility": 37929861332.94949
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 6,
+          "attn_band_1_7": 5,
+          "attn_band_8_15": 5,
+          "mlp_band_16_22": 6,
+          "mlp_band_1_7": 5,
+          "mlp_band_8_15": 4
+        },
+        "n_trials": 5
+      },
+      {
+        "step": 12,
+        "accepted": {
+          "unit": "attn_band_8_15",
+          "from_keep": 5,
+          "to_keep": 4,
+          "calib_ppl_retention": 0.9992117138530497,
+          "delta_nll": 0.0007885970078507221,
+          "bytes_saved_vs_bf16_mantissa": 83865600.0,
+          "utility": 106347854690.15549
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 6,
+          "attn_band_1_7": 5,
+          "attn_band_8_15": 4,
+          "mlp_band_16_22": 6,
+          "mlp_band_1_7": 5,
+          "mlp_band_8_15": 4
+        },
+        "n_trials": 5
+      },
+      {
+        "step": 13,
+        "accepted": {
+          "unit": "attn_band_16_22",
+          "from_keep": 6,
+          "to_keep": 5,
+          "calib_ppl_retention": 0.9982647024602384,
+          "delta_nll": 0.0017368049126167406,
+          "bytes_saved_vs_bf16_mantissa": 85471232.0,
+          "utility": 49211763151.467354
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 5,
+          "attn_band_1_7": 5,
+          "attn_band_8_15": 4,
+          "mlp_band_16_22": 6,
+          "mlp_band_1_7": 5,
+          "mlp_band_8_15": 4
+        },
+        "n_trials": 4
+      },
+      {
+        "step": 14,
+        "accepted": {
+          "unit": "attn_band_16_22",
+          "from_keep": 5,
+          "to_keep": 4,
+          "calib_ppl_retention": 0.9996430159965393,
+          "delta_nll": 0.0003570477374186254,
+          "bytes_saved_vs_bf16_mantissa": 87076864.0,
+          "utility": 243880173081.46548
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 4,
+          "attn_band_1_7": 5,
+          "attn_band_8_15": 4,
+          "mlp_band_16_22": 6,
+          "mlp_band_1_7": 5,
+          "mlp_band_8_15": 4
+        },
+        "n_trials": 4
+      },
+      {
+        "step": 15,
+        "accepted": {
+          "unit": "attn_band_1_7",
+          "from_keep": 5,
+          "to_keep": 4,
+          "calib_ppl_retention": 0.9958603091127205,
+          "delta_nll": 0.004148283128614594,
+          "bytes_saved_vs_bf16_mantissa": 88682496.0,
+          "utility": 21378120357.377193
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 4,
+          "attn_band_1_7": 4,
+          "attn_band_8_15": 4,
+          "mlp_band_16_22": 6,
+          "mlp_band_1_7": 5,
+          "mlp_band_8_15": 4
+        },
+        "n_trials": 3
+      },
+      {
+        "step": 16,
+        "accepted": {
+          "unit": "mlp_band_16_22",
+          "from_keep": 6,
+          "to_keep": 5,
+          "calib_ppl_retention": 0.999055227019189,
+          "delta_nll": 0.0009452195601031832,
+          "bytes_saved_vs_bf16_mantissa": 100122624.0,
+          "utility": 105925256126.80962
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 4,
+          "attn_band_1_7": 4,
+          "attn_band_8_15": 4,
+          "mlp_band_16_22": 5,
+          "mlp_band_1_7": 5,
+          "mlp_band_8_15": 4
+        },
+        "n_trials": 2
+      },
+      {
+        "step": 17,
+        "accepted": {
+          "unit": "mlp_band_16_22",
+          "from_keep": 5,
+          "to_keep": 4,
+          "calib_ppl_retention": 0.9995870774159463,
+          "delta_nll": 0.0004130078600597109,
+          "bytes_saved_vs_bf16_mantissa": 111562752.0,
+          "utility": 270122587942.68646
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 4,
+          "attn_band_1_7": 4,
+          "attn_band_8_15": 4,
+          "mlp_band_16_22": 4,
+          "mlp_band_1_7": 5,
+          "mlp_band_8_15": 4
+        },
+        "n_trials": 2
+      },
+      {
+        "step": 18,
+        "accepted": {
+          "unit": "mlp_band_1_7",
+          "from_keep": 5,
+          "to_keep": 4,
+          "calib_ppl_retention": 0.9932723031479375,
+          "delta_nll": 0.006750429822253157,
+          "bytes_saved_vs_bf16_mantissa": 123002880.0,
+          "utility": 18221488592.40257
+        },
+        "unit_keeps_after": {
+          "attn_band_16_22": 4,
+          "attn_band_1_7": 4,
+          "attn_band_8_15": 4,
+          "mlp_band_16_22": 4,
+          "mlp_band_1_7": 4,
+          "mlp_band_8_15": 4
+        },
+        "n_trials": 1
+      }
+    ],
+    "frozen_unit_keeps": {
+      "attn_band_16_22": 4,
+      "attn_band_1_7": 4,
+      "attn_band_8_15": 4,
+      "mlp_band_16_22": 4,
+      "mlp_band_1_7": 4,
+      "mlp_band_8_15": 4
+    }
+  },
+  "baseline_calib": {
+    "mean_nll": 3.160408227103097,
+    "ppl": 23.580220049442257,
+    "n_tokens": 1925,
+    "wall_seconds": 12.37
+  },
+  "baseline_heldout": {
+    "mean_nll": 3.6641478285711035,
+    "ppl": 39.022867816918406,
+    "n_tokens": 1094,
+    "wall_seconds": 6.34
+  },
+  "frozen": {
+    "unit_keeps": {
+      "attn_band_16_22": 4,
+      "attn_band_1_7": 4,
+      "attn_band_8_15": 4,
+      "mlp_band_16_22": 4,
+      "mlp_band_1_7": 4,
+      "mlp_band_8_15": 4
+    },
+    "keep_hist": {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 154,
+      "5": 0,
+      "6": 0,
+      "7": 137
+    },
+    "calib": {
+      "name": "frozen_calib",
+      "mean_nll": 3.1669199103813668,
+      "ppl": 23.734267985392176,
+      "n_tokens": 1925,
+      "delta_nll": 0.006511683278269675,
+      "ppl_retention": 0.9935094717880184,
+      "bytes_saved_vs_bf16_mantissa": 123002880.0,
+      "avg_keep_bits": 5.008182647512158,
+      "est_total_bpw": 8.628182647512158,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 154,
+        "5": 0,
+        "6": 0,
+        "7": 137
+      },
+      "wall_seconds": 16.95
+    },
+    "heldout": {
+      "name": "frozen_heldout",
+      "mean_nll": 3.6709984425434903,
+      "ppl": 39.29111620440899,
+      "n_tokens": 1094,
+      "delta_nll": 0.006850613972386732,
+      "ppl_retention": 0.9931727979908984,
+      "bytes_saved_vs_bf16_mantissa": 123002880.0,
+      "avg_keep_bits": 5.008182647512158,
+      "est_total_bpw": 8.628182647512158,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 154,
+        "5": 0,
+        "6": 0,
+        "7": 137
+      },
+      "wall_seconds": 11.75
+    }
+  },
+  "references": [
+    {
+      "name": "policy_7_5",
+      "calib": {
+        "name": "policy_7_5_calib",
+        "mean_nll": 3.159533698342063,
+        "ppl": 23.559607483272192,
+        "n_tokens": 1925,
+        "delta_nll": -0.0008745287610341101,
+        "ppl_retention": 1.0008749112728088,
+        "bytes_saved_vs_bf16_mantissa": 82001920.0,
+        "avg_keep_bits": 5.6721217650081055,
+        "est_total_bpw": 9.292121765008105,
+        "keep_hist": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 154,
+          "6": 0,
+          "7": 137
+        },
+        "wall_seconds": 16.14
+      },
+      "heldout": {
+        "name": "policy_7_5_heldout",
+        "mean_nll": 3.6792556685982936,
+        "ppl": 39.61689499640625,
+        "n_tokens": 1094,
+        "delta_nll": 0.015107840027190012,
+        "ppl_retention": 0.9850057108326705,
+        "bytes_saved_vs_bf16_mantissa": 82001920.0,
+        "avg_keep_bits": 5.6721217650081055,
+        "est_total_bpw": 9.292121765008105,
+        "keep_hist": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 154,
+          "6": 0,
+          "7": 137
+        },
+        "wall_seconds": 11.27
+      }
+    },
+    {
+      "name": "uniform_mid_k6",
+      "calib": {
+        "name": "uniform_mid_k6_calib",
+        "mean_nll": 3.1617901472611862,
+        "ppl": 23.612828556848232,
+        "n_tokens": 1925,
+        "delta_nll": 0.0013819201580891338,
+        "ppl_retention": 0.9986190342538815,
+        "bytes_saved_vs_bf16_mantissa": 41000960.0,
+        "avg_keep_bits": 6.336060882504053,
+        "est_total_bpw": 9.956060882504053,
+        "keep_hist": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0,
+          "6": 154,
+          "7": 137
+        },
+        "wall_seconds": 16.65
+      },
+      "heldout": {
+        "name": "uniform_mid_k6_heldout",
+        "mean_nll": 3.6663800750397675,
+        "ppl": 39.11007377218098,
+        "n_tokens": 1094,
+        "delta_nll": 0.0022322464686639343,
+        "ppl_retention": 0.9977702431406661,
+        "bytes_saved_vs_bf16_mantissa": 41000960.0,
+        "avg_keep_bits": 6.336060882504053,
+        "est_total_bpw": 9.956060882504053,
+        "keep_hist": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0,
+          "6": 154,
+          "7": 137
+        },
+        "wall_seconds": 10.94
+      }
+    },
+    {
+      "name": "uniform_mid_k5",
+      "calib": {
+        "name": "uniform_mid_k5_calib",
+        "mean_nll": 3.160070593697684,
+        "ppl": 23.572259923324438,
+        "n_tokens": 1925,
+        "delta_nll": -0.0003376334054130403,
+        "ppl_retention": 1.0003376904099865,
+        "bytes_saved_vs_bf16_mantissa": 82001920.0,
+        "avg_keep_bits": 5.6721217650081055,
+        "est_total_bpw": 9.292121765008105,
+        "keep_hist": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 154,
+          "6": 0,
+          "7": 137
+        },
+        "wall_seconds": 16.1
+      },
+      "heldout": {
+        "name": "uniform_mid_k5_heldout",
+        "mean_nll": 3.6792392312281748,
+        "ppl": 39.6162438041922,
+        "n_tokens": 1094,
+        "delta_nll": 0.015091402657071207,
+        "ppl_retention": 0.9850219018691772,
+        "bytes_saved_vs_bf16_mantissa": 82001920.0,
+        "avg_keep_bits": 5.6721217650081055,
+        "est_total_bpw": 9.292121765008105,
+        "keep_hist": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 154,
+          "6": 0,
+          "7": 137
+        },
+        "wall_seconds": 11.13
+      }
+    },
+    {
+      "name": "uniform_mid_k4",
+      "calib": {
+        "name": "uniform_mid_k4_calib",
+        "mean_nll": 3.167158442905971,
+        "ppl": 23.739930055521462,
+        "n_tokens": 1925,
+        "delta_nll": 0.006750215802874049,
+        "ppl_retention": 0.9932725157274817,
+        "bytes_saved_vs_bf16_mantissa": 123002880.0,
+        "avg_keep_bits": 5.008182647512158,
+        "est_total_bpw": 8.628182647512158,
+        "keep_hist": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 154,
+          "5": 0,
+          "6": 0,
+          "7": 137
+        },
+        "wall_seconds": 16.28
+      },
+      "heldout": {
+        "name": "uniform_mid_k4_heldout",
+        "mean_nll": 3.6709984425434903,
+        "ppl": 39.29111620440899,
+        "n_tokens": 1094,
+        "delta_nll": 0.006850613972386732,
+        "ppl_retention": 0.9931727979908984,
+        "bytes_saved_vs_bf16_mantissa": 123002880.0,
+        "avg_keep_bits": 5.008182647512158,
+        "est_total_bpw": 8.628182647512158,
+        "keep_hist": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 154,
+          "5": 0,
+          "6": 0,
+          "7": 137
+        },
+        "wall_seconds": 11.05
+      }
+    }
+  ],
+  "pareto": [
+    {
+      "name": "frozen_greedy",
+      "calib_ppl_retention": 0.9935094717880184,
+      "heldout_ppl_retention": 0.9931727979908984,
+      "bytes_saved_vs_bf16_mantissa": 123002880.0,
+      "avg_keep_bits": 5.008182647512158,
+      "est_total_bpw": 8.628182647512158,
+      "unit_keeps": {
+        "attn_band_16_22": 4,
+        "attn_band_1_7": 4,
+        "attn_band_8_15": 4,
+        "mlp_band_16_22": 4,
+        "mlp_band_1_7": 4,
+        "mlp_band_8_15": 4
+      }
+    },
+    {
+      "name": "policy_7_5",
+      "calib_ppl_retention": 1.0008749112728088,
+      "heldout_ppl_retention": 0.9850057108326705,
+      "bytes_saved_vs_bf16_mantissa": 82001920.0,
+      "avg_keep_bits": 5.6721217650081055,
+      "est_total_bpw": 9.292121765008105
+    },
+    {
+      "name": "uniform_mid_k6",
+      "calib_ppl_retention": 0.9986190342538815,
+      "heldout_ppl_retention": 0.9977702431406661,
+      "bytes_saved_vs_bf16_mantissa": 41000960.0,
+      "avg_keep_bits": 6.336060882504053,
+      "est_total_bpw": 9.956060882504053
+    },
+    {
+      "name": "uniform_mid_k5",
+      "calib_ppl_retention": 1.0003376904099865,
+      "heldout_ppl_retention": 0.9850219018691772,
+      "bytes_saved_vs_bf16_mantissa": 82001920.0,
+      "avg_keep_bits": 5.6721217650081055,
+      "est_total_bpw": 9.292121765008105
+    },
+    {
+      "name": "uniform_mid_k4",
+      "calib_ppl_retention": 0.9932725157274817,
+      "heldout_ppl_retention": 0.9931727979908984,
+      "bytes_saved_vs_bf16_mantissa": 123002880.0,
+      "avg_keep_bits": 5.008182647512158,
+      "est_total_bpw": 8.628182647512158
+    }
+  ],
+  "gate": {
+    "metric": "heldout_ppl_retention",
+    "threshold": 0.95,
+    "heldout_ppl_retention": 0.9931727979908984,
+    "calib_ppl_retention": 0.9935094717880184,
+    "decision": "GO",
+    "go": true
+  },
+  "shortcuts": [
+    "Stepwise next-lower keep only (not all jumps per round) for band-unit CPU budget.",
+    "Candidate keeps 6,5,4 only (k=3 not tried).",
+    "Frozen band map coincides with uniform_mid_k4."
+  ],
+  "honesty": [
+    "Held-out set is small/in-repo \u2014 **not** a production LM benchmark (no MMLU/HellaSwag/etc.).",
+    "ppl_retention on heldout-v1 is a **proxy** quality score for this PoC.",
+    "Claim GO only if heldout ppl_retention \u2265 0.95 AND map is reported; if <0.95, say NO-GO / needs restore.",
+    "Not a physical container BPW; est only.",
+    "Not \u22644 BPW product claim."
+  ],
+  "wall_seconds": 1481.24,
+  "env": {
+    "torch": "2.6.0+cpu",
+    "device": "cpu",
+    "dtype": "bfloat16"
+  }
+}

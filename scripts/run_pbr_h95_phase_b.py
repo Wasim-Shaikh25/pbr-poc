@@ -54,12 +54,15 @@ CALIB_TEXTS = [
     "A sonnet is a fourteen-line poem with a structured rhyme scheme and meter.",
 ]
 
-HONESTY = (
-    "CALIBRATION PROXY ONLY — not held-out evaluation. Scores use the fixed "
-    "in-repo corpus calib-v1 under teacher-forcing mean token NLL / perplexity. "
-    "Phase C owns the ≥95% held-out quality gate. Do NOT claim ≥95% GO from Phase B. "
-    "ppl_retention = bf16_ppl / quant_ppl is reported for ranking, not acceptance."
-)
+def honesty_for(calib_version: str) -> str:
+    return (
+        "CALIBRATION PROXY ONLY — not held-out evaluation. Scores use the fixed "
+        f"in-repo corpus {calib_version} under teacher-forcing mean token NLL / perplexity. "
+        "Larger corpora (e.g. calib-v2) reduce noise relative to calib-v1 but remain "
+        "calibration proxies. Phase C owns the ≥95% held-out quality gate. "
+        "Do NOT claim ≥95% GO from Phase B. "
+        "ppl_retention = bf16_ppl / quant_ppl is reported for ranking, not acceptance."
+    )
 
 
 def write_calibration(path: Path) -> dict:
@@ -134,6 +137,12 @@ def _keep_hist(keep_map: dict[str, int]) -> dict[str, int]:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--model-dir", type=Path, default=DEFAULT_MODEL)
+    ap.add_argument(
+        "--calib",
+        type=Path,
+        default=None,
+        help="Calibration JSON (default: docs/pbr_h95/calibration_v1.json; writes v1 if missing)",
+    )
     ap.add_argument("--max-length", type=int, default=128)
     ap.add_argument("--max-texts", type=int, default=0, help="If >0, truncate calib set")
     ap.add_argument("--smoke", action="store_true", help="One forward + one policy only")
@@ -142,7 +151,16 @@ def main() -> int:
     args = ap.parse_args()
 
     wall0 = time.perf_counter()
-    calib = write_calibration(CALIB_PATH)
+    calib_path = args.calib if args.calib is not None else CALIB_PATH
+    if args.calib is None and not calib_path.exists():
+        calib = write_calibration(calib_path)
+    elif args.calib is None and calib_path.exists():
+        # Preserve historical calib-v1 file; do not rewrite unless missing
+        calib = json.loads(calib_path.read_text())
+    else:
+        calib = json.loads(calib_path.read_text())
+    calib_version = calib.get("version", calib.get("id", str(calib_path)))
+    HONESTY = honesty_for(calib_version)
     texts = [t["text"] for t in calib["texts"]]
     if args.max_texts > 0:
         texts = texts[: args.max_texts]
@@ -293,8 +311,8 @@ def main() -> int:
         "repo": "Qwen/Qwen2.5-0.5B-Instruct",
         "tie_word_embeddings": True,
         "calibration": {
-            "version": CALIB_VERSION,
-            "path": str(CALIB_PATH),
+            "version": calib_version,
+            "path": str(calib_path),
             "n_texts": len(texts),
             "max_length": args.max_length,
             "metric": "mean_token_nll_teacher_forcing",
@@ -359,7 +377,7 @@ def main() -> int:
         "# PBR-H95 Phase B — Layer/tensor sensitivity (Qwen)",
         "",
         f"Model: `{summary['repo']}` (local BF16, CPU)",
-        f"Calibration: **{CALIB_VERSION}** (`{CALIB_PATH}`), max_length={args.max_length}, n_texts={len(texts)}",
+        f"Calibration: **{calib_version}** (`{calib_path}`), max_length={args.max_length}, n_texts={len(texts)}",
         "",
         "## Honesty",
         "",
@@ -413,7 +431,7 @@ def main() -> int:
         "",
     ]
     if not by_util_pos:
-        lines.append("- _(none — no family showed positive Δnll on calib-v1)_")
+        lines.append(f"- _(none — no family showed positive Δnll on {calib_version})_")
     for r in by_util_pos[:3]:
         lines.append(
             f"- **{r['family']}**: util={r['utility_bytes_per_delta_nll']:.2f}, "

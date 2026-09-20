@@ -1,0 +1,137 @@
+{
+  "version": "heldout-v1",
+  "id": "heldout-v1",
+  "language": "en",
+  "n_texts": 32,
+  "texts": [
+    {
+      "id": "h00",
+      "text": "Asteroids that cross Earth's orbit are tracked by observatories so potential impactors can be catalogued years in advance. Deflection concepts include kinetic impactors and gravity tractors, though none have been deployed against a real threat."
+    },
+    {
+      "id": "h01",
+      "text": "A compiler translates high-level source code into machine instructions, applying optimizations such as inlining and dead-code elimination. Debug builds keep symbols and skip aggressive transforms so stack traces remain readable."
+    },
+    {
+      "id": "h02",
+      "text": "\"Where should we meet?\" \"At the cafe near the museum entrance at four,\" said Priya. \"Bring the tickets; I will bring the cameras.\""
+    },
+    {
+      "id": "h03",
+      "text": "To install the package, create a virtual environment, activate it, then run the package manager install command listed in the project README. Verify the installation by importing the module in a short interactive session."
+    },
+    {
+      "id": "h04",
+      "text": "Flood warnings prompted residents along the river to move vehicles to higher ground before midnight. Emergency shelters opened in two schools, and volunteers distributed bottled water and blankets."
+    },
+    {
+      "id": "h05",
+      "text": "A farmer has forty-eight apples and wants to pack them into boxes of six. How many full boxes can be filled, and how many apples remain unpacked?"
+    },
+    {
+      "id": "h06",
+      "text": "Glaciers carve U-shaped valleys and deposit moraines as they advance and retreat. Measuring ice thickness with radar helps scientists estimate freshwater stores locked in polar and alpine ice sheets."
+    },
+    {
+      "id": "h07",
+      "text": "Database transactions should be atomic, consistent, isolated, and durable so concurrent clients do not corrupt shared data. Isolation levels trade correctness guarantees against throughput under heavy write load."
+    },
+    {
+      "id": "h08",
+      "text": "\"Is the battery charged?\" \"Not yet; plug it in for twenty minutes before the hike,\" answered Sam. \"Otherwise the GPS may die halfway up the trail.\""
+    },
+    {
+      "id": "h09",
+      "text": "When writing a cover letter, address a specific role, highlight two or three relevant achievements with evidence, and close with a clear call to schedule a conversation. Keep the tone professional and the length under one page."
+    },
+    {
+      "id": "h10",
+      "text": "Market regulators fined a brokerage for inadequate customer identity checks after an audit. The firm pledged to hire more compliance staff and retrain brokers before the next inspection cycle."
+    },
+    {
+      "id": "h11",
+      "text": "If a taxi charges a base fare of five dollars plus two dollars per kilometer, what is the cost of a trip that covers nine kilometers without waiting time?"
+    },
+    {
+      "id": "h12",
+      "text": "Symbiosis can be mutualistic, commensal, or parasitic depending on whether both, one, or neither partner benefits. Coral\u2013algae partnerships illustrate mutualism that collapses under prolonged heat stress."
+    },
+    {
+      "id": "h13",
+      "text": "Container orchestration schedules workloads across a cluster, restarting failed pods and scaling replicas with demand. Resource requests and limits prevent a single noisy neighbor from starving critical services."
+    },
+    {
+      "id": "h14",
+      "text": "\"We need a backup plan if the venue cancels,\" said Alex. \"I already called the community hall; they are free that Saturday,\" replied Nina."
+    },
+    {
+      "id": "h15",
+      "text": "Before sharing a spreadsheet externally, remove hidden sheets, strip personal comments, and export a values-only copy. Confirm that macros are disabled unless recipients explicitly need them."
+    },
+    {
+      "id": "h16",
+      "text": "Wildfire smoke reduced air quality across several counties, prompting schools to move outdoor sports indoors. Health officials advised sensitive groups to limit prolonged outdoor activity until the haze cleared."
+    },
+    {
+      "id": "h17",
+      "text": "A ladder leans against a wall forming a right triangle with the ground. If the base is three meters from the wall and the ladder is five meters long, how high does it reach on the wall?"
+    },
+    {
+      "id": "h18",
+      "text": "Seismologists locate earthquake epicenters by comparing arrival times of primary and secondary waves at distant stations. Early-warning systems can give seconds of notice before strong shaking reaches cities."
+    },
+    {
+      "id": "h19",
+      "text": "Functional programming favors pure functions and immutable data so programs are easier to reason about and test. Side effects are isolated at the edges of the system rather than scattered through the core logic."
+    },
+    {
+      "id": "h20",
+      "text": "\"Did the package arrive?\" \"It is on the porch,\" said Lee. \"Open it carefully; the glassware is fragile.\""
+    },
+    {
+      "id": "h21",
+      "text": "To calibrate a kitchen scale, place it on a flat surface, select the correct unit, and use a known reference weight if the reading drifts. Recalibrate after moving the scale or changing batteries."
+    },
+    {
+      "id": "h22",
+      "text": "Diplomats negotiated a ceasefire framework that pauses strikes while humanitarian corridors remain open. Observers will verify compliance at designated checkpoints along the contested frontier."
+    },
+    {
+      "id": "h23",
+      "text": "A bakery sells muffins in packs of four for ten dollars. What is the unit price per muffin, and how much would seven muffins cost if sold at the same unit rate without a pack discount?"
+    },
+    {
+      "id": "h24",
+      "text": "Tides arise primarily from the Moon's gravitational pull, with the Sun contributing a smaller but still important force. Spring tides occur near new and full moons when the alignments reinforce each other."
+    },
+    {
+      "id": "h25",
+      "text": "Message queues decouple producers from consumers so spikes in traffic can be buffered without dropping requests. At-least-once delivery requires idempotent handlers to avoid duplicate side effects."
+    },
+    {
+      "id": "h26",
+      "text": "\"Should we refactor now or after the release?\" \"After,\" said the tech lead. \"Stabilize the feature first, then clean the interfaces when the pressure eases.\""
+    },
+    {
+      "id": "h27",
+      "text": "When photographing the night sky, use a sturdy tripod, a wide aperture, and a remote shutter if possible. Light pollution maps help choose darker sites away from city glow."
+    },
+    {
+      "id": "h28",
+      "text": "Archaeologists excavate stratified layers carefully so artifacts can be dated relative to surrounding soil and charcoal. Contaminating a layer with modern material can ruin radiocarbon estimates."
+    },
+    {
+      "id": "h29",
+      "text": "A cyclist rides fifteen kilometers in forty-five minutes. What is the average speed in kilometers per hour, assuming constant pace and no stops?"
+    },
+    {
+      "id": "h30",
+      "text": "Polarized sunglasses reduce glare from horizontal surfaces such as water and roads by filtering light oscillating in particular planes. Pilots and anglers rely on this effect for clearer vision outdoors."
+    },
+    {
+      "id": "h31",
+      "text": "Feature flags let teams enable unfinished code paths for internal users without shipping incomplete behavior to everyone. Cleanup of stale flags is essential to avoid accumulating permanent complexity."
+    }
+  ],
+  "note": "Held-out only; never use for greedy search / precision allocation. Small in-repo proxy set \u2014 not a production LM benchmark."
+}
