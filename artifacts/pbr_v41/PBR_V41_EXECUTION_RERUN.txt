@@ -1,0 +1,7 @@
+random {'predictor': 'avg', 'traversal': 'col_serp', 'pairing': 'horizontal', 'K': 16, 'coverage': 0.00341796875, 'pair_entropy': 10.887934680173668, 'bpw': 8.090576171875, 'ratio': 1.1557965959821428}
+constant {'predictor': 'left', 'traversal': 'row', 'pairing': 'traversal', 'K': 16, 'coverage': 1.0, 'pair_entropy': 0.006075362677284398, 'bpw': 1.0546875, 'ratio': 0.15066964285714285}
+horizontal {'predictor': 'left', 'traversal': 'col', 'pairing': 'traversal', 'K': 16, 'coverage': 1.0, 'pair_entropy': 0.11611507530476972, 'bpw': 1.0546875, 'ratio': 0.15066964285714285}
+vertical {'predictor': 'left', 'traversal': 'row', 'pairing': 'traversal', 'K': 16, 'coverage': 1.0, 'pair_entropy': 0.19819757331021473, 'bpw': 1.0546875, 'ratio': 0.15066964285714285}
+plane {'predictor': 'left', 'traversal': 'row', 'pairing': 'traversal', 'K': 16, 'coverage': 1.0, 'pair_entropy': 0.2042509204159887, 'bpw': 1.55859375, 'ratio': 0.22265625}
+near {'predictor': 'avg', 'traversal': 'serp', 'pairing': 'vertical', 'K': 16, 'coverage': 0.951171875, 'pair_entropy': 4.0429697900629975, 'bpw': 2.8779296875, 'ratio': 0.4111328125}
+Wrote 1800 rows
