@@ -5,7 +5,9 @@ Complete cost includes the frequency table. Bit-exact symbol roundtrip.
 
 from __future__ import annotations
 
+import os
 import struct
+from functools import lru_cache
 
 import numpy as np
 
@@ -114,7 +116,7 @@ def rans_encode(symbols: np.ndarray, freq: np.ndarray) -> bytes:
     return state + bytes(overflow)
 
 
-def rans_decode(blob: bytes, count: int, freq: np.ndarray) -> np.ndarray:
+def rans_decode_python(blob: bytes, count: int, freq: np.ndarray) -> np.ndarray:
     if count == 0:
         return np.zeros(0, dtype=np.uint8)
     cumul = _cumul(freq)
@@ -137,6 +139,96 @@ def rans_decode(blob: bytes, count: int, freq: np.ndarray) -> np.ndarray:
             x = (x << 8) | blob[pos]
             pos += 1
     return out
+
+
+@lru_cache(maxsize=1)
+def _c_lib():
+    """Compile/load librans. None if gcc/ctypes is unavailable."""
+    import ctypes
+    import subprocess
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parent
+    src = root / "rans_fast.c"
+    so = root / "_rans_fast.so"
+    if not src.is_file():
+        return None
+    need = (not so.is_file()) or so.stat().st_mtime < src.stat().st_mtime
+    if need:
+        gcc = os.environ.get("CC", "gcc")
+        try:
+            subprocess.check_call(
+                [gcc, "-O3", "-std=c99", "-shared", "-fPIC", "-o", str(so), str(src)],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+        except (OSError, subprocess.CalledProcessError):
+            return None
+    try:
+        lib = ctypes.CDLL(str(so))
+    except OSError:
+        return None
+    lib.pbr_rans_decode.argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_int,
+        ctypes.c_int,
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+    ]
+    lib.pbr_rans_decode.restype = ctypes.c_int
+    return lib
+
+
+def rans_impl() -> str:
+    forced = os.environ.get("PBR_RANS_IMPL", "").strip().lower()
+    if forced in {"python", "py"}:
+        return "python"
+    if _c_lib() is not None:
+        return "c"
+    return "python"
+
+
+def rans_decode_c(blob: bytes, count: int, freq: np.ndarray) -> np.ndarray:
+    lib = _c_lib()
+    if lib is None:
+        return rans_decode_python(blob, count, freq)
+    if count == 0:
+        return np.zeros(0, dtype=np.uint8)
+    if len(blob) < 4:
+        raise ValueError("rANS blob too short")
+    freq64 = np.ascontiguousarray(freq, dtype=np.int64)
+    if freq64.size < 256:
+        padded = np.zeros(256, dtype=np.int64)
+        padded[: freq64.size] = freq64
+        freq64 = padded
+    cumul = _cumul(freq64)
+    lut = np.ascontiguousarray(_symbol_lut(freq64), dtype=np.uint8)
+    out = np.empty(count, dtype=np.uint8)
+    blob_u8 = np.frombuffer(memoryview(blob), dtype=np.uint8)
+    if not blob_u8.flags.c_contiguous:
+        blob_u8 = np.ascontiguousarray(blob_u8)
+    import ctypes
+
+    rc = lib.pbr_rans_decode(
+        blob_u8.ctypes.data_as(ctypes.c_void_p),
+        ctypes.c_int(int(blob_u8.size)),
+        ctypes.c_int(int(count)),
+        freq64.ctypes.data_as(ctypes.c_void_p),
+        cumul.ctypes.data_as(ctypes.c_void_p),
+        lut.ctypes.data_as(ctypes.c_void_p),
+        out.ctypes.data_as(ctypes.c_void_p),
+    )
+    if rc != 0:
+        raise RuntimeError(f"pbr_rans_decode rc={rc}")
+    return out
+
+
+def rans_decode(blob: bytes, count: int, freq: np.ndarray) -> np.ndarray:
+    if rans_impl() == "c":
+        return rans_decode_c(blob, count, freq)
+    return rans_decode_python(blob, count, freq)
 
 
 def table_from_symbols(symbols: np.ndarray) -> np.ndarray:

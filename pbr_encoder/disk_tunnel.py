@@ -19,7 +19,10 @@ import struct
 import subprocess
 import sys
 import tempfile
+import threading
 import time
+from collections import OrderedDict
+from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -126,6 +129,13 @@ class WeightSource:
 
     def load_row_range(self, key: str, row0: int, row1: int) -> np.ndarray:
         return self.load(key)[row0:row1]
+
+    def load_compute(self, key: str) -> np.ndarray:
+        """FP32 weights for GEMM / RMSNorm (compute path only)."""
+        return bf16_to_fp32(self.load(key))
+
+    def prefetch(self, key: str) -> None:
+        return
 
 
 class FullRamSource(WeightSource):
@@ -248,6 +258,135 @@ class PbrDirSource(WeightSource):
             mmap.stats = self.stats
             return mmap.load_row_range(key, row0, row1)
         return self.load(key)[row0:row1]
+
+
+class FastPbrDirSource(PbrDirSource):
+    """PBR-E tunnel with C rANS, a 2-slot decoded cache, and one prefetch thread."""
+
+    def __init__(
+        self,
+        index: dict,
+        pbre_dir: Path,
+        specs: dict[str, TensorSpec] | None = None,
+        *,
+        verify_sha: bool = True,
+        mmap_fallback: dict[str, TensorSpec] | None = None,
+        cache_slots: int = 2,
+        prefetch: bool = True,
+    ):
+        super().__init__(
+            index,
+            pbre_dir,
+            specs=specs,
+            verify_sha=verify_sha,
+            mmap_fallback=mmap_fallback,
+        )
+        self.name = "pbre_fast"
+        self.cache_slots = max(1, int(cache_slots))
+        self._cache: OrderedDict[str, np.ndarray] = OrderedDict()
+        self._lock = threading.Lock()
+        self._pool: ThreadPoolExecutor | None = (
+            ThreadPoolExecutor(max_workers=1, thread_name_prefix="pbre-prefetch")
+            if prefetch
+            else None
+        )
+        self._fut: Future | None = None
+        self._fut_key: str | None = None
+
+    def close(self) -> None:
+        with self._lock:
+            fut = self._fut
+            self._fut = None
+            self._fut_key = None
+        if fut is not None:
+            try:
+                fut.result(timeout=120)
+            except Exception:
+                pass
+        if self._pool is not None:
+            self._pool.shutdown(wait=False)
+            self._pool = None
+        self._cache.clear()
+
+    def prefetch(self, key: str) -> None:
+        if self._pool is None or not key:
+            return
+        with self._lock:
+            if key in self._cache or key == self._fut_key:
+                return
+            if self._fut is not None and not self._fut.done():
+                return
+            self._fut_key = key
+            self._fut = self._pool.submit(self._decode_job, key)
+
+    def _remember_decoded(self, key: str, arr: np.ndarray) -> np.ndarray:
+        self._cache[key] = arr
+        while len(self._cache) > self.cache_slots:
+            self._cache.popitem(last=False)
+        return arr
+
+    def _decode_job(self, key: str) -> tuple[str, np.ndarray, int, float, int, int]:
+        """Thread worker: decode without touching IoStats."""
+        t0 = time.perf_counter()
+        disk_n = 0
+        checks = 0
+        fail = 0
+        if key not in self.index["tensors"] and key in self.mmap_fallback:
+            words = load_uint16(self.mmap_fallback[key])
+            disk_n = int(words.nbytes)
+            return key, words, disk_n, time.perf_counter() - t0, checks, fail
+        rec = self.index["tensors"][key]
+        path = self.pbre_dir / rec["file"]
+        blob = path.read_bytes()
+        disk_n = len(blob)
+        from pbr_core.container import PBRContainer
+
+        container = PBRContainer.loads(blob)
+        decoded = decode_container(container)[0]
+        words = decoded.reshape(tuple(int(x) for x in rec["shape"]))
+        if self.verify_sha:
+            got = sha256_words(words)
+            if got != rec["sha256"]:
+                fail = 1
+                raise AssertionError(f"PBR-E SHA mismatch {key}: {got} != {rec['sha256']}")
+            checks = 1
+        del blob, container, decoded
+        return key, words, disk_n, time.perf_counter() - t0, checks, fail
+
+    def load(self, key: str) -> np.ndarray:
+        with self._lock:
+            if key in self._cache:
+                arr = self._cache.pop(key)
+                self._cache[key] = arr
+                self.stats.n_loads += 1
+                self.stats.note_rss()
+                return arr
+            fut, fkey = self._fut, self._fut_key
+        if fkey == key and fut is not None:
+            _k, arr, disk_n, dec_s, checks, fail = fut.result()
+            with self._lock:
+                if self._fut is fut:
+                    self._fut = None
+                    self._fut_key = None
+            self.stats.disk_read_bytes += disk_n
+            self.stats.decode_s += dec_s
+            self.stats.n_loads += 1
+            self.stats.exact_checks += checks
+            self.stats.exact_fail += fail
+            self.stats.note_rss()
+            with self._lock:
+                self._remember_decoded(key, arr)
+            return arr
+        _k, arr, disk_n, dec_s, checks, fail = self._decode_job(key)
+        self.stats.disk_read_bytes += disk_n
+        self.stats.decode_s += dec_s
+        self.stats.n_loads += 1
+        self.stats.exact_checks += checks
+        self.stats.exact_fail += fail
+        self.stats.note_rss()
+        with self._lock:
+            self._remember_decoded(key, arr)
+        return arr
 
 
 def _pbre_name(key: str) -> str:
@@ -392,21 +531,27 @@ def load_config_json(model_dir: Path) -> dict:
     return {}
 
 
-def _linear(x: np.ndarray, weight_u16: np.ndarray, bias_u16: np.ndarray | None, stats: IoStats) -> np.ndarray:
+def _as_fp32(weight: np.ndarray) -> np.ndarray:
+    if weight.dtype == np.uint16:
+        return bf16_to_fp32(weight)
+    return np.asarray(weight, dtype=np.float32)
+
+
+def _linear(x: np.ndarray, weight: np.ndarray, bias: np.ndarray | None, stats: IoStats) -> np.ndarray:
     t0 = time.perf_counter()
-    w = bf16_to_fp32(weight_u16)
+    w = _as_fp32(weight)
     y = x @ w.T
-    if bias_u16 is not None:
-        y = y + bf16_to_fp32(bias_u16)
+    if bias is not None:
+        y = y + _as_fp32(bias)
     stats.compute_s += time.perf_counter() - t0
     stats.n_matmuls += 1
     stats.note_rss()
     return y.astype(np.float32, copy=False)
 
 
-def rms_norm(x: np.ndarray, weight_u16: np.ndarray, eps: float, stats: IoStats) -> np.ndarray:
+def rms_norm(x: np.ndarray, weight: np.ndarray, eps: float, stats: IoStats) -> np.ndarray:
     t0 = time.perf_counter()
-    w = bf16_to_fp32(weight_u16)
+    w = _as_fp32(weight)
     var = np.mean(x.astype(np.float32) ** 2, axis=-1, keepdims=True)
     y = x.astype(np.float32) * np.reciprocal(np.sqrt(var + eps)) * w
     stats.compute_s += time.perf_counter() - t0
@@ -467,7 +612,11 @@ def attend(q: np.ndarray, k: np.ndarray, v: np.ndarray, stats: IoStats) -> np.nd
 def _get(src: WeightSource, specs: dict[str, TensorSpec], name: str) -> np.ndarray | None:
     if name not in specs:
         return None
-    return src.load(name)
+    return src.load_compute(name)
+
+
+def _pf(src: WeightSource, name: str) -> None:
+    src.prefetch(name)
 
 
 def embed_tokens(src: WeightSource, name: str, ids: np.ndarray) -> np.ndarray:
@@ -532,45 +681,57 @@ def qwen_forward(
 
     for li in range(n_layer):
         prefix = f"model.layers.{li}"
-        n1 = src.load(f"{prefix}.input_layernorm.weight")
+        _pf(src, f"{prefix}.self_attn.q_proj.weight")
+        n1 = src.load_compute(f"{prefix}.input_layernorm.weight")
         h = rms_norm(x, n1, eps, src.stats)
         del n1
-        wq = src.load(f"{prefix}.self_attn.q_proj.weight")
+        _pf(src, f"{prefix}.self_attn.k_proj.weight")
+        wq = src.load_compute(f"{prefix}.self_attn.q_proj.weight")
         bq = _get(src, specs, f"{prefix}.self_attn.q_proj.bias")
         q = _linear(h, wq, bq, src.stats).reshape(tlen, n_heads, head_dim)
         del wq, bq
-        wk = src.load(f"{prefix}.self_attn.k_proj.weight")
+        _pf(src, f"{prefix}.self_attn.v_proj.weight")
+        wk = src.load_compute(f"{prefix}.self_attn.k_proj.weight")
         bk = _get(src, specs, f"{prefix}.self_attn.k_proj.bias")
         k = _linear(h, wk, bk, src.stats).reshape(tlen, n_kv, head_dim)
         del wk, bk
-        wv = src.load(f"{prefix}.self_attn.v_proj.weight")
+        _pf(src, f"{prefix}.self_attn.o_proj.weight")
+        wv = src.load_compute(f"{prefix}.self_attn.v_proj.weight")
         bv = _get(src, specs, f"{prefix}.self_attn.v_proj.bias")
         v = _linear(h, wv, bv, src.stats).reshape(tlen, n_kv, head_dim)
         del wv, bv
         q, k = apply_rope(q, k, cos, sin)
         attn = attend(q, k, v, src.stats).reshape(tlen, hidden_size)
         del q, k, v
-        wo = src.load(f"{prefix}.self_attn.o_proj.weight")
+        _pf(src, f"{prefix}.post_attention_layernorm.weight")
+        wo = src.load_compute(f"{prefix}.self_attn.o_proj.weight")
         x = x + _linear(attn, wo, None, src.stats)
         del wo, attn, h
         _release()
 
-        n2 = src.load(f"{prefix}.post_attention_layernorm.weight")
+        _pf(src, f"{prefix}.mlp.gate_proj.weight")
+        n2 = src.load_compute(f"{prefix}.post_attention_layernorm.weight")
         h = rms_norm(x, n2, eps, src.stats)
         del n2
-        wg = src.load(f"{prefix}.mlp.gate_proj.weight")
+        _pf(src, f"{prefix}.mlp.up_proj.weight")
+        wg = src.load_compute(f"{prefix}.mlp.gate_proj.weight")
         g = silu(_linear(h, wg, None, src.stats))
         del wg
-        wu = src.load(f"{prefix}.mlp.up_proj.weight")
+        _pf(src, f"{prefix}.mlp.down_proj.weight")
+        wu = src.load_compute(f"{prefix}.mlp.up_proj.weight")
         u = _linear(h, wu, None, src.stats)
         del wu, h
-        wd = src.load(f"{prefix}.mlp.down_proj.weight")
+        if li + 1 < n_layer:
+            _pf(src, f"model.layers.{li + 1}.input_layernorm.weight")
+        else:
+            _pf(src, "model.norm.weight")
+        wd = src.load_compute(f"{prefix}.mlp.down_proj.weight")
         x = x + _linear(g * u, wd, None, src.stats)
         del wd, g, u
         _release()
         src.stats.note_rss()
 
-    nw = src.load("model.norm.weight")
+    nw = src.load_compute("model.norm.weight")
     x = rms_norm(x, nw, eps, src.stats)
     del nw
     logits = lm_head_chunked(src, embed_name, x, vocab, lm_head_chunk, src.stats)
@@ -602,12 +763,15 @@ def run_mode(
     specs = select_specs(model_dir)
     t_wall = time.perf_counter()
     mmap_fallback = {k: v for k, v in specs.items() if k.endswith("embed_tokens.weight")}
+    rans_backend = None
 
     if mode == "full":
         src: WeightSource = FullRamSource(specs)
     elif mode == "mmap":
         src = MmapSafetensorsSource(specs, max_resident=1)
-    elif mode == "pbre":
+    elif mode in {"pbre", "pbre_fast", "pbre_slow"}:
+        from pbr_core.rans import rans_impl
+
         index_path = pbre_dir / "index.json"
         skip = set(mmap_fallback)
         if encode_if_missing and not index_path.is_file():
@@ -616,13 +780,31 @@ def run_mode(
         if not index_path.is_file():
             raise SystemExit(f"missing {index_path}; pass --encode")
         index = json.loads(index_path.read_text(encoding="utf-8"))
-        src = PbrDirSource(
-            index,
-            pbre_dir,
-            specs=specs if verify_pbre else {},
-            verify_sha=verify_pbre,
-            mmap_fallback=mmap_fallback,
-        )
+        if mode == "pbre_slow":
+            os.environ["PBR_RANS_IMPL"] = "python"
+            src = PbrDirSource(
+                index,
+                pbre_dir,
+                specs=specs if verify_pbre else {},
+                verify_sha=verify_pbre,
+                mmap_fallback=mmap_fallback,
+            )
+            src.name = "pbre_slow"
+        else:
+            os.environ["PBR_RANS_IMPL"] = "c"
+            src = FastPbrDirSource(
+                index,
+                pbre_dir,
+                specs=specs if verify_pbre else {},
+                verify_sha=verify_pbre,
+                mmap_fallback=mmap_fallback,
+                cache_slots=2,
+                prefetch=True,
+            )
+            if mode == "pbre":
+                src.name = "pbre_dir"
+        summary_impl = rans_impl()
+        rans_backend = summary_impl
     else:
         raise SystemExit(f"unknown mode {mode}")
 
@@ -636,11 +818,14 @@ def run_mode(
     )
     wall = time.perf_counter() - t_wall
     src.stats.note_rss()
+    closer = getattr(src, "close", None)
+    if callable(closer):
+        closer()
     n_tok = int(np.asarray(token_ids).size)
     weight_files = {s.file_path.resolve() for s in specs.values()}
     safetensors_bytes = sum(p.stat().st_size for p in weight_files if p.is_file())
     pbre_bytes = 0
-    if mode == "pbre" and (pbre_dir / "index.json").is_file():
+    if mode.startswith("pbre") and (pbre_dir / "index.json").is_file():
         pbre_bytes = sum(
             p.stat().st_size for p in pbre_dir.glob("*.pbr") if p.is_file()
         )
@@ -678,6 +863,7 @@ def run_mode(
         "pbre_exact_fail": src.stats.exact_fail,
         "exact": "FAIL" if src.stats.exact_fail else "PASS",
         "isolated_process": True,
+        "rans_impl": rans_backend,
     }
     summary["logits_checksum"] = struct.pack("<dd", summary["logits_sum"], summary["logits_absmax"]).hex()
     return {"summary": summary, "logits": logits}
@@ -705,7 +891,7 @@ def format_markdown(report: dict) -> str:
         "| mode | peak sampled RSS | ru_maxrss | disk read | decode s | compute s | wall s | tok/s | matmuls/s | exact |",
         "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
     ]
-    for name in ("full", "mmap", "pbre"):
+    for name in ("full", "mmap", "pbre", "pbre_fast", "pbre_slow", "hybrid"):
         if name not in modes:
             continue
         s = modes[name]
@@ -718,7 +904,10 @@ def format_markdown(report: dict) -> str:
         )
     full = modes.get("full") or {}
     mmap = modes.get("mmap") or {}
-    pbre = modes.get("pbre") or {}
+    pbre = modes.get("pbre") or modes.get("pbre_fast") or {}
+    pbre_slow = modes.get("pbre_slow") or {}
+    pbre_fast = modes.get("pbre_fast") or {}
+    hybrid = modes.get("hybrid") or {}
     if full and mmap and full.get("rss_maxrss_bytes"):
         ratio = mmap["rss_maxrss_bytes"] / max(full["rss_maxrss_bytes"], 1)
         samp = mmap["rss_peak_sampled_bytes"] / max(full["rss_peak_sampled_bytes"], 1)
@@ -729,14 +918,18 @@ def format_markdown(report: dict) -> str:
             f"({bytes_human(mmap['rss_peak_sampled_bytes'])} vs "
             f"{bytes_human(full['rss_peak_sampled_bytes'])}).",
         ]
-    if full and pbre and full.get("rss_maxrss_bytes"):
-        ratio_p = pbre["rss_maxrss_bytes"] / max(full["rss_maxrss_bytes"], 1)
-        samp_p = pbre["rss_peak_sampled_bytes"] / max(full["rss_peak_sampled_bytes"], 1)
+    for label, row in (("pbre", pbre), ("pbre_fast", pbre_fast), ("pbre_slow", pbre_slow), ("hybrid", hybrid)):
+        if not (full and row and full.get("rss_maxrss_bytes") and row.get("rss_maxrss_bytes")):
+            continue
+        if label == "pbre" and pbre_fast and row is pbre_fast:
+            continue
+        ratio_p = row["rss_maxrss_bytes"] / max(full["rss_maxrss_bytes"], 1)
+        samp_p = row["rss_peak_sampled_bytes"] / max(full["rss_peak_sampled_bytes"], 1)
         lines.append(
-            f"pbre/full ru_maxrss ratio: **{ratio_p:.3f}**. "
-            f"Sampled peak pbre/full: **{samp_p:.3f}**. "
-            f"PBR-E SHA checks: {pbre.get('pbre_exact_checks', 0)} "
-            f"(fail {pbre.get('pbre_exact_fail', 0)})."
+            f"{label}/full ru_maxrss ratio: **{ratio_p:.3f}**. "
+            f"Sampled peak {label}/full: **{samp_p:.3f}**. "
+            f"SHA checks: {row.get('pbre_exact_checks', 0)} "
+            f"(fail {row.get('pbre_exact_fail', 0)})."
         )
     if report.get("subprocess_isolated"):
         lines += [
@@ -835,7 +1028,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Disk-resident BF16/PBR-E inference tunnel PoC.")
     parser.add_argument("--model-dir", type=Path, default=DEFAULT_MODEL)
     parser.add_argument("--pbre-dir", type=Path, default=DEFAULT_PBRE_DIR)
-    parser.add_argument("--mode", choices=["full", "mmap", "pbre", "all"], default="all")
+    parser.add_argument(
+        "--mode",
+        choices=["full", "mmap", "pbre", "pbre_fast", "pbre_slow", "all"],
+        default="all",
+    )
     parser.add_argument("--tokens", type=int, default=DEFAULT_TOKENS)
     parser.add_argument("--layers", type=int, default=0, help="0 = all layers")
     parser.add_argument("--encode", action="store_true", help="Build per-tensor PBR-E dir if missing")

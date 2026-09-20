@@ -733,6 +733,26 @@ python scripts/disk_tunnel_infer.py --model-dir outputs/models/Qwen__Qwen2.5-0.5
 
 Measured on this Qwen 0.5B Instruct checkpoint (8 tokens, 24 layers, isolated processes): **full-load sampled peak 1006 MiB** vs **mmap 78 MiB** / **PBR-E 83 MiB**. Logits bit-identical (`max_abs=0`). PBR-E SHA **289/289 PASS**. PBR-E decode is slow (~124 s) because every tensor is rANS-decoded on the CPU; RAM stays in the mmap band.
 
+### Faster PBR-E decode
+
+C rANS (bit-exact vs the Python loop) plus a 2-slot decoded cache and one prefetch thread. Still `Decode(Encode(W))==W`.
+
+```bash
+python scripts/tunnel_fast_pbre.py --model-dir outputs/models/Qwen__Qwen2.5-0.5B-Instruct
+```
+
+Metrics: `artifacts/tunnel_fast_pbre.md`. Compare `pbre_fast` wall time to mmap / full / `pbre_slow` (original Python rANS).
+
+### Hybrid lossy tunnel (prototype)
+
+Embeddings, norms, biases, and first/last layers stay BF16. Middle-layer attention/MLP weights are per-group **int4 + FP16 scales**. Same disk-resident RAM tunnel. **Not bit-exact** on quantized tensors; quality is logit max_abs / KL / argmax match vs full BF16.
+
+```bash
+python scripts/tunnel_hybrid_lossy.py --model-dir outputs/models/Qwen__Qwen2.5-0.5B-Instruct --encode
+```
+
+Metrics: `artifacts/tunnel_hybrid_lossy.md`. Not a 27B phone runtime. Not ≤8 BPW exact.
+
 This does **not** claim phone-scale 27B, ≤8 BPW exact, or 1–2 GB / 8 GB. ≤8 BPW hunt notes stay in `artifacts/path_to_50pct.md` and are not the goal here.
 
 ## Tests
