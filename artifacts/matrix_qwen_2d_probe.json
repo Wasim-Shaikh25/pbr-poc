@@ -1,0 +1,161 @@
+{
+  "model_dir": "outputs/models/Qwen__Qwen2.5-0.5B-Instruct",
+  "repo": "Qwen/Qwen2.5-0.5B-Instruct",
+  "tile": [
+    16,
+    16
+  ],
+  "version": 3,
+  "max_tiles_per_tensor": 64,
+  "tensors": [
+    {
+      "name": "model.layers.0.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "n_words_tensor": 802816,
+      "tiles": 64,
+      "n_vals_tiled": 16384,
+      "exact": true,
+      "mode_counts": {
+        "raw": 64
+      },
+      "candidate_payload_bytes": 14656,
+      "candidate_payload_bpw": 7.1562,
+      "raw_candidate_bytes": 14656,
+      "raw_candidate_bpw": 7.1562,
+      "vs_raw_candidate": 1.0,
+      "container_bytes": 32896,
+      "container_bpw": 16.0625,
+      "implied_total_bpw_sign1_exp8_cand": 16.1562
+    },
+    {
+      "name": "model.layers.0.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "n_words_tensor": 802816,
+      "tiles": 64,
+      "n_vals_tiled": 16384,
+      "exact": true,
+      "mode_counts": {
+        "raw": 64
+      },
+      "candidate_payload_bytes": 14656,
+      "candidate_payload_bpw": 7.1562,
+      "raw_candidate_bytes": 14656,
+      "raw_candidate_bpw": 7.1562,
+      "vs_raw_candidate": 1.0,
+      "container_bytes": 32896,
+      "container_bpw": 16.0625,
+      "implied_total_bpw_sign1_exp8_cand": 16.1562
+    },
+    {
+      "name": "model.layers.0.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "n_words_tensor": 4358144,
+      "tiles": 64,
+      "n_vals_tiled": 16384,
+      "exact": true,
+      "mode_counts": {
+        "raw": 64
+      },
+      "candidate_payload_bytes": 14656,
+      "candidate_payload_bpw": 7.1562,
+      "raw_candidate_bytes": 14656,
+      "raw_candidate_bpw": 7.1562,
+      "vs_raw_candidate": 1.0,
+      "container_bytes": 32896,
+      "container_bpw": 16.0625,
+      "implied_total_bpw_sign1_exp8_cand": 16.1562
+    },
+    {
+      "name": "model.layers.0.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "n_words_tensor": 4358144,
+      "tiles": 64,
+      "n_vals_tiled": 16384,
+      "exact": true,
+      "mode_counts": {
+        "raw": 64
+      },
+      "candidate_payload_bytes": 14656,
+      "candidate_payload_bpw": 7.1562,
+      "raw_candidate_bytes": 14656,
+      "raw_candidate_bpw": 7.1562,
+      "vs_raw_candidate": 1.0,
+      "container_bytes": 32896,
+      "container_bpw": 16.0625,
+      "implied_total_bpw_sign1_exp8_cand": 16.1562
+    },
+    {
+      "name": "model.layers.12.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "n_words_tensor": 4358144,
+      "tiles": 64,
+      "n_vals_tiled": 16384,
+      "exact": true,
+      "mode_counts": {
+        "raw": 64
+      },
+      "candidate_payload_bytes": 14656,
+      "candidate_payload_bpw": 7.1562,
+      "raw_candidate_bytes": 14656,
+      "raw_candidate_bpw": 7.1562,
+      "vs_raw_candidate": 1.0,
+      "container_bytes": 32896,
+      "container_bpw": 16.0625,
+      "implied_total_bpw_sign1_exp8_cand": 16.1562
+    },
+    {
+      "name": "model.layers.23.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "n_words_tensor": 4358144,
+      "tiles": 64,
+      "n_vals_tiled": 16384,
+      "exact": true,
+      "mode_counts": {
+        "raw": 64
+      },
+      "candidate_payload_bytes": 14656,
+      "candidate_payload_bpw": 7.1562,
+      "raw_candidate_bytes": 14656,
+      "raw_candidate_bpw": 7.1562,
+      "vs_raw_candidate": 1.0,
+      "container_bytes": 32896,
+      "container_bpw": 16.0625,
+      "implied_total_bpw_sign1_exp8_cand": 16.1562
+    }
+  ],
+  "aggregate": {
+    "n_vals_tiled": 98304,
+    "candidate_payload_bpw": 7.1562,
+    "raw_candidate_bpw": 7.1562,
+    "implied_total_bpw_sign1_exp8_cand": 16.1562,
+    "mode_counts": {
+      "raw": 384
+    },
+    "all_exact": true,
+    "prior_adaptive_mantissa_reference": {
+      "mantissa_bpw": 7.0001,
+      "total_bpw": 10.6194,
+      "note": "ALL_RAW adaptive mantissa on full Qwen (earlier PR)"
+    }
+  },
+  "disclaimer": "Probe only on a tiled subset of 2-D linear weights. candidate_payload_bpw is the evaluate_tile winner payload (not whole-model). implied_total assumes raw sign (1) + raw exp (8) + candidate mantissa \u2014 exp is usually ~2.6 BPW with rANS, so real totals would be lower by ~5.4 if exp coding is reused. Not a <=4 BPW claim. container_bpw includes Gate D framing + stored exp plane and is not comparable to PBR-E totals.",
+  "wall_seconds": 3.63
+}
