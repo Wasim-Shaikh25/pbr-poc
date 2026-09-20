@@ -206,7 +206,7 @@ def write_report(row: dict[str, Any], wall: float) -> None:
         f"| Δ (this − S1 v2) | {row['file_bytes'] - S1_V2_FILE_BYTES:+,} | **{delta_s1:+.6f}** | negative = smaller; ≤0 is PASS |",
         f"| Δ (this − PR #15) | {row['file_bytes'] - PR15_ALL_TILE_FILE_BYTES:+,} | **{delta_pr15:+.6f}** | vs always-on |",
         "",
-        f"**Verdict: {verdict}** — `actual_bpw={'≤' if verdict == 'PASS' else '>'} 7.420820`.",
+        f"**Verdict: {verdict}** — `actual_bpw` {('≤' if verdict == 'PASS' else '>')} 7.420820.",
         "",
         "## Selective mantissa vs packed-K (true nodes, no 16×16 pad)",
         "",

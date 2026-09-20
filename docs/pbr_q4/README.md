@@ -51,6 +51,16 @@ PYTHONPATH=. python scripts/run_pbr_q4_s1_xy.py \
 
 Artifacts: `artifacts/pbr_q4/s1_xy_selective_qwen.{json,md}`. Large `.h95x` blobs are gitignored.
 
+## Measured (Qwen2.5-0.5B-Instruct, frozen S1 SHA)
+
+| Container | file_bytes | actual_bpw | exact Q(W)? |
+| --- | ---: | ---: | --- |
+| H95Q-S1 v2 (PR #14) | 458,266,017 | **7.420820** | yes |
+| H95Q-S1 + all-tile X/Y (PR #15) | 460,308,254 | **7.453890** | yes |
+| H95Q-S1 + selective X/Y (this) | 458,220,385 | **7.420081** | yes (SHA `eda64747…`) |
+
+**PASS** vs ≤ 7.420820. Δ vs S1 v2: **−0.000739 BPW** / −45,632 bytes. 1,120 XY tiles (embed only: 1,080 rANS / 40 RUN); 1,933,000 tiles stay packed-K. Quality not re-run: Q(W) is bit-identical to S1, prior heldout proxy **0.990**.
+
 ## Honesty
 
 - Not a production mobile runtime.
