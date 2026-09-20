@@ -42,6 +42,18 @@ PYTHONPATH=. python scripts/run_pbr_q4_hybrid.py
 Policies (auto ladder, cheapest first): `h_stretch`, `h_mix`, `h_practical`,
 `h_restore`, `h_quality`. First map with heldout ≥0.95 is encoded.
 
+## Measured (Qwen2.5-0.5B-Instruct)
+
+**Dual-gate FAIL.** Encoded winner `h_quality` (all-H95 backoff):
+
+| Gate | Target | Measured | Verdict |
+| --- | --- | ---: | --- |
+| Practical physical rate | ≤ **5.0** | **7.765222** | **FAIL** |
+| Held-out proxy | ≥ **0.95** | **0.980986** | **PASS** |
+| Exact decode | this SHA | `900f4535…` | **PASS** |
+
+INT-heavy maps hit ~4.68–6.50 packed-est BPW and heldout **0.72–0.87**. Selective X/Y on the winner: **1,177 / 1,934,008** tiles (0.06%). File **479,534,240 B**. vs S1 **7.420820** and PR #17 **6.191189**.
+
 ## Honesty
 
 - Proxy PPL on in-repo calib-v2 / heldout-v1 only — not MMLU.

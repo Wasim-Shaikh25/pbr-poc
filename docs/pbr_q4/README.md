@@ -73,6 +73,8 @@ PR #17's pure groupwise INT `restore_q6` hit heldout **0.967** but physical **6.
 
 New Q-ref (`HYBX`). Not S1. Not PR #17 SHA-compatible.
 
+**Measured dual-gate FAIL:** physical **7.765222 BPW** (file 479,534,240 B) / heldout **0.980986**. INT Q4/Q5 mixes reached ~4.68–6.50 packed-est BPW at heldout 0.72–0.87. Encoded winner is the H95-heavy quality backoff. X/Y 0.06% of tiles.
+
 ```bash
 PYTHONPATH=. python scripts/run_pbr_q4_hybrid.py
 ```
