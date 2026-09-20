@@ -211,3 +211,133 @@ def avg_keep_bits(keep_map: dict[str, int], state_dict) -> float:
     if total_w == 0:
         return 7.0
     return total_k / total_w
+
+
+# --- H95Q named policies (guide §18 first run) ---
+
+H95Q_POLICY_NAMES = (
+    "h95q_A_7_5",
+    "h95q_B1_mlp_k4",
+    "h95q_B2_embed_k5",
+    "h95q_C_sketch_k4_row_recover",
+)
+
+
+def h95q_policy_description(name: str) -> str:
+    """Human-readable rule summary for artifacts / README."""
+    return {
+        "h95q_A_7_5": (
+            "Candidate A (H95 control): emb/lm/norm/bias/first/last → K7; "
+            "mid attn/mlp (non-bias) → K5. Packed retained bits. Reproduce ~9.29 total est BPW."
+        ),
+        "h95q_B1_mlp_k4": (
+            "Candidate B1: same as A, but low-sensitivity mlp_mid (layers 1..22, non-bias) → K4; "
+            "attn_mid stays K5; emb/norm/bias/first/last stay K7."
+        ),
+        "h95q_B2_embed_k5": (
+            "Candidate B2: embedding (tied lm_head) → K5; attn_mid → K6 (sensitive); "
+            "mlp_mid → K5; norm/bias/first/last → K7."
+        ),
+        "h95q_C_sketch_k4_row_recover": (
+            "Optional C sketch: body like Phase-C mid@K4 with emb/norm/bias/first/last@K7, "
+            "then restore top-magnitude fraction of mlp_mid rows to K7 (magnitude sparse recovery)."
+        ),
+    }.get(name, name)
+
+
+def h95q_A_7_5_keep_fn(*, num_layers: int = 24):
+    """Existing per-tensor 7/5 policy (Phase A first map)."""
+
+    def _fn(name: str) -> int:
+        return default_keep_bits(name, default_large=5)
+
+    return _fn
+
+
+def h95q_B1_mlp_k4_keep_fn(*, num_layers: int = 24, mlp_keep: int = 4, attn_keep: int = 5, protected: int = 7):
+    """B1: drop mlp_mid K5→K4; keep attn and protected families higher."""
+
+    def _fn(name: str) -> int:
+        n = name.lower()
+        if "bias" in n:
+            return protected
+        fam = tensor_family(name, num_layers=num_layers)
+        if fam == "mlp_mid":
+            return int(mlp_keep)
+        if fam == "attn_mid":
+            return int(attn_keep)
+        return protected
+
+    return _fn
+
+
+def h95q_B2_embed_k5_keep_fn(
+    *,
+    num_layers: int = 24,
+    embed_keep: int = 5,
+    attn_keep: int = 6,
+    mlp_keep: int = 5,
+    protected: int = 7,
+):
+    """B2: embedding at K5; sensitive mid-attn at K6; mlp mid at K5; rest protected."""
+
+    def _fn(name: str) -> int:
+        n = name.lower()
+        if "bias" in n:
+            return protected
+        fam = tensor_family(name, num_layers=num_layers)
+        if fam == "embed":
+            return int(embed_keep)
+        if fam == "attn_mid":
+            return int(attn_keep)
+        if fam == "mlp_mid":
+            return int(mlp_keep)
+        return protected
+
+    return _fn
+
+
+def h95q_named_keep_fn(name: str, *, num_layers: int = 24):
+    """Dispatch named H95Q policy → keep_fn. Raises KeyError for unknown names."""
+    table = {
+        "h95q_A_7_5": h95q_A_7_5_keep_fn,
+        "h95q_B1_mlp_k4": h95q_B1_mlp_k4_keep_fn,
+        "h95q_B2_embed_k5": h95q_B2_embed_k5_keep_fn,
+    }
+    if name not in table:
+        raise KeyError(f"Unknown H95Q policy {name!r}; known={list(table)}")
+    return table[name](num_layers=num_layers)
+
+
+def family_keep_breakdown(
+    keep_map: dict[str, int],
+    state_dict,
+    *,
+    num_layers: int = 24,
+) -> dict[str, dict]:
+    """Word-weighted keep stats per tensor family (unique storage)."""
+    seen: set[int] = set()
+    fams: dict[str, dict] = {}
+    for name, keep in keep_map.items():
+        if name not in state_dict:
+            continue
+        t = state_dict[name]
+        if not hasattr(t, "data_ptr"):
+            continue
+        ptr = t.data_ptr()
+        if ptr in seen:
+            continue
+        seen.add(ptr)
+        fam = tensor_family(name, num_layers=num_layers) or "other"
+        n = int(t.numel())
+        slot = fams.setdefault(fam, {"n_words": 0, "sum_k": 0.0, "keep_hist": {}})
+        slot["n_words"] += n
+        slot["sum_k"] += int(keep) * n
+        kh = slot["keep_hist"]
+        ks = str(int(keep))
+        kh[ks] = kh.get(ks, 0) + n
+    for fam, slot in fams.items():
+        nw = slot["n_words"]
+        slot["avg_keep"] = (slot["sum_k"] / nw) if nw else 0.0
+        del slot["sum_k"]
+    return fams
