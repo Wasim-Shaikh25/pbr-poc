@@ -236,6 +236,7 @@ def _hybrid_blob(
     chosen: Sequence[_Cand],
 ) -> tuple[bytes, dict[str, Any]]:
     n_tiles = len(boxes)
+    chosen = sorted(chosen, key=lambda c: c.index)
     xy_indices = [c.index for c in chosen]
     xy_set = set(xy_indices)
     map_b = encode_tile_map(n_tiles, xy_indices)

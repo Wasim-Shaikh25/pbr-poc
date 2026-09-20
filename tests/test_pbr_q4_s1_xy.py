@@ -200,6 +200,27 @@ def test_selective_mixed_tiles_roundtrip():
                 assert name != "XY_MATRIX"  # MATRIX ties packed-K, never strictly smaller
 
 
+def test_xy_flag_order_follows_tile_index_not_savings():
+    """Two different XY tiles must decode in raster order, not savings order."""
+    arr = np.zeros((16, 32), dtype=np.uint16)
+    arr[:, 16:] = 7  # right tile is a different constant
+    enc = encode_array_selective(arr, 4)
+    rec = decode_array_selective(enc["blob"], rows=16, cols=32, nbits=4)
+    assert np.array_equal(rec, arr)
+    assert enc["kind"] == "xy_sel"
+    assert enc["n_xy_tiles"] == 2
+
+
+def test_ragged_and_full_xy_tiles_do_not_cross_read():
+    arr = np.zeros((17, 16), dtype=np.uint16)
+    arr[16, :] = 5  # 1×16 last tile, different RUN payload than the 16×16 above
+    enc = encode_array_selective(arr, 4)
+    rec = decode_array_selective(enc["blob"], rows=17, cols=16, nbits=4)
+    assert np.array_equal(rec, arr)
+    assert enc["padded"] is False
+    assert enc["n_tiles"] == 2
+
+
 def test_ragged_last_tile_not_padded():
     rng = np.random.default_rng(11)
     arr = rng.integers(0, 8, size=(17, 20), dtype=np.uint16)
