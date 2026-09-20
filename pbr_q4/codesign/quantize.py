@@ -22,8 +22,6 @@ from pbr_q4.codesign.bits import (
     f32_to_bf16_u16,
     group_ids,
     qmax_for_bits,
-    signed_to_stored,
-    stored_to_signed,
 )
 from pbr_q4.codesign.policy import CodesignPolicy
 
@@ -44,6 +42,7 @@ class QuantizedTensor:
     group_size: int
     n_groups: int
     scales: np.ndarray  # float16, n_groups (empty if BF16)
+    zp: np.ndarray  # uint8 zero-points in stored-code space (empty if BF16)
     codes: np.ndarray  # uint16 (rows, cols) stored codes (empty if BF16)
     q_ref: np.ndarray  # uint16 BF16 quantized reference, original shape
     outlier_idx: np.ndarray
@@ -92,39 +91,62 @@ def _chunk_candidates(
     valid: np.ndarray,
     bits: int,
     group_size: int,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Return scales/q/mse for a row chunk.
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Return scales/zp/stored/mse for a row chunk.
 
-    shapes: scales (n_cand, R, n_gc), q (n_cand, R, n_gc, G), mse (n_cand, R, n_gc).
+    Asymmetric (minmax / percentile) and symmetric absmax compete. Stored
+    codes live in ``0 .. 2*qmax``. shapes: scales/zp/mse (n_cand, R, n_gc),
+    stored (n_cand, R, n_gc, G).
     """
     r, c = int(rows_f32.shape[0]), int(rows_f32.shape[1])
     g = int(group_size)
     n_gc = (c + g - 1) // g
     cpad = n_gc * g
     qmax = qmax_for_bits(bits)
+    qrange = np.float32(2 * qmax)
     buf = np.zeros((r, cpad), dtype=np.float32)
     vbuf = np.zeros((r, cpad), dtype=bool)
     buf[:, :c] = rows_f32
     vbuf[:, :c] = valid
     groups = buf.reshape(r, n_gc, g)
     v_g = vbuf.reshape(r, n_gc, g)
-    abs_g = np.where(v_g, np.abs(groups), 0.0)
-    absmax = np.max(abs_g, axis=-1).astype(np.float32)
+    masked = np.where(v_g, groups, np.nan)
     with np.errstate(invalid="ignore"):
-        p99 = np.quantile(np.where(v_g, abs_g, np.nan), _P99, axis=-1)
-    p99 = np.where(np.isfinite(p99), p99, absmax).astype(np.float32)
-    absmax = np.maximum(absmax, _MIN_SCALE)
-    p99 = np.maximum(p99, _MIN_SCALE)
-    scales_abs = (absmax / np.float32(qmax))[None, :, :] * _SCALE_FACTORS[:, None, None]
-    scales_p99 = (p99 / np.float32(qmax))[None, :, :]
-    scales = np.concatenate([scales_abs, scales_p99], axis=0)
-    scales = np.maximum(scales, _MIN_SCALE)
-    q = np.clip(np.rint(groups[None] / scales[..., None]), -qmax, qmax).astype(np.int16)
-    recon = q.astype(np.float32) * scales[..., None]
+        wmin = np.nanmin(masked, axis=-1).astype(np.float32)
+        wmax = np.nanmax(masked, axis=-1).astype(np.float32)
+        p01 = np.nanpercentile(masked, 1.0, axis=-1).astype(np.float32)
+        p99 = np.nanpercentile(masked, 99.0, axis=-1).astype(np.float32)
+    wmin = np.where(np.isfinite(wmin), wmin, 0.0)
+    wmax = np.where(np.isfinite(wmax), wmax, 0.0)
+    p01 = np.where(np.isfinite(p01), p01, wmin)
+    p99 = np.where(np.isfinite(p99), p99, wmax)
+    absmax = np.maximum(np.maximum(np.abs(wmin), np.abs(wmax)), _MIN_SCALE)
+
+    def _affine(lo: np.ndarray, hi: np.ndarray, factors: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        span = np.maximum(hi - lo, _MIN_SCALE)
+        scales = (span / qrange)[None, ...] * factors[:, None, None]
+        scales = np.maximum(scales, _MIN_SCALE)
+        zp = np.rint((-lo[None, ...] / scales)).astype(np.int16)
+        zp = np.clip(zp, 0, int(qrange))
+        return scales, zp
+
+    sym_scale = (absmax / np.float32(qmax))[None, ...] * _SCALE_FACTORS[:, None, None]
+    sym_scale = np.maximum(sym_scale, _MIN_SCALE)
+    sym_zp = np.full(sym_scale.shape, qmax, dtype=np.int16)
+    mm_scale, mm_zp = _affine(wmin, wmax, _SCALE_FACTORS)
+    pct_scale, pct_zp = _affine(p01, p99, np.array([1.00, 1.10], dtype=np.float32))
+    scales = np.concatenate([sym_scale, mm_scale, pct_scale], axis=0)
+    zp = np.concatenate([sym_zp, mm_zp, pct_zp], axis=0)
+    q = np.clip(
+        np.rint(groups[None] / scales[..., None] + zp.astype(np.float32)[..., None]),
+        0,
+        int(qrange),
+    ).astype(np.int16)
+    recon = (q.astype(np.float32) - zp.astype(np.float32)[..., None]) * scales[..., None]
     diff2 = np.where(v_g[None], (groups[None] - recon) ** 2, 0.0)
     denom = np.maximum(v_g.sum(axis=-1).astype(np.float32), 1.0)
     mse = diff2.sum(axis=-1) / denom[None, :, :]
-    return scales, q, mse
+    return scales, zp, q.astype(np.uint16), mse
 
 
 def _spatial_scores(
@@ -207,15 +229,16 @@ def quantize_matrix(
     gid, n_gc, n_groups = group_ids(rows, cols, group_size)
     cpad = n_gc * group_size
     scales = np.zeros((rows, n_gc), dtype=np.float32)
+    zps = np.zeros((rows, n_gc), dtype=np.uint8)
     codes_pad = np.zeros((rows, cpad), dtype=np.uint16)
     n_override = 0
     n_clipped = 0
+    qrange = 2 * qmax
     prev_stored: np.ndarray | None = None
 
     for r0 in range(0, rows, _CHUNK_ROWS):
         r1 = min(rows, r0 + _CHUNK_ROWS)
-        sc, q, mse = _chunk_candidates(w_f32[r0:r1], valid[r0:r1], bits, group_size)
-        stored = signed_to_stored(q, bits)  # (n_cand, R, n_gc, G)
+        sc, zp_c, stored, mse = _chunk_candidates(w_f32[r0:r1], valid[r0:r1], bits, group_size)
         n_cand = int(stored.shape[0])
         rr = r1 - r0
         stored_rows = stored.reshape(n_cand, rr, cpad)
@@ -225,17 +248,19 @@ def quantize_matrix(
             pick, n_ov = _pick_scales(mse[:, i, :], spatial, tie_ratio=mse_tie_ratio)
             n_override += n_ov
             scales[r] = sc[pick, i, ar]
-            chosen_q = q[pick, i, ar, :]
-            n_clipped += int(np.count_nonzero(np.abs(chosen_q) >= qmax))
-            codes_pad[r] = signed_to_stored(chosen_q, bits).reshape(cpad)
+            zps[r] = zp_c[pick, i, ar].astype(np.uint8)
+            chosen = stored[pick, i, ar, :]
+            n_clipped += int(np.count_nonzero((chosen == 0) | (chosen == qrange)))
+            codes_pad[r] = chosen.reshape(cpad)
             prev_stored = codes_pad[r]
 
     codes = codes_pad[:, :cols]
-    q_signed = stored_to_signed(codes, bits)
-    # Q-ref must use the same float16 scales the container stores.
+    # Q-ref must use the same float16 scales / uint8 zp the container stores.
     scales_f16 = scales.astype(np.float16)
+    zp_u8 = zps.astype(np.uint8)
     scale_of = scales_f16.astype(np.float32).reshape(-1)[gid]
-    deq = q_signed.astype(np.float32) * scale_of
+    zp_of = zp_u8.astype(np.float32).reshape(-1)[gid]
+    deq = (codes.astype(np.float32) - zp_of) * scale_of
     # Specials (NaN/Inf) always become outliers; they are not dequantized.
     deq = np.where(special, w_f32, deq)
     q_ref = f32_to_bf16_u16(deq)
@@ -272,6 +297,7 @@ def quantize_matrix(
         group_size=group_size,
         n_groups=n_groups,
         scales=scales_f16.ravel(),
+        zp=zp_u8.ravel(),
         codes=codes.astype(np.uint16),
         q_ref=q_ref.reshape(orig).astype(np.uint16),
         outlier_idx=outlier_idx,
@@ -332,6 +358,7 @@ def quantize_bf16_raw(
         group_size=0,
         n_groups=0,
         scales=np.zeros(0, dtype=np.float16),
+        zp=np.zeros(0, dtype=np.uint8),
         codes=np.zeros((0, 0), dtype=np.uint16),
         q_ref=w.copy(),
         outlier_idx=np.zeros(0, dtype=np.int64),
@@ -354,6 +381,7 @@ def dequantize_to_bf16(
     cols: int,
     group_size: int,
     shape: tuple[int, ...],
+    zp: np.ndarray | None = None,
     outlier_idx: np.ndarray | None = None,
     outlier_words: np.ndarray | None = None,
 ) -> np.ndarray:
@@ -362,12 +390,17 @@ def dequantize_to_bf16(
         raise ValueError("use the raw payload path for bf16_raw tensors")
 
     stored = np.ascontiguousarray(codes, dtype=np.uint16).reshape(rows, cols)
-    q = stored_to_signed(stored, bits)
     gid, _n_gc, n_groups = group_ids(rows, cols, group_size)
     sc = np.ascontiguousarray(scales, dtype=np.float16).astype(np.float32).ravel()
     if int(sc.size) != n_groups:
         raise ValueError(f"scale count {sc.size} != n_groups {n_groups}")
-    deq = q.astype(np.float32) * sc[gid]
+    if zp is None:
+        z = np.full(n_groups, qmax_for_bits(bits), dtype=np.float32)
+    else:
+        z = np.ascontiguousarray(zp, dtype=np.uint8).astype(np.float32).ravel()
+        if int(z.size) != n_groups:
+            raise ValueError(f"zp count {z.size} != n_groups {n_groups}")
+    deq = (stored.astype(np.float32) - z[gid]) * sc[gid]
     out = f32_to_bf16_u16(deq).reshape(shape)
     if outlier_idx is not None and outlier_words is not None and int(np.asarray(outlier_idx).size):
         flat = out.ravel()
@@ -408,6 +441,7 @@ def estimate_packed_bits(qt: QuantizedTensor) -> int:
         return n * 16
     code_bits = n * int(qt.bits)
     scale_bits = int(qt.n_groups) * 16
+    zp_bits = int(qt.n_groups) * 8
     # sparse outliers: u32 index + bf16 word
     out_bits = int(qt.outlier_idx.size) * (32 + 16)
-    return code_bits + scale_bits + out_bits
+    return code_bits + scale_bits + zp_bits + out_bits

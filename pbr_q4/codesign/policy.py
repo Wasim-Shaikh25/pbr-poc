@@ -123,15 +123,52 @@ RESTORE = CodesignPolicy(
     description="Restore mid-MLP to Q5 if Q4 mid-MLP breaks the 0.95 proxy floor.",
 )
 
+# Quality-seeking points (rate likely >5.0). Measured, not claimed.
+RESTORE_Q6 = CodesignPolicy(
+    name="restore_q6",
+    group_size=128,
+    embed=6,
+    mlp_mid=6,
+    mlp_late=6,
+    mlp_first=6,
+    mlp_last=6,
+    attn_mid=6,
+    attn_first=6,
+    attn_last=6,
+    other=None,
+    outlier_frac=0.002,
+    outlier_max_bits=6,
+    description="Uniform groupwise Q6 + BF16 norms. Quality backoff; rate expected >5.0.",
+)
+
+QUALITY = CodesignPolicy(
+    name="quality",
+    group_size=128,
+    embed=8,
+    mlp_mid=6,
+    mlp_late=8,
+    mlp_first=8,
+    mlp_last=8,
+    attn_mid=8,
+    attn_first=8,
+    attn_last=8,
+    other=None,
+    outlier_frac=0.003,
+    outlier_max_bits=6,
+    description="Quality-first: mid-MLP Q6, embed/attn/late Q8, norms BF16.",
+)
+
 POLICIES: dict[str, CodesignPolicy] = {
     "stretch": STRETCH,
     "practical": PRACTICAL,
     "safe": SAFE,
     "restore": RESTORE,
+    "restore_q6": RESTORE_Q6,
+    "quality": QUALITY,
 }
 
 POLICY_NAMES = tuple(POLICIES)
-LADDER = ("stretch", "practical", "safe", "restore")
+LADDER = ("stretch", "practical", "safe", "restore", "restore_q6", "quality")
 
 
 def get_policy(name: str) -> CodesignPolicy:

@@ -63,8 +63,31 @@ def load_texts(path: Path) -> tuple[dict, list[str]]:
     return payload, [t["text"] for t in payload["texts"]]
 
 
+def _ensure_tokenizer_files(model_dir: Path) -> None:
+    """Stage-1B snapshots omit tokenizer files; proxy NLL needs them."""
+    if (model_dir / "tokenizer.json").exists() or (model_dir / "tokenizer_config.json").exists():
+        return
+    from huggingface_hub import snapshot_download
+
+    print(f"  fetching tokenizer files into {model_dir}", flush=True)
+    snapshot_download(
+        repo_id="Qwen/Qwen2.5-0.5B-Instruct",
+        local_dir=str(model_dir),
+        cache_dir=str(Path("outputs/hf_cache")),
+        allow_patterns=[
+            "tokenizer*",
+            "vocab.json",
+            "merges.txt",
+            "special_tokens_map.json",
+            "added_tokens.json",
+            "generation_config.json",
+        ],
+    )
+
+
 def resolve_model(model_dir: Path) -> Path:
     if model_dir.exists() and any(model_dir.glob("*.safetensors")):
+        _ensure_tokenizer_files(model_dir)
         return model_dir
     print(f"Model not at {model_dir}; downloading Qwen2.5-0.5B-Instruct…", flush=True)
     from pbr_encoder.hf_weights import download_checkpoint
@@ -74,7 +97,9 @@ def resolve_model(model_dir: Path) -> Path:
         cache_dir=Path("outputs/hf_cache"),
     )
     print(f"  downloaded {result.repo_id} → {result.local_dir} ({result.note})", flush=True)
-    return Path(result.local_dir)
+    dest = Path(result.local_dir)
+    _ensure_tokenizer_files(dest)
+    return dest
 
 
 def unique_specs(model_dir: Path):
@@ -170,10 +195,15 @@ def write_md(report: dict[str, Any], path: Path) -> None:
     lines = [
         "# PBR-Q4 quantize ↔ selective 256-node X/Y co-design",
         "",
-        f"**Physical ≤5.0: {gates['practical_rate']}** — actual_bpw={w.get('actual_bpw')}",
-        f"**Physical ≤4.5: {gates['stretch_rate']}**",
-        f"**Held-out proxy ≥0.95: {gates['quality_min']}** — heldout_ret={w.get('heldout_retention')}",
-        f"**Held-out proxy ≥0.97 (aim): {gates['quality_aim']}**",
+        "## Dual-gate verdict",
+        "",
+        "| Gate | Target | Measured | Verdict |",
+        "| --- | --- | ---: | --- |",
+        f"| Practical physical rate | ≤ **5.0** BPW | **{w.get('actual_bpw')}** | **{gates['practical_rate']}** |",
+        f"| Stretch physical rate | ≤ **4.5** BPW | **{w.get('actual_bpw')}** | **{gates['stretch_rate']}** |",
+        f"| Held-out proxy (hard min) | ≥ **0.95** | **{w.get('heldout_retention')}** | **{gates['quality_min']}** |",
+        f"| Held-out proxy (aim) | ≥ **0.97** | **{w.get('heldout_retention')}** | **{gates['quality_aim']}** |",
+        f"| Exact decode of this Q-ref | SHA match | `{w.get('sha256_quantized_reference')}` | **{gates['exact_decode']}** |",
         "",
         f"Policy: `{w.get('policy')}` — new quantized reference SHA `{w.get('sha256_quantized_reference')}`.",
         f"Not S1-compatible. Wall time: **{report['wall_s']:.1f}s**",
@@ -242,7 +272,12 @@ def write_md(report: dict[str, Any], path: Path) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--model-dir", type=Path, default=DEFAULT_MODEL)
-    ap.add_argument("--policy", type=str, default="auto", help="auto | stretch | practical | safe | restore")
+    ap.add_argument(
+        "--policy",
+        type=str,
+        default="auto",
+        help="auto | stretch | practical | safe | restore | restore_q6 | quality",
+    )
     ap.add_argument("--skip-eval", action="store_true")
     ap.add_argument("--skip-encode", action="store_true")
     ap.add_argument("--calib", type=Path, default=CALIB_PATH)

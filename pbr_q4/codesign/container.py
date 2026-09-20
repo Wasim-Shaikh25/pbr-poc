@@ -158,6 +158,8 @@ def encode_quantized(
 
         scale_b = np.ascontiguousarray(qt.scales, dtype="<f2").tobytes()
         item["scale_rel"], item["scale_len"] = _push(scale_b)
+        zp_b = np.ascontiguousarray(qt.zp, dtype=np.uint8).tobytes()
+        item["zp_rel"], item["zp_len"] = _push(zp_b)
         enc = encode_array_selective(qt.codes, int(qt.bits))
         item["codes_rel"], item["codes_len"] = _push(enc["blob"])
         item["codes_kind"] = enc["kind"]
@@ -219,6 +221,8 @@ def encode_quantized(
             else:
                 item["scale_off"] = payload_start + spec["scale_rel"]
                 item["scale_len"] = spec["scale_len"]
+                item["zp_off"] = payload_start + spec["zp_rel"]
+                item["zp_len"] = spec["zp_len"]
                 item["codes_off"] = payload_start + spec["codes_rel"]
                 item["codes_len"] = spec["codes_len"]
                 item["out_idx_off"] = payload_start + spec["out_idx_rel"]
@@ -381,6 +385,10 @@ def _decode_one(spec: Mapping[str, Any], data: memoryview) -> np.ndarray:
     if s_ln != n_groups * 2:
         raise ValueError(f"scale length {s_ln} != {n_groups * 2}")
     scales = np.frombuffer(data[s_off : s_off + s_ln], dtype="<f2").copy()
+    z_off, z_ln = int(spec["zp_off"]), int(spec["zp_len"])
+    if z_ln != n_groups:
+        raise ValueError(f"zp length {z_ln} != {n_groups}")
+    zp = np.frombuffer(data[z_off : z_off + z_ln], dtype=np.uint8).copy()
 
     c_off, c_ln = int(spec["codes_off"]), int(spec["codes_len"])
     if c_off < 0 or c_ln < 0 or c_off + c_ln > len(data):
@@ -396,6 +404,7 @@ def _decode_one(spec: Mapping[str, Any], data: memoryview) -> np.ndarray:
         bits=bits,
         codes=codes,
         scales=scales,
+        zp=zp,
         rows=rows,
         cols=cols,
         group_size=group_size,
@@ -433,7 +442,7 @@ def decode_container(path: str | Path) -> dict[str, Any]:
     # Trailing-byte / overlap check: payload must end at file end (padding only in header).
     last = 0
     for spec in header["tensors"]:
-        for key in ("raw_off", "scale_off", "codes_off", "out_idx_off", "out_words_off"):
+        for key in ("raw_off", "scale_off", "zp_off", "codes_off", "out_idx_off", "out_words_off"):
             ln_key = key.replace("_off", "_len")
             if key in spec:
                 last = max(last, int(spec[key]) + int(spec.get(ln_key, 0)))
