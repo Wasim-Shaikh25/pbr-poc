@@ -1,0 +1,2836 @@
+{
+  "disclaimer": "PBR-4 structured nibble + node formulas. W[i] = F(node(i), c4[i]) XOR R[i]. Complete bytes = |S| + 4N/8 + |R| + metadata. Bit-exact uint16 BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW unless measured total complete BPW is \u22644. c4 is stored 4-bit side info; coordinates are already known.",
+  "model": {
+    "repo_id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "license": "Apache-2.0"
+  },
+  "summary": {
+    "n_tensors": 42,
+    "n_words": 83836928,
+    "original_bytes": 167673856,
+    "pbre_ref": 10.616,
+    "zoo_best_total": 10.585,
+    "raw_bpw": 16.0,
+    "best_setting": "16x16",
+    "best_formal_bpw": 20.58030799983511,
+    "best_s_bytes": 6724733,
+    "best_c4_bytes": 41918464,
+    "best_r_bytes": 163750642,
+    "best_meta_bytes": 3279886,
+    "best_hit_rate": 0.08588619802481312,
+    "beats_pbre": false,
+    "beats_zoo": false,
+    "beats_raw": false,
+    "stretch_le4": false,
+    "c4_entropy_bpw": 3.1423333108373237,
+    "c4_ans_est_bpw": 3.1423333108373237,
+    "elapsed_s": 707.1230766119988,
+    "settings": [
+      {
+        "name": "16x16",
+        "s_bytes": 6724733,
+        "c4_bytes": 41918464,
+        "c4_bits": 335347712,
+        "r_bytes": 163750642,
+        "meta_bytes": 3279886,
+        "payload_bytes": 215669769,
+        "header_bytes": 3956,
+        "formal_bytes": 215673725,
+        "formal_bpw": 20.58030799983511,
+        "n_hit": 7200435,
+        "hit_rate": 0.08588619802481312,
+        "family_counts": {
+          "palette16": 203664,
+          "inherit_root": 123702,
+          "templates16": 92,
+          "nibble_insert": 5,
+          "const_proto": 25
+        },
+        "beats_pbre": false,
+        "stretch_le4": false,
+        "beats_raw": false,
+        "beats_zoo": false
+      },
+      {
+        "name": "per_tensor_min",
+        "s_bytes": 6724733,
+        "c4_bytes": 41918464,
+        "c4_bits": 335347712,
+        "r_bytes": 163750642,
+        "meta_bytes": 3279886,
+        "payload_bytes": 215669769,
+        "header_bytes": 3956,
+        "formal_bytes": 215673725,
+        "formal_bpw": 20.58030799983511,
+        "n_hit": 7200435,
+        "hit_rate": 0.08588619802481312,
+        "family_counts": {
+          "palette16": 203664,
+          "inherit_root": 123702,
+          "templates16": 92,
+          "nibble_insert": 5,
+          "const_proto": 25
+        },
+        "beats_pbre": false,
+        "stretch_le4": false,
+        "beats_raw": false,
+        "beats_zoo": false
+      },
+      {
+        "name": "8x8",
+        "s_bytes": 312370,
+        "c4_bytes": 41918464,
+        "c4_bits": 335347712,
+        "r_bytes": 167673898,
+        "meta_bytes": 13104526,
+        "payload_bytes": 223005302,
+        "header_bytes": 3956,
+        "formal_bytes": 223009258,
+        "formal_bpw": 21.280289086928377,
+        "n_hit": 437224,
+        "hit_rate": 0.005215172006302521,
+        "family_counts": {
+          "inherit_root": 1281483,
+          "nibble_insert": 16814,
+          "palette16": 7682,
+          "const_proto": 3308,
+          "se_nibble": 655,
+          "templates16": 8,
+          "affine_rc": 2
+        },
+        "beats_pbre": false,
+        "stretch_le4": false,
+        "beats_raw": false,
+        "beats_zoo": false
+      },
+      {
+        "name": "1x64",
+        "s_bytes": 335753,
+        "c4_bytes": 41918464,
+        "c4_bits": 335347712,
+        "r_bytes": 167673898,
+        "meta_bytes": 13104526,
+        "payload_bytes": 223028685,
+        "header_bytes": 3956,
+        "formal_bytes": 223032641,
+        "formal_bpw": 21.282520370975426,
+        "n_hit": 458631,
+        "hit_rate": 0.005470512946275894,
+        "family_counts": {
+          "inherit_root": 1279703,
+          "nibble_insert": 17918,
+          "palette16": 8291,
+          "const_proto": 3357,
+          "se_nibble": 679,
+          "templates16": 4
+        },
+        "beats_pbre": false,
+        "stretch_le4": false,
+        "beats_raw": false,
+        "beats_zoo": false
+      }
+    ],
+    "per_tensor": [
+      {
+        "name": "model.layers.0.mlp.down_proj.weight",
+        "shape": [
+          896,
+          4864
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11591741,
+            "formal_bpw": 21.27830746299342,
+            "s_bytes": 15395,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005136590254934211,
+            "family_counts": {
+              "inherit_root": 66602,
+              "nibble_insert": 896,
+              "palette16": 370,
+              "const_proto": 194,
+              "se_nibble": 33,
+              "templates16": 1
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11204783,
+            "formal_bpw": 20.567990410596803,
+            "s_bytes": 355171,
+            "c4_bytes": 2179072,
+            "r_bytes": 8500275,
+            "meta_bytes": 170265,
+            "hit_rate": 0.08728302690319549,
+            "family_counts": {
+              "palette16": 10759,
+              "inherit_root": 6261,
+              "templates16": 3,
+              "nibble_insert": 1
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11593366,
+            "formal_bpw": 21.281290384163533,
+            "s_bytes": 17020,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005391744742716165,
+            "family_counts": {
+              "inherit_root": 66535,
+              "nibble_insert": 905,
+              "palette16": 419,
+              "const_proto": 207,
+              "se_nibble": 30
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11204783,
+        "best_formal_bpw": 20.567990410596803,
+        "sha256": "195f2fd5f3bc96980f509c46b59180cfe3eacba58cb890381900d4c118157200"
+      },
+      {
+        "name": "model.layers.0.mlp.gate_proj.weight",
+        "shape": [
+          4864,
+          896
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11593028,
+            "formal_bpw": 21.28066993656015,
+            "s_bytes": 16682,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005258431111959587,
+            "family_counts": {
+              "inherit_root": 66545,
+              "const_proto": 203,
+              "nibble_insert": 910,
+              "palette16": 405,
+              "se_nibble": 30,
+              "templates16": 3
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11205307,
+            "formal_bpw": 20.568952287946427,
+            "s_bytes": 355021,
+            "c4_bytes": 2179072,
+            "r_bytes": 8500949,
+            "meta_bytes": 170265,
+            "hit_rate": 0.08720570040824718,
+            "family_counts": {
+              "palette16": 10752,
+              "inherit_root": 6264,
+              "const_proto": 3,
+              "templates16": 5
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11594880,
+            "formal_bpw": 21.284069548872182,
+            "s_bytes": 18534,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005615693285949248,
+            "family_counts": {
+              "inherit_root": 66459,
+              "palette16": 460,
+              "const_proto": 179,
+              "nibble_insert": 959,
+              "se_nibble": 38,
+              "templates16": 1
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11205307,
+        "best_formal_bpw": 20.568952287946427,
+        "sha256": "e3346225575baaf568a0835e2c8f4bb682652093afdab5ff1a49224853c156a2"
+      },
+      {
+        "name": "model.layers.0.mlp.up_proj.weight",
+        "shape": [
+          4864,
+          896
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11594822,
+            "formal_bpw": 21.283963081531954,
+            "s_bytes": 18476,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005791226724036654,
+            "family_counts": {
+              "inherit_root": 66513,
+              "nibble_insert": 984,
+              "palette16": 462,
+              "const_proto": 100,
+              "se_nibble": 37
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11192628,
+            "formal_bpw": 20.54567816024436,
+            "s_bytes": 364842,
+            "c4_bytes": 2179072,
+            "r_bytes": 8478449,
+            "meta_bytes": 170265,
+            "hit_rate": 0.08978707449776786,
+            "family_counts": {
+              "palette16": 11052,
+              "inherit_root": 5967,
+              "templates16": 3,
+              "nibble_insert": 1,
+              "const_proto": 1
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11593109,
+            "formal_bpw": 21.280818623707706,
+            "s_bytes": 16763,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005547086099036654,
+            "family_counts": {
+              "inherit_root": 66532,
+              "nibble_insert": 1014,
+              "se_nibble": 36,
+              "palette16": 407,
+              "const_proto": 107
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11192628,
+        "best_formal_bpw": 20.54567816024436,
+        "sha256": "c66e277c3f509f8b2e3b40155a954f98ac5753870d344c9f67005f7108991862"
+      },
+      {
+        "name": "model.layers.0.self_attn.k_proj.weight",
+        "shape": [
+          128,
+          896
+        ],
+        "n_words": 114688,
+        "raw_bytes": 229376,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 304948,
+            "formal_bpw": 21.271484375,
+            "s_bytes": 282,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.003627232142857143,
+            "family_counts": {
+              "inherit_root": 1766,
+              "palette16": 7,
+              "const_proto": 9,
+              "nibble_insert": 9,
+              "se_nibble": 1
+            },
+            "n_nodes": 1792
+          },
+          "16x16": {
+            "formal_bytes": 296939,
+            "formal_bpw": 20.712820870535715,
+            "s_bytes": 5713,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 4505,
+            "hit_rate": 0.05341448102678571,
+            "family_counts": {
+              "inherit_root": 275,
+              "palette16": 173
+            },
+            "n_nodes": 448
+          },
+          "1x64": {
+            "formal_bytes": 305258,
+            "formal_bpw": 21.293108258928573,
+            "s_bytes": 592,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.006208147321428571,
+            "family_counts": {
+              "inherit_root": 1744,
+              "const_proto": 5,
+              "nibble_insert": 27,
+              "palette16": 15,
+              "se_nibble": 1
+            },
+            "n_nodes": 1792
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 296939,
+        "best_formal_bpw": 20.712820870535715,
+        "sha256": "e26298921de4a3580417534336302070ab0e25f64a0a2dec7f9cbee98dfe5f15"
+      },
+      {
+        "name": "model.layers.0.self_attn.o_proj.weight",
+        "shape": [
+          896,
+          896
+        ],
+        "n_words": 802816,
+        "raw_bytes": 1605632,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 2134971,
+            "formal_bpw": 21.274822624362244,
+            "s_bytes": 2465,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.004540268255739796,
+            "family_counts": {
+              "inherit_root": 12286,
+              "nibble_insert": 147,
+              "palette16": 58,
+              "const_proto": 48,
+              "se_nibble": 5
+            },
+            "n_nodes": 12544
+          },
+          "16x16": {
+            "formal_bytes": 2068721,
+            "formal_bpw": 20.614646444515305,
+            "s_bytes": 61621,
+            "c4_bytes": 401408,
+            "r_bytes": 1574307,
+            "meta_bytes": 31385,
+            "hit_rate": 0.08201132015306123,
+            "family_counts": {
+              "palette16": 1866,
+              "inherit_root": 1269,
+              "templates16": 1
+            },
+            "n_nodes": 3136
+          },
+          "1x64": {
+            "formal_bytes": 2135680,
+            "formal_bpw": 21.28188775510204,
+            "s_bytes": 3174,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.005125707509566327,
+            "family_counts": {
+              "se_nibble": 10,
+              "inherit_root": 12283,
+              "nibble_insert": 137,
+              "const_proto": 33,
+              "palette16": 81
+            },
+            "n_nodes": 12544
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 2068721,
+        "best_formal_bpw": 20.614646444515305,
+        "sha256": "550df0b768809efcfc3cda7f8bf86e5c1d64ec5a456fa8c443a51d6bbf20c8d6"
+      },
+      {
+        "name": "model.layers.0.self_attn.q_proj.weight",
+        "shape": [
+          896,
+          896
+        ],
+        "n_words": 802816,
+        "raw_bytes": 1605632,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 2134813,
+            "formal_bpw": 21.27324816645408,
+            "s_bytes": 2307,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.004086864237882653,
+            "family_counts": {
+              "inherit_root": 12347,
+              "nibble_insert": 111,
+              "palette16": 58,
+              "const_proto": 25,
+              "se_nibble": 3
+            },
+            "n_nodes": 12544
+          },
+          "16x16": {
+            "formal_bytes": 2080193,
+            "formal_bpw": 20.728964046556122,
+            "s_bytes": 51475,
+            "c4_bytes": 401408,
+            "r_bytes": 1595925,
+            "meta_bytes": 31385,
+            "hit_rate": 0.06854746293048469,
+            "family_counts": {
+              "inherit_root": 1574,
+              "palette16": 1556,
+              "templates16": 3,
+              "const_proto": 3
+            },
+            "n_nodes": 3136
+          },
+          "1x64": {
+            "formal_bytes": 2135754,
+            "formal_bpw": 21.282625159438776,
+            "s_bytes": 3248,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.0053486726721938774,
+            "family_counts": {
+              "inherit_root": 12250,
+              "palette16": 80,
+              "nibble_insert": 176,
+              "const_proto": 27,
+              "se_nibble": 11
+            },
+            "n_nodes": 12544
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 2080193,
+        "best_formal_bpw": 20.728964046556122,
+        "sha256": "7af566022f07072d911a22135d8835121b1fe44e05e2d9a009c1263cba98fdef"
+      },
+      {
+        "name": "model.layers.0.self_attn.v_proj.weight",
+        "shape": [
+          128,
+          896
+        ],
+        "n_words": 114688,
+        "raw_bytes": 229376,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 304987,
+            "formal_bpw": 21.274204799107142,
+            "s_bytes": 321,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.004778180803571429,
+            "family_counts": {
+              "inherit_root": 1753,
+              "nibble_insert": 22,
+              "palette16": 7,
+              "const_proto": 7,
+              "se_nibble": 3
+            },
+            "n_nodes": 1792
+          },
+          "16x16": {
+            "formal_bytes": 295079,
+            "formal_bpw": 20.583077566964285,
+            "s_bytes": 9211,
+            "c4_bytes": 57344,
+            "r_bytes": 224019,
+            "meta_bytes": 4505,
+            "hit_rate": 0.08586774553571429,
+            "family_counts": {
+              "palette16": 279,
+              "inherit_root": 169
+            },
+            "n_nodes": 448
+          },
+          "1x64": {
+            "formal_bytes": 305256,
+            "formal_bpw": 21.29296875,
+            "s_bytes": 590,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.006373814174107143,
+            "family_counts": {
+              "inherit_root": 1744,
+              "nibble_insert": 25,
+              "palette16": 15,
+              "const_proto": 7,
+              "se_nibble": 1
+            },
+            "n_nodes": 1792
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 295079,
+        "best_formal_bpw": 20.583077566964285,
+        "sha256": "e91cd98736944a3939585889527255165ace900bc926e85b1f13d90d3cad6e0c"
+      },
+      {
+        "name": "model.layers.12.mlp.down_proj.weight",
+        "shape": [
+          896,
+          4864
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11589648,
+            "formal_bpw": 21.274465460526315,
+            "s_bytes": 13302,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.004474152299694549,
+            "family_counts": {
+              "inherit_root": 66974,
+              "nibble_insert": 663,
+              "palette16": 334,
+              "const_proto": 96,
+              "se_nibble": 28,
+              "templates16": 1
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11244813,
+            "formal_bpw": 20.641471231790412,
+            "s_bytes": 321813,
+            "c4_bytes": 2179072,
+            "r_bytes": 8573663,
+            "meta_bytes": 170265,
+            "hit_rate": 0.07886338771734022,
+            "family_counts": {
+              "palette16": 9747,
+              "inherit_root": 7272,
+              "templates16": 4,
+              "const_proto": 1
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11593033,
+            "formal_bpw": 21.280679114779137,
+            "s_bytes": 16687,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005200149421405075,
+            "family_counts": {
+              "inherit_root": 66712,
+              "palette16": 422,
+              "nibble_insert": 833,
+              "const_proto": 96,
+              "se_nibble": 33
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11244813,
+        "best_formal_bpw": 20.641471231790412,
+        "sha256": "79ae5a8fe91ecf437f5959c7cb28121fda775a8e62fc807179cd037fbe6c1762"
+      },
+      {
+        "name": "model.layers.12.mlp.gate_proj.weight",
+        "shape": [
+          4864,
+          896
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11590459,
+            "formal_bpw": 21.275954167645676,
+            "s_bytes": 14113,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.004832791206531955,
+            "family_counts": {
+              "inherit_root": 66826,
+              "nibble_insert": 812,
+              "const_proto": 90,
+              "se_nibble": 21,
+              "palette16": 347
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11222132,
+            "formal_bpw": 20.599836994830827,
+            "s_bytes": 340998,
+            "c4_bytes": 2179072,
+            "r_bytes": 8531797,
+            "meta_bytes": 170265,
+            "hit_rate": 0.08366657916764568,
+            "family_counts": {
+              "palette16": 10326,
+              "inherit_root": 6691,
+              "templates16": 6,
+              "const_proto": 1
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11592632,
+            "formal_bpw": 21.279943021616543,
+            "s_bytes": 16286,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005280229382048873,
+            "family_counts": {
+              "inherit_root": 66638,
+              "nibble_insert": 904,
+              "palette16": 402,
+              "se_nibble": 35,
+              "const_proto": 117
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11222132,
+        "best_formal_bpw": 20.599836994830827,
+        "sha256": "4c3c119736760683a14b05074c290e837dd7a4d5cb08a680446e62baa3d631dd"
+      },
+      {
+        "name": "model.layers.12.mlp.up_proj.weight",
+        "shape": [
+          4864,
+          896
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11591232,
+            "formal_bpw": 21.27737312030075,
+            "s_bytes": 14886,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.004953025875234962,
+            "family_counts": {
+              "inherit_root": 66634,
+              "nibble_insert": 823,
+              "const_proto": 243,
+              "palette16": 358,
+              "se_nibble": 37,
+              "templates16": 1
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11216887,
+            "formal_bpw": 20.5902090431156,
+            "s_bytes": 344863,
+            "c4_bytes": 2179072,
+            "r_bytes": 8522687,
+            "meta_bytes": 170265,
+            "hit_rate": 0.08471174885455827,
+            "family_counts": {
+              "palette16": 10443,
+              "inherit_root": 6572,
+              "templates16": 6,
+              "const_proto": 3
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11594096,
+            "formal_bpw": 21.28263040413534,
+            "s_bytes": 17750,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005546168277138158,
+            "family_counts": {
+              "nibble_insert": 971,
+              "inherit_root": 66451,
+              "const_proto": 215,
+              "palette16": 435,
+              "se_nibble": 24
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11216887,
+        "best_formal_bpw": 20.5902090431156,
+        "sha256": "456ee472d1a607028419a73c53b791d80f53c58ba9baa162a9cca6c22a3e2d40"
+      },
+      {
+        "name": "model.layers.12.self_attn.k_proj.weight",
+        "shape": [
+          128,
+          896
+        ],
+        "n_words": 114688,
+        "raw_bytes": 229376,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 304986,
+            "formal_bpw": 21.274135044642858,
+            "s_bytes": 320,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.00445556640625,
+            "family_counts": {
+              "inherit_root": 1766,
+              "nibble_insert": 16,
+              "palette16": 8,
+              "se_nibble": 1,
+              "const_proto": 1
+            },
+            "n_nodes": 1792
+          },
+          "16x16": {
+            "formal_bytes": 296421,
+            "formal_bpw": 20.676688058035715,
+            "s_bytes": 8023,
+            "c4_bytes": 57344,
+            "r_bytes": 226549,
+            "meta_bytes": 4505,
+            "hit_rate": 0.07483782087053571,
+            "family_counts": {
+              "palette16": 243,
+              "inherit_root": 205
+            },
+            "n_nodes": 448
+          },
+          "1x64": {
+            "formal_bytes": 305138,
+            "formal_bpw": 21.284737723214285,
+            "s_bytes": 472,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.0054931640625,
+            "family_counts": {
+              "inherit_root": 1755,
+              "nibble_insert": 22,
+              "palette16": 12,
+              "const_proto": 2,
+              "se_nibble": 1
+            },
+            "n_nodes": 1792
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 296421,
+        "best_formal_bpw": 20.676688058035715,
+        "sha256": "17cb102c41469ce106213ba6845d3fd25d87d62298288568f37fc4f3a46b5d5d"
+      },
+      {
+        "name": "model.layers.12.self_attn.o_proj.weight",
+        "shape": [
+          896,
+          896
+        ],
+        "n_words": 802816,
+        "raw_bytes": 1605632,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 2134049,
+            "formal_bpw": 21.265634964923468,
+            "s_bytes": 1543,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.003476512675382653,
+            "family_counts": {
+              "inherit_root": 12396,
+              "nibble_insert": 96,
+              "palette16": 37,
+              "const_proto": 12,
+              "se_nibble": 3
+            },
+            "n_nodes": 12544
+          },
+          "16x16": {
+            "formal_bytes": 2077698,
+            "formal_bpw": 20.7041015625,
+            "s_bytes": 53868,
+            "c4_bytes": 401408,
+            "r_bytes": 1591037,
+            "meta_bytes": 31385,
+            "hit_rate": 0.07159174705038265,
+            "family_counts": {
+              "inherit_root": 1503,
+              "palette16": 1631,
+              "const_proto": 1,
+              "templates16": 1
+            },
+            "n_nodes": 3136
+          },
+          "1x64": {
+            "formal_bytes": 2135888,
+            "formal_bpw": 21.283960459183675,
+            "s_bytes": 3382,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.005511848294005102,
+            "family_counts": {
+              "inherit_root": 12246,
+              "const_proto": 30,
+              "nibble_insert": 178,
+              "palette16": 84,
+              "se_nibble": 6
+            },
+            "n_nodes": 12544
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 2077698,
+        "best_formal_bpw": 20.7041015625,
+        "sha256": "eb9ec8dd8892d1f4ab95f3789eb488cbbec494d1ce2b9ebb7e2fbf08bdb42359"
+      },
+      {
+        "name": "model.layers.12.self_attn.q_proj.weight",
+        "shape": [
+          896,
+          896
+        ],
+        "n_words": 802816,
+        "raw_bytes": 1605632,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 2135800,
+            "formal_bpw": 21.283083545918366,
+            "s_bytes": 3294,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.005316286670918368,
+            "family_counts": {
+              "inherit_root": 12265,
+              "se_nibble": 4,
+              "const_proto": 33,
+              "palette16": 83,
+              "nibble_insert": 159
+            },
+            "n_nodes": 12544
+          },
+          "16x16": {
+            "formal_bytes": 2068348,
+            "formal_bpw": 20.610929528061224,
+            "s_bytes": 61714,
+            "c4_bytes": 401408,
+            "r_bytes": 1573841,
+            "meta_bytes": 31385,
+            "hit_rate": 0.08230154854910714,
+            "family_counts": {
+              "inherit_root": 1266,
+              "palette16": 1870
+            },
+            "n_nodes": 3136
+          },
+          "1x64": {
+            "formal_bytes": 2136037,
+            "formal_bpw": 21.285445232780614,
+            "s_bytes": 3531,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.005404725366709184,
+            "family_counts": {
+              "inherit_root": 12288,
+              "nibble_insert": 132,
+              "palette16": 93,
+              "const_proto": 24,
+              "se_nibble": 7
+            },
+            "n_nodes": 12544
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 2068348,
+        "best_formal_bpw": 20.610929528061224,
+        "sha256": "e1818f862dec0e01975debeb084759c0a9d6fd3df8f6d3a38b8bb7f83efcb1fb"
+      },
+      {
+        "name": "model.layers.12.self_attn.v_proj.weight",
+        "shape": [
+          128,
+          896
+        ],
+        "n_words": 114688,
+        "raw_bytes": 229376,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 305274,
+            "formal_bpw": 21.294224330357142,
+            "s_bytes": 608,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.006147112165178571,
+            "family_counts": {
+              "inherit_root": 1747,
+              "palette16": 16,
+              "const_proto": 10,
+              "nibble_insert": 18,
+              "se_nibble": 1
+            },
+            "n_nodes": 1792
+          },
+          "16x16": {
+            "formal_bytes": 295407,
+            "formal_bpw": 20.60595703125,
+            "s_bytes": 8881,
+            "c4_bytes": 57344,
+            "r_bytes": 224677,
+            "meta_bytes": 4505,
+            "hit_rate": 0.08299909319196429,
+            "family_counts": {
+              "inherit_root": 179,
+              "palette16": 269
+            },
+            "n_nodes": 448
+          },
+          "1x64": {
+            "formal_bytes": 305066,
+            "formal_bpw": 21.279715401785715,
+            "s_bytes": 400,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.004900251116071429,
+            "family_counts": {
+              "inherit_root": 1757,
+              "nibble_insert": 16,
+              "const_proto": 8,
+              "palette16": 10,
+              "se_nibble": 1
+            },
+            "n_nodes": 1792
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 295407,
+        "best_formal_bpw": 20.60595703125,
+        "sha256": "1e6cff29995344801fa16098edb0ba2e8c2a5106a96a4762fcad2c547ace555c"
+      },
+      {
+        "name": "model.layers.23.mlp.down_proj.weight",
+        "shape": [
+          896,
+          4864
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11591995,
+            "formal_bpw": 21.278773716517858,
+            "s_bytes": 15649,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005228372444783835,
+            "family_counts": {
+              "inherit_root": 66655,
+              "nibble_insert": 915,
+              "palette16": 382,
+              "se_nibble": 38,
+              "const_proto": 105,
+              "affine_rc": 1
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11212319,
+            "formal_bpw": 20.58182382225094,
+            "s_bytes": 348869,
+            "c4_bytes": 2179072,
+            "r_bytes": 8514113,
+            "meta_bytes": 170265,
+            "hit_rate": 0.08569542447427161,
+            "family_counts": {
+              "inherit_root": 6451,
+              "palette16": 10568,
+              "templates16": 3,
+              "const_proto": 2
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11591637,
+            "formal_bpw": 21.278116556038533,
+            "s_bytes": 15291,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005101024656367481,
+            "family_counts": {
+              "inherit_root": 66734,
+              "nibble_insert": 839,
+              "const_proto": 105,
+              "palette16": 377,
+              "se_nibble": 40,
+              "templates16": 1
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11212319,
+        "best_formal_bpw": 20.58182382225094,
+        "sha256": "e9c9f13345658df421db84b2ecb11d62258a569511bfa549859a7180061d6d95"
+      },
+      {
+        "name": "model.layers.23.mlp.gate_proj.weight",
+        "shape": [
+          4864,
+          896
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11594086,
+            "formal_bpw": 21.28261204769737,
+            "s_bytes": 17740,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005573014567669173,
+            "family_counts": {
+              "inherit_root": 66430,
+              "const_proto": 221,
+              "nibble_insert": 981,
+              "palette16": 433,
+              "se_nibble": 31
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11206274,
+            "formal_bpw": 20.57072735549812,
+            "s_bytes": 353720,
+            "c4_bytes": 2179072,
+            "r_bytes": 8503217,
+            "meta_bytes": 170265,
+            "hit_rate": 0.0869454979000235,
+            "family_counts": {
+              "palette16": 10715,
+              "inherit_root": 6304,
+              "templates16": 3,
+              "const_proto": 2
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11593699,
+            "formal_bpw": 21.281901653547934,
+            "s_bytes": 17353,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005523222729675752,
+            "family_counts": {
+              "inherit_root": 66401,
+              "palette16": 417,
+              "nibble_insert": 995,
+              "const_proto": 247,
+              "se_nibble": 35,
+              "templates16": 1
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11206274,
+        "best_formal_bpw": 20.57072735549812,
+        "sha256": "03b3fd4c785569559f8aaaebdcb33b52903f8602e35f00dd3000ca2d4a2c01de"
+      },
+      {
+        "name": "model.layers.23.mlp.up_proj.weight",
+        "shape": [
+          4864,
+          896
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11593195,
+            "formal_bpw": 21.28097648907425,
+            "s_bytes": 16849,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005452091532542293,
+            "family_counts": {
+              "inherit_root": 66592,
+              "nibble_insert": 941,
+              "palette16": 416,
+              "const_proto": 112,
+              "se_nibble": 35
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11198159,
+            "formal_bpw": 20.555831106085527,
+            "s_bytes": 360753,
+            "c4_bytes": 2179072,
+            "r_bytes": 8488069,
+            "meta_bytes": 170265,
+            "hit_rate": 0.08868339366482612,
+            "family_counts": {
+              "inherit_root": 6092,
+              "palette16": 10927,
+              "templates16": 4,
+              "const_proto": 1
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11593890,
+            "formal_bpw": 21.282252261513158,
+            "s_bytes": 17544,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005538825701950188,
+            "family_counts": {
+              "inherit_root": 66597,
+              "nibble_insert": 902,
+              "palette16": 440,
+              "const_proto": 112,
+              "se_nibble": 45
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11198159,
+        "best_formal_bpw": 20.555831106085527,
+        "sha256": "763040c6066a2a82f45fdd87d306a18620007409812ca139f999561ea823ad08"
+      },
+      {
+        "name": "model.layers.23.self_attn.k_proj.weight",
+        "shape": [
+          128,
+          896
+        ],
+        "n_words": 114688,
+        "raw_bytes": 229376,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 304855,
+            "formal_bpw": 21.264997209821427,
+            "s_bytes": 189,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.0033656529017857145,
+            "family_counts": {
+              "inherit_root": 1768,
+              "palette16": 4,
+              "const_proto": 6,
+              "se_nibble": 1,
+              "nibble_insert": 13
+            },
+            "n_nodes": 1792
+          },
+          "16x16": {
+            "formal_bytes": 296919,
+            "formal_bpw": 20.71142578125,
+            "s_bytes": 7627,
+            "c4_bytes": 57344,
+            "r_bytes": 227443,
+            "meta_bytes": 4505,
+            "hit_rate": 0.07094029017857142,
+            "family_counts": {
+              "palette16": 231,
+              "inherit_root": 217
+            },
+            "n_nodes": 448
+          },
+          "1x64": {
+            "formal_bytes": 305059,
+            "formal_bpw": 21.279227120535715,
+            "s_bytes": 393,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.004786900111607143,
+            "family_counts": {
+              "inherit_root": 1761,
+              "palette16": 10,
+              "const_proto": 4,
+              "nibble_insert": 17
+            },
+            "n_nodes": 1792
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 296919,
+        "best_formal_bpw": 20.71142578125,
+        "sha256": "8efa5e5ffc5b284052bdf5bb4db8861c0c16a883415cd5955558b0b0e4eea7ce"
+      },
+      {
+        "name": "model.layers.23.self_attn.o_proj.weight",
+        "shape": [
+          896,
+          896
+        ],
+        "n_words": 802816,
+        "raw_bytes": 1605632,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 2135445,
+            "formal_bpw": 21.279545998086736,
+            "s_bytes": 2939,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.0048093211894132655,
+            "family_counts": {
+              "inherit_root": 12312,
+              "nibble_insert": 115,
+              "palette16": 76,
+              "const_proto": 34,
+              "se_nibble": 7
+            },
+            "n_nodes": 12544
+          },
+          "16x16": {
+            "formal_bytes": 2069683,
+            "formal_bpw": 20.624232700892858,
+            "s_bytes": 60429,
+            "c4_bytes": 401408,
+            "r_bytes": 1576461,
+            "meta_bytes": 31385,
+            "hit_rate": 0.0806697923309949,
+            "family_counts": {
+              "inherit_root": 1304,
+              "palette16": 1831,
+              "const_proto": 1
+            },
+            "n_nodes": 3136
+          },
+          "1x64": {
+            "formal_bytes": 2135163,
+            "formal_bpw": 21.276735889668366,
+            "s_bytes": 2657,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.0047121631855867345,
+            "family_counts": {
+              "inherit_root": 12283,
+              "nibble_insert": 147,
+              "const_proto": 45,
+              "palette16": 64,
+              "se_nibble": 5
+            },
+            "n_nodes": 12544
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 2069683,
+        "best_formal_bpw": 20.624232700892858,
+        "sha256": "ac10706a3dab8947109c4dcd5297904f5c7b5f4cf6bf4c35d1e7051efd0f4bb0"
+      },
+      {
+        "name": "model.layers.23.self_attn.q_proj.weight",
+        "shape": [
+          896,
+          896
+        ],
+        "n_words": 802816,
+        "raw_bytes": 1605632,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 2134674,
+            "formal_bpw": 21.271863042091837,
+            "s_bytes": 2168,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.00397102200255102,
+            "family_counts": {
+              "inherit_root": 12358,
+              "palette16": 54,
+              "nibble_insert": 118,
+              "const_proto": 14
+            },
+            "n_nodes": 12544
+          },
+          "16x16": {
+            "formal_bytes": 2075733,
+            "formal_bpw": 20.684520487882654,
+            "s_bytes": 55693,
+            "c4_bytes": 401408,
+            "r_bytes": 1587247,
+            "meta_bytes": 31385,
+            "hit_rate": 0.07395218829719388,
+            "family_counts": {
+              "inherit_root": 1449,
+              "palette16": 1684,
+              "templates16": 3
+            },
+            "n_nodes": 3136
+          },
+          "1x64": {
+            "formal_bytes": 2134731,
+            "formal_bpw": 21.272431042729593,
+            "s_bytes": 2225,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.00400340800382653,
+            "family_counts": {
+              "inherit_root": 12361,
+              "se_nibble": 2,
+              "palette16": 55,
+              "nibble_insert": 113,
+              "const_proto": 12,
+              "templates16": 1
+            },
+            "n_nodes": 12544
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 2075733,
+        "best_formal_bpw": 20.684520487882654,
+        "sha256": "bc8003e71b8f6f622b6f648e0212456b455feffa0ca1ef377c5c6584b1668aa1"
+      },
+      {
+        "name": "model.layers.23.self_attn.v_proj.weight",
+        "shape": [
+          128,
+          896
+        ],
+        "n_words": 114688,
+        "raw_bytes": 229376,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 304960,
+            "formal_bpw": 21.272321428571427,
+            "s_bytes": 294,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.004499162946428571,
+            "family_counts": {
+              "inherit_root": 1753,
+              "nibble_insert": 26,
+              "palette16": 6,
+              "const_proto": 7
+            },
+            "n_nodes": 1792
+          },
+          "16x16": {
+            "formal_bytes": 295459,
+            "formal_bpw": 20.609584263392858,
+            "s_bytes": 8881,
+            "c4_bytes": 57344,
+            "r_bytes": 224729,
+            "meta_bytes": 4505,
+            "hit_rate": 0.08277239118303571,
+            "family_counts": {
+              "palette16": 269,
+              "inherit_root": 179
+            },
+            "n_nodes": 448
+          },
+          "1x64": {
+            "formal_bytes": 305099,
+            "formal_bpw": 21.282017299107142,
+            "s_bytes": 433,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.005074637276785714,
+            "family_counts": {
+              "inherit_root": 1758,
+              "palette16": 11,
+              "nibble_insert": 20,
+              "const_proto": 3
+            },
+            "n_nodes": 1792
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 295459,
+        "best_formal_bpw": 20.609584263392858,
+        "sha256": "1b79dfea2c74ef52b642b20f9fe949dd0cffcd4952d71c92124c426a8f19b977"
+      },
+      {
+        "name": "model.layers.1.mlp.down_proj.weight",
+        "shape": [
+          896,
+          4864
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11593517,
+            "formal_bpw": 21.28156756637688,
+            "s_bytes": 17171,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005498900449365601,
+            "family_counts": {
+              "inherit_root": 66495,
+              "const_proto": 195,
+              "palette16": 420,
+              "nibble_insert": 945,
+              "se_nibble": 41
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11200061,
+            "formal_bpw": 20.559322500587406,
+            "s_bytes": 358957,
+            "c4_bytes": 2179072,
+            "r_bytes": 8491767,
+            "meta_bytes": 170265,
+            "hit_rate": 0.08825913049224623,
+            "family_counts": {
+              "palette16": 10875,
+              "inherit_root": 6147,
+              "templates16": 2
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11594546,
+            "formal_bpw": 21.283456443843985,
+            "s_bytes": 18200,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005676957897673873,
+            "family_counts": {
+              "inherit_root": 66415,
+              "nibble_insert": 977,
+              "const_proto": 226,
+              "palette16": 447,
+              "se_nibble": 31
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11200061,
+        "best_formal_bpw": 20.559322500587406,
+        "sha256": "76b93dabcb4247e6bace2b8fd29833431809a8655ad594fc53a7896a62feeadd"
+      },
+      {
+        "name": "model.layers.1.mlp.gate_proj.weight",
+        "shape": [
+          4864,
+          896
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11593273,
+            "formal_bpw": 21.281119669290412,
+            "s_bytes": 16927,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005320843001057331,
+            "family_counts": {
+              "inherit_root": 66524,
+              "nibble_insert": 908,
+              "const_proto": 213,
+              "palette16": 414,
+              "se_nibble": 36,
+              "templates16": 1
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11198186,
+            "formal_bpw": 20.555880668468046,
+            "s_bytes": 361196,
+            "c4_bytes": 2179072,
+            "r_bytes": 8487653,
+            "meta_bytes": 170265,
+            "hit_rate": 0.08873112040354793,
+            "family_counts": {
+              "palette16": 10938,
+              "inherit_root": 6078,
+              "templates16": 6,
+              "const_proto": 2
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11595176,
+            "formal_bpw": 21.28461289943609,
+            "s_bytes": 18830,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005653323983787594,
+            "family_counts": {
+              "inherit_root": 66411,
+              "nibble_insert": 948,
+              "const_proto": 228,
+              "palette16": 468,
+              "se_nibble": 41
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11198186,
+        "best_formal_bpw": 20.555880668468046,
+        "sha256": "f65a208e6f676ce3f33904fc252a39aeb2cf20e75f6d5d99bffb01ee70d99bf8"
+      },
+      {
+        "name": "model.layers.1.mlp.up_proj.weight",
+        "shape": [
+          4864,
+          896
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11595084,
+            "formal_bpw": 21.284444020206767,
+            "s_bytes": 18738,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005858916089050752,
+            "family_counts": {
+              "nibble_insert": 1019,
+              "inherit_root": 66353,
+              "const_proto": 230,
+              "palette16": 459,
+              "se_nibble": 35
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11190752,
+            "formal_bpw": 20.542234492481203,
+            "s_bytes": 366786,
+            "c4_bytes": 2179072,
+            "r_bytes": 8474629,
+            "meta_bytes": 170265,
+            "hit_rate": 0.09022533445429981,
+            "family_counts": {
+              "palette16": 11111,
+              "inherit_root": 5909,
+              "templates16": 3,
+              "const_proto": 1
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11595453,
+            "formal_bpw": 21.285121372767858,
+            "s_bytes": 19107,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005991311897908835,
+            "family_counts": {
+              "inherit_root": 66304,
+              "nibble_insert": 1073,
+              "palette16": 466,
+              "const_proto": 216,
+              "se_nibble": 37
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11190752,
+        "best_formal_bpw": 20.542234492481203,
+        "sha256": "1ad73428e44709872103940396a390975d2792019ff95d6e1608bbf46d1d3692"
+      },
+      {
+        "name": "model.layers.1.self_attn.k_proj.weight",
+        "shape": [
+          128,
+          896
+        ],
+        "n_words": 114688,
+        "raw_bytes": 229376,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 304916,
+            "formal_bpw": 21.269252232142858,
+            "s_bytes": 250,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.003627232142857143,
+            "family_counts": {
+              "inherit_root": 1768,
+              "nibble_insert": 12,
+              "const_proto": 6,
+              "palette16": 6
+            },
+            "n_nodes": 1792
+          },
+          "16x16": {
+            "formal_bytes": 296071,
+            "formal_bpw": 20.652273995535715,
+            "s_bytes": 8353,
+            "c4_bytes": 57344,
+            "r_bytes": 225869,
+            "meta_bytes": 4505,
+            "hit_rate": 0.07780238560267858,
+            "family_counts": {
+              "palette16": 253,
+              "inherit_root": 195
+            },
+            "n_nodes": 448
+          },
+          "1x64": {
+            "formal_bytes": 305234,
+            "formal_bpw": 21.291434151785715,
+            "s_bytes": 568,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.005972726004464286,
+            "family_counts": {
+              "inherit_root": 1753,
+              "nibble_insert": 21,
+              "const_proto": 3,
+              "palette16": 15
+            },
+            "n_nodes": 1792
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 296071,
+        "best_formal_bpw": 20.652273995535715,
+        "sha256": "68965d21ec67cd5b99b9fbe868fa580ce4f7c6067b4cbafbb046d6ec8b9e6717"
+      },
+      {
+        "name": "model.layers.1.self_attn.o_proj.weight",
+        "shape": [
+          896,
+          896
+        ],
+        "n_words": 802816,
+        "raw_bytes": 1605632,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 2135342,
+            "formal_bpw": 21.278519610969386,
+            "s_bytes": 2836,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.004831742267219388,
+            "family_counts": {
+              "inherit_root": 12322,
+              "palette16": 73,
+              "se_nibble": 6,
+              "nibble_insert": 125,
+              "const_proto": 18
+            },
+            "n_nodes": 12544
+          },
+          "16x16": {
+            "formal_bytes": 2069547,
+            "formal_bpw": 20.62287747130102,
+            "s_bytes": 60837,
+            "c4_bytes": 401408,
+            "r_bytes": 1575917,
+            "meta_bytes": 31385,
+            "hit_rate": 0.08100859972895408,
+            "family_counts": {
+              "palette16": 1841,
+              "inherit_root": 1292,
+              "templates16": 2,
+              "const_proto": 1
+            },
+            "n_nodes": 3136
+          },
+          "1x64": {
+            "formal_bytes": 2135978,
+            "formal_bpw": 21.28485730229592,
+            "s_bytes": 3472,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.005546725526147959,
+            "family_counts": {
+              "inherit_root": 12281,
+              "nibble_insert": 152,
+              "palette16": 90,
+              "const_proto": 14,
+              "se_nibble": 7
+            },
+            "n_nodes": 12544
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 2069547,
+        "best_formal_bpw": 20.62287747130102,
+        "sha256": "46ec79ddfed230a01b3d1377ffe8e5cc7c64c007e802edf662fc7db0eee4dc9c"
+      },
+      {
+        "name": "model.layers.1.self_attn.q_proj.weight",
+        "shape": [
+          896,
+          896
+        ],
+        "n_words": 802816,
+        "raw_bytes": 1605632,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 2135289,
+            "formal_bpw": 21.277991470025512,
+            "s_bytes": 2783,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.004720882493622449,
+            "family_counts": {
+              "inherit_root": 12306,
+              "nibble_insert": 133,
+              "palette16": 70,
+              "const_proto": 28,
+              "se_nibble": 7
+            },
+            "n_nodes": 12544
+          },
+          "16x16": {
+            "formal_bytes": 2067866,
+            "formal_bpw": 20.60612643494898,
+            "s_bytes": 62380,
+            "c4_bytes": 401408,
+            "r_bytes": 1572693,
+            "meta_bytes": 31385,
+            "hit_rate": 0.08301653180803571,
+            "family_counts": {
+              "inherit_root": 1246,
+              "palette16": 1889,
+              "templates16": 1
+            },
+            "n_nodes": 3136
+          },
+          "1x64": {
+            "formal_bytes": 2135377,
+            "formal_bpw": 21.278868383290817,
+            "s_bytes": 2871,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.004840461575255102,
+            "family_counts": {
+              "inherit_root": 12285,
+              "nibble_insert": 148,
+              "palette16": 71,
+              "se_nibble": 7,
+              "const_proto": 33
+            },
+            "n_nodes": 12544
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 2067866,
+        "best_formal_bpw": 20.60612643494898,
+        "sha256": "fa0bdadf045770a258498b7eff459c52601cb917eeae3e756f9c3a0e85020e45"
+      },
+      {
+        "name": "model.layers.1.self_attn.v_proj.weight",
+        "shape": [
+          128,
+          896
+        ],
+        "n_words": 114688,
+        "raw_bytes": 229376,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 305243,
+            "formal_bpw": 21.292061941964285,
+            "s_bytes": 577,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.005990164620535714,
+            "family_counts": {
+              "inherit_root": 1749,
+              "palette16": 15,
+              "nibble_insert": 22,
+              "const_proto": 6
+            },
+            "n_nodes": 1792
+          },
+          "16x16": {
+            "formal_bytes": 295275,
+            "formal_bpw": 20.596749441964285,
+            "s_bytes": 9013,
+            "c4_bytes": 57344,
+            "r_bytes": 224413,
+            "meta_bytes": 4505,
+            "hit_rate": 0.08415004185267858,
+            "family_counts": {
+              "inherit_root": 175,
+              "palette16": 273
+            },
+            "n_nodes": 448
+          },
+          "1x64": {
+            "formal_bytes": 305020,
+            "formal_bpw": 21.276506696428573,
+            "s_bytes": 354,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.004359654017857143,
+            "family_counts": {
+              "inherit_root": 1763,
+              "const_proto": 5,
+              "palette16": 9,
+              "nibble_insert": 13,
+              "se_nibble": 2
+            },
+            "n_nodes": 1792
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 295275,
+        "best_formal_bpw": 20.596749441964285,
+        "sha256": "e9a896d29f44908ece842882ddff891db5bf8fabeb62b3107d3fcd929b45090a"
+      },
+      {
+        "name": "model.layers.2.mlp.down_proj.weight",
+        "shape": [
+          896,
+          4864
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11593428,
+            "formal_bpw": 21.28140419407895,
+            "s_bytes": 17082,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005416984844924812,
+            "family_counts": {
+              "inherit_root": 66518,
+              "nibble_insert": 902,
+              "palette16": 420,
+              "const_proto": 211,
+              "se_nibble": 45
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11210414,
+            "formal_bpw": 20.57832692081767,
+            "s_bytes": 350428,
+            "c4_bytes": 2179072,
+            "r_bytes": 8510649,
+            "meta_bytes": 170265,
+            "hit_rate": 0.08609284135632049,
+            "family_counts": {
+              "palette16": 10614,
+              "inherit_root": 6404,
+              "templates16": 4,
+              "nibble_insert": 2
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11592907,
+            "formal_bpw": 21.280447823660715,
+            "s_bytes": 16561,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005455762820136279,
+            "family_counts": {
+              "inherit_root": 66463,
+              "nibble_insert": 984,
+              "palette16": 397,
+              "const_proto": 207,
+              "se_nibble": 45
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11210414,
+        "best_formal_bpw": 20.57832692081767,
+        "sha256": "f63c374701cb7470074cd572b26de4061cc794c859ea9cf4d39b38caed7f8bdb"
+      },
+      {
+        "name": "model.layers.2.mlp.gate_proj.weight",
+        "shape": [
+          4864,
+          896
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11593578,
+            "formal_bpw": 21.281679540648497,
+            "s_bytes": 17232,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.0053160244360902255,
+            "family_counts": {
+              "inherit_root": 66647,
+              "nibble_insert": 876,
+              "palette16": 434,
+              "se_nibble": 40,
+              "const_proto": 99
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11203601,
+            "formal_bpw": 20.56582067962876,
+            "s_bytes": 355999,
+            "c4_bytes": 2179072,
+            "r_bytes": 8498265,
+            "meta_bytes": 170265,
+            "hit_rate": 0.08751362965519267,
+            "family_counts": {
+              "inherit_root": 6237,
+              "palette16": 10783,
+              "templates16": 4
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11593702,
+            "formal_bpw": 21.281907160479324,
+            "s_bytes": 17356,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005322449189379699,
+            "family_counts": {
+              "inherit_root": 66650,
+              "nibble_insert": 882,
+              "palette16": 438,
+              "const_proto": 92,
+              "se_nibble": 34
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11203601,
+        "best_formal_bpw": 20.56582067962876,
+        "sha256": "4d3697a14f1f060d8ef2939e99007872394c11edbd16a7fabe2f4d95a309d93c"
+      },
+      {
+        "name": "model.layers.2.mlp.up_proj.weight",
+        "shape": [
+          4864,
+          896
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11593977,
+            "formal_bpw": 21.282411962523497,
+            "s_bytes": 17631,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005582651697603383,
+            "family_counts": {
+              "inherit_root": 66424,
+              "nibble_insert": 984,
+              "palette16": 429,
+              "const_proto": 230,
+              "se_nibble": 29
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11196516,
+            "formal_bpw": 20.552815143327066,
+            "s_bytes": 361546,
+            "c4_bytes": 2179072,
+            "r_bytes": 8485633,
+            "meta_bytes": 170265,
+            "hit_rate": 0.08896287043291823,
+            "family_counts": {
+              "palette16": 10951,
+              "inherit_root": 6068,
+              "nibble_insert": 1,
+              "templates16": 4
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11594944,
+            "formal_bpw": 21.284187030075188,
+            "s_bytes": 18598,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005789620535714286,
+            "family_counts": {
+              "inherit_root": 66363,
+              "nibble_insert": 1023,
+              "const_proto": 233,
+              "palette16": 455,
+              "se_nibble": 22
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11196516,
+        "best_formal_bpw": 20.552815143327066,
+        "sha256": "98ec9fbc054f78a85f9482a6c942d234be443906c456c11544c8210afc862ecf"
+      },
+      {
+        "name": "model.layers.2.self_attn.k_proj.weight",
+        "shape": [
+          128,
+          896
+        ],
+        "n_words": 114688,
+        "raw_bytes": 229376,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 304893,
+            "formal_bpw": 21.267647879464285,
+            "s_bytes": 227,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.0038364955357142855,
+            "family_counts": {
+              "inherit_root": 1766,
+              "nibble_insert": 16,
+              "se_nibble": 2,
+              "const_proto": 3,
+              "palette16": 5
+            },
+            "n_nodes": 1792
+          },
+          "16x16": {
+            "formal_bytes": 295543,
+            "formal_bpw": 20.615443638392858,
+            "s_bytes": 8821,
+            "c4_bytes": 57344,
+            "r_bytes": 224873,
+            "meta_bytes": 4505,
+            "hit_rate": 0.08214460100446429,
+            "family_counts": {
+              "palette16": 266,
+              "inherit_root": 181,
+              "templates16": 1
+            },
+            "n_nodes": 448
+          },
+          "1x64": {
+            "formal_bytes": 305312,
+            "formal_bpw": 21.296875,
+            "s_bytes": 646,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.006138392857142857,
+            "family_counts": {
+              "inherit_root": 1757,
+              "palette16": 18,
+              "const_proto": 2,
+              "se_nibble": 1,
+              "nibble_insert": 14
+            },
+            "n_nodes": 1792
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 295543,
+        "best_formal_bpw": 20.615443638392858,
+        "sha256": "1e97937d88791ae1c049e7d34b2c1b3c4757f37f16c38c651f3ffd4164a35070"
+      },
+      {
+        "name": "model.layers.2.self_attn.o_proj.weight",
+        "shape": [
+          896,
+          896
+        ],
+        "n_words": 802816,
+        "raw_bytes": 1605632,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 2134831,
+            "formal_bpw": 21.273427535076532,
+            "s_bytes": 2325,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.004377092633928571,
+            "family_counts": {
+              "inherit_root": 12316,
+              "nibble_insert": 129,
+              "const_proto": 32,
+              "palette16": 56,
+              "se_nibble": 11
+            },
+            "n_nodes": 12544
+          },
+          "16x16": {
+            "formal_bytes": 2069136,
+            "formal_bpw": 20.6187818877551,
+            "s_bytes": 61144,
+            "c4_bytes": 401408,
+            "r_bytes": 1575199,
+            "meta_bytes": 31385,
+            "hit_rate": 0.08145577566964286,
+            "family_counts": {
+              "palette16": 1848,
+              "inherit_root": 1284,
+              "templates16": 4
+            },
+            "n_nodes": 3136
+          },
+          "1x64": {
+            "formal_bytes": 2135402,
+            "formal_bpw": 21.279117506377553,
+            "s_bytes": 2896,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.005063426737882653,
+            "family_counts": {
+              "inherit_root": 12268,
+              "nibble_insert": 170,
+              "palette16": 70,
+              "const_proto": 33,
+              "se_nibble": 3
+            },
+            "n_nodes": 12544
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 2069136,
+        "best_formal_bpw": 20.6187818877551,
+        "sha256": "c16634511de9ddfe82383777994f361ffdfe55156466e06654fdd2bb4212c692"
+      },
+      {
+        "name": "model.layers.2.self_attn.q_proj.weight",
+        "shape": [
+          896,
+          896
+        ],
+        "n_words": 802816,
+        "raw_bytes": 1605632,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 2134875,
+            "formal_bpw": 21.273865991709183,
+            "s_bytes": 2369,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.00421516262755102,
+            "family_counts": {
+              "inherit_root": 12335,
+              "palette16": 59,
+              "nibble_insert": 118,
+              "const_proto": 28,
+              "se_nibble": 4
+            },
+            "n_nodes": 12544
+          },
+          "16x16": {
+            "formal_bytes": 2071456,
+            "formal_bpw": 20.64190051020408,
+            "s_bytes": 59212,
+            "c4_bytes": 401408,
+            "r_bytes": 1579451,
+            "meta_bytes": 31385,
+            "hit_rate": 0.07880759725765306,
+            "family_counts": {
+              "palette16": 1793,
+              "inherit_root": 1342,
+              "templates16": 1
+            },
+            "n_nodes": 3136
+          },
+          "1x64": {
+            "formal_bytes": 2135199,
+            "formal_bpw": 21.277094626913264,
+            "s_bytes": 2693,
+            "c4_bytes": 401408,
+            "r_bytes": 1605633,
+            "meta_bytes": 125465,
+            "hit_rate": 0.004492934869260204,
+            "family_counts": {
+              "inherit_root": 12316,
+              "const_proto": 32,
+              "palette16": 68,
+              "nibble_insert": 125,
+              "se_nibble": 3
+            },
+            "n_nodes": 12544
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 2071456,
+        "best_formal_bpw": 20.64190051020408,
+        "sha256": "0788c986facb8858582820a8f9a94791217c24902577400102efba4fd11dd332"
+      },
+      {
+        "name": "model.layers.2.self_attn.v_proj.weight",
+        "shape": [
+          128,
+          896
+        ],
+        "n_words": 114688,
+        "raw_bytes": 229376,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 305051,
+            "formal_bpw": 21.278669084821427,
+            "s_bytes": 385,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.004717145647321429,
+            "family_counts": {
+              "inherit_root": 1764,
+              "palette16": 10,
+              "nibble_insert": 15,
+              "const_proto": 2,
+              "se_nibble": 1
+            },
+            "n_nodes": 1792
+          },
+          "16x16": {
+            "formal_bytes": 295382,
+            "formal_bpw": 20.604213169642858,
+            "s_bytes": 8980,
+            "c4_bytes": 57344,
+            "r_bytes": 224553,
+            "meta_bytes": 4505,
+            "hit_rate": 0.08353969029017858,
+            "family_counts": {
+              "palette16": 272,
+              "inherit_root": 176
+            },
+            "n_nodes": 448
+          },
+          "1x64": {
+            "formal_bytes": 305092,
+            "formal_bpw": 21.281529017857142,
+            "s_bytes": 426,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.00506591796875,
+            "family_counts": {
+              "inherit_root": 1760,
+              "nibble_insert": 17,
+              "const_proto": 3,
+              "se_nibble": 1,
+              "palette16": 11
+            },
+            "n_nodes": 1792
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 295382,
+        "best_formal_bpw": 20.604213169642858,
+        "sha256": "5d8d6d4736ad6e3235708cd8ffb6181ac1f43290ab6c399cd686e6abc41a5bd9"
+      },
+      {
+        "name": "model.layers.3.mlp.down_proj.weight",
+        "shape": [
+          896,
+          4864
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11592638,
+            "formal_bpw": 21.279954035479324,
+            "s_bytes": 16292,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005210704373237782,
+            "family_counts": {
+              "inherit_root": 66621,
+              "nibble_insert": 845,
+              "const_proto": 192,
+              "se_nibble": 35,
+              "palette16": 403
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11214863,
+            "formal_bpw": 20.586493700070488,
+            "s_bytes": 346585,
+            "c4_bytes": 2179072,
+            "r_bytes": 8518941,
+            "meta_bytes": 170265,
+            "hit_rate": 0.08514151895852913,
+            "family_counts": {
+              "inherit_root": 6523,
+              "palette16": 10493,
+              "templates16": 8
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11594241,
+            "formal_bpw": 21.282896572485903,
+            "s_bytes": 17895,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.005630148980850564,
+            "family_counts": {
+              "inherit_root": 66418,
+              "nibble_insert": 988,
+              "palette16": 437,
+              "se_nibble": 46,
+              "const_proto": 207
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11214863,
+        "best_formal_bpw": 20.586493700070488,
+        "sha256": "97ec77ac02d6aa263136096efe304ea6d0f3fe1b7ee45beb78296049b568d08a"
+      },
+      {
+        "name": "model.layers.3.mlp.gate_proj.weight",
+        "shape": [
+          4864,
+          896
+        ],
+        "n_words": 4358144,
+        "raw_bytes": 8716288,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 11594339,
+            "formal_bpw": 21.283076465578006,
+            "s_bytes": 17993,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.0054653999500704886,
+            "family_counts": {
+              "inherit_root": 66469,
+              "palette16": 446,
+              "const_proto": 235,
+              "nibble_insert": 903,
+              "se_nibble": 42,
+              "affine_rc": 1
+            },
+            "n_nodes": 68096
+          },
+          "16x16": {
+            "formal_bytes": 11197746,
+            "formal_bpw": 20.55507298519737,
+            "s_bytes": 361058,
+            "c4_bytes": 2179072,
+            "r_bytes": 8487351,
+            "meta_bytes": 170265,
+            "hit_rate": 0.08876576818021617,
+            "family_counts": {
+              "inherit_root": 6082,
+              "palette16": 10935,
+              "templates16": 5,
+              "const_proto": 2
+            },
+            "n_nodes": 17024
+          },
+          "1x64": {
+            "formal_bytes": 11595553,
+            "formal_bpw": 21.285304937147558,
+            "s_bytes": 19207,
+            "c4_bytes": 2179072,
+            "r_bytes": 8716289,
+            "meta_bytes": 680985,
+            "hit_rate": 0.00570908166412124,
+            "family_counts": {
+              "inherit_root": 66409,
+              "palette16": 480,
+              "nibble_insert": 949,
+              "const_proto": 221,
+              "se_nibble": 37
+            },
+            "n_nodes": 68096
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 11197746,
+        "best_formal_bpw": 20.55507298519737,
+        "sha256": "211a021f1a54f527d53965be5397c6275eca777edaaabf1f81890ddb02fe941f"
+      },
+      {
+        "name": "model.layers.3.self_attn.k_proj.weight",
+        "shape": [
+          128,
+          896
+        ],
+        "n_words": 114688,
+        "raw_bytes": 229376,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 304955,
+            "formal_bpw": 21.27197265625,
+            "s_bytes": 289,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.004037039620535714,
+            "family_counts": {
+              "inherit_root": 1766,
+              "const_proto": 2,
+              "nibble_insert": 16,
+              "palette16": 7,
+              "se_nibble": 1
+            },
+            "n_nodes": 1792
+          },
+          "16x16": {
+            "formal_bytes": 295676,
+            "formal_bpw": 20.624720982142858,
+            "s_bytes": 8650,
+            "c4_bytes": 57344,
+            "r_bytes": 225177,
+            "meta_bytes": 4505,
+            "hit_rate": 0.08081926618303571,
+            "family_counts": {
+              "palette16": 262,
+              "inherit_root": 186
+            },
+            "n_nodes": 448
+          },
+          "1x64": {
+            "formal_bytes": 305010,
+            "formal_bpw": 21.275809151785715,
+            "s_bytes": 344,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.004638671875,
+            "family_counts": {
+              "inherit_root": 1758,
+              "nibble_insert": 24,
+              "palette16": 8,
+              "const_proto": 2
+            },
+            "n_nodes": 1792
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 295676,
+        "best_formal_bpw": 20.624720982142858,
+        "sha256": "0df69edf4f94ff651bae9cdf7ec91d4b569b99a77859c21624fb4b05e86955dd"
+      },
+      {
+        "name": "model.layers.3.self_attn.v_proj.weight",
+        "shape": [
+          128,
+          896
+        ],
+        "n_words": 114688,
+        "raw_bytes": 229376,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 305034,
+            "formal_bpw": 21.277483258928573,
+            "s_bytes": 368,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.00494384765625,
+            "family_counts": {
+              "inherit_root": 1760,
+              "nibble_insert": 21,
+              "palette16": 9,
+              "const_proto": 2
+            },
+            "n_nodes": 1792
+          },
+          "16x16": {
+            "formal_bytes": 296251,
+            "formal_bpw": 20.664829799107142,
+            "s_bytes": 8155,
+            "c4_bytes": 57344,
+            "r_bytes": 226247,
+            "meta_bytes": 4505,
+            "hit_rate": 0.07615443638392858,
+            "family_counts": {
+              "palette16": 247,
+              "inherit_root": 201
+            },
+            "n_nodes": 448
+          },
+          "1x64": {
+            "formal_bytes": 304965,
+            "formal_bpw": 21.272670200892858,
+            "s_bytes": 299,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.004420689174107143,
+            "family_counts": {
+              "inherit_root": 1763,
+              "nibble_insert": 20,
+              "palette16": 7,
+              "const_proto": 2
+            },
+            "n_nodes": 1792
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 296251,
+        "best_formal_bpw": 20.664829799107142,
+        "sha256": "285ba2f89b6608e43ab5fedeb441ed20b20dfe6b359f5b425420623fac3de4b3"
+      },
+      {
+        "name": "model.layers.4.self_attn.k_proj.weight",
+        "shape": [
+          128,
+          896
+        ],
+        "n_words": 114688,
+        "raw_bytes": 229376,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 304978,
+            "formal_bpw": 21.273577008928573,
+            "s_bytes": 312,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.003949846540178571,
+            "family_counts": {
+              "inherit_root": 1770,
+              "const_proto": 4,
+              "nibble_insert": 10,
+              "palette16": 7,
+              "templates16": 1
+            },
+            "n_nodes": 1792
+          },
+          "16x16": {
+            "formal_bytes": 295318,
+            "formal_bpw": 20.599748883928573,
+            "s_bytes": 9046,
+            "c4_bytes": 57344,
+            "r_bytes": 224423,
+            "meta_bytes": 4505,
+            "hit_rate": 0.0841064453125,
+            "family_counts": {
+              "palette16": 274,
+              "inherit_root": 174
+            },
+            "n_nodes": 448
+          },
+          "1x64": {
+            "formal_bytes": 305145,
+            "formal_bpw": 21.285226004464285,
+            "s_bytes": 479,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.005562918526785714,
+            "family_counts": {
+              "inherit_root": 1752,
+              "nibble_insert": 23,
+              "const_proto": 4,
+              "se_nibble": 1,
+              "palette16": 12
+            },
+            "n_nodes": 1792
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 295318,
+        "best_formal_bpw": 20.599748883928573,
+        "sha256": "502d58934dd7604ff2a83c08dfe73e91646ec89819f153bffcf6d8cf023c9895"
+      },
+      {
+        "name": "model.layers.4.self_attn.v_proj.weight",
+        "shape": [
+          128,
+          896
+        ],
+        "n_words": 114688,
+        "raw_bytes": 229376,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 305014,
+            "formal_bpw": 21.276088169642858,
+            "s_bytes": 348,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.004621233258928571,
+            "family_counts": {
+              "inherit_root": 1767,
+              "nibble_insert": 15,
+              "palette16": 9,
+              "se_nibble": 1
+            },
+            "n_nodes": 1792
+          },
+          "16x16": {
+            "formal_bytes": 294795,
+            "formal_bpw": 20.563267299107142,
+            "s_bytes": 9481,
+            "c4_bytes": 57344,
+            "r_bytes": 223465,
+            "meta_bytes": 4505,
+            "hit_rate": 0.08828299386160714,
+            "family_counts": {
+              "palette16": 286,
+              "inherit_root": 161,
+              "templates16": 1
+            },
+            "n_nodes": 448
+          },
+          "1x64": {
+            "formal_bytes": 304954,
+            "formal_bpw": 21.271902901785715,
+            "s_bytes": 288,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.004193987165178571,
+            "family_counts": {
+              "inherit_root": 1766,
+              "nibble_insert": 15,
+              "palette16": 7,
+              "const_proto": 4
+            },
+            "n_nodes": 1792
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 294795,
+        "best_formal_bpw": 20.563267299107142,
+        "sha256": "7f11d5346929f579341d9e4dde9a39a5b2c480aa7357c947f90d54f51fd60e9d"
+      },
+      {
+        "name": "model.layers.5.self_attn.k_proj.weight",
+        "shape": [
+          128,
+          896
+        ],
+        "n_words": 114688,
+        "raw_bytes": 229376,
+        "settings": {
+          "8x8": {
+            "formal_bytes": 305079,
+            "formal_bpw": 21.280622209821427,
+            "s_bytes": 413,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.005214146205357143,
+            "family_counts": {
+              "inherit_root": 1755,
+              "nibble_insert": 25,
+              "palette16": 10,
+              "const_proto": 2
+            },
+            "n_nodes": 1792
+          },
+          "16x16": {
+            "formal_bytes": 295412,
+            "formal_bpw": 20.606305803571427,
+            "s_bytes": 8920,
+            "c4_bytes": 57344,
+            "r_bytes": 224643,
+            "meta_bytes": 4505,
+            "hit_rate": 0.08314732142857142,
+            "family_counts": {
+              "palette16": 269,
+              "inherit_root": 178,
+              "templates16": 1
+            },
+            "n_nodes": 448
+          },
+          "1x64": {
+            "formal_bytes": 305004,
+            "formal_bpw": 21.275390625,
+            "s_bytes": 338,
+            "c4_bytes": 57344,
+            "r_bytes": 229377,
+            "meta_bytes": 17945,
+            "hit_rate": 0.004438127790178571,
+            "family_counts": {
+              "inherit_root": 1759,
+              "nibble_insert": 20,
+              "const_proto": 5,
+              "palette16": 8
+            },
+            "n_nodes": 1792
+          }
+        },
+        "best_setting": "16x16",
+        "best_formal_bytes": 295412,
+        "best_formal_bpw": 20.606305803571427,
+        "sha256": "f93d9472614d9467abbe14e9a4eba5f319749fbed0efbc05ebe970619c0652f2"
+      }
+    ],
+    "slice": {
+      "n_words": 2048,
+      "all_exact": "PASS",
+      "sha256": "697b8886f18de0f79825ff10ea1bd120363d2fe441f5e2c1f1a0811554d017d5",
+      "encode_decode_s": 0.025273150000430178,
+      "formal_bpw": 22.08984375,
+      "container_bytes": 6308
+    },
+    "c4_bytes_formula": 41918464
+  }
+}

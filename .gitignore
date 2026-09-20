@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+dist/
+build/
+outputs/
+*.u16
+*.safetensors
+!tests/fixtures/**
+!tests/fixtures/**/*.safetensors
+.coverage
+htmlcov/
+*.so

@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pbr-poc"
+version = "0.1.0"
+description = "PBR Stage 1A/1B research PoC (bit-exact BF16 codecs)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "PBR research PoC" }]
+dependencies = [
+    "numpy>=1.24",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+baselines = ["zstandard>=0.22"]
+stage1b = ["huggingface_hub>=0.23", "safetensors>=0.4"]
+
+[project.scripts]
+pbr = "pbr_encoder.product:main"
+pbr-poc1 = "pbr_encoder.cli:main"
+pbr-poc1b = "pbr_encoder.poc1b:main"
+pbr-qualify = "pbr_qualifier.cli:main"
+pbr-e = "pbr_encoder.pbre:main"
+pbr-diagnose-blockers = "pbr_encoder.blocker_diagnosis:main"
+pbr-ablate-blockers = "pbr_encoder.ablation:main"
+pbr-phase-a = "pbr_encoder.mantissa_audit:main"
+pbr-exp-ablate = "pbr_encoder.exp_coder_ablation:main"
+pbr-delta = "pbr_encoder.checkpoint_delta:main"
+pbr-mantissa-zoo = "pbr_encoder.mantissa_zoo:main"
+pbr-zoo-vs-pbre = "pbr_encoder.zoo_vs_pbre:main"
+pbr-path-50pct = "pbr_encoder.path_to_50pct:main"
+pbr-disk-tunnel = "pbr_encoder.disk_tunnel:main"
+pbr-tunnel-fast = "pbr_encoder.tunnel_fast_pbre:main"
+pbr-tunnel-faster = "pbr_encoder.tunnel_faster_pbre:main"
+pbr-tunnel-hybrid = "pbr_encoder.hybrid_lossy:main"
+pbr-generate-controlled = "pbr_encoder.controlled_data:main"
+pbr-4 = "pbr_encoder.pbr4_eval:main"
+pbr-adaptive-mantissa = "pbr_adaptive_mantissa.cli:main"
+
+[project.urls]
+Repository = "https://github.com/Wasim-Shaikh25/pbr-poc"
+
+[tool.setuptools.packages.find]
+include = ["pbr_core*", "pbr_codecs*", "pbr_encoder*", "pbr_qualifier*", "pbr_adaptive_mantissa*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]

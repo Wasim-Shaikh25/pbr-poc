@@ -1,0 +1,19 @@
+# PBR Stage 2 — model qualification scanner
+# Projects complete-container BPW from sampled encodings.
+# Not a measured full-model size. Cannot one-GB-qualify a checkpoint.
+stage: 2
+repo: Qwen/Qwen2.5-0.5B-Instruct
+revision: 7ae557604adf67be50417f59c2c2f167def9a775
+license: Apache-2.0
+block_size: 256
+sample_tiles: 8
+max_full_words: 16384
+cache_dir: outputs/hf_cache
+local_dir: outputs/models
+output_dir: outputs/reports/poc2
+json_out: outputs/reports/poc2/stage2_qwen05b.json
+disclaimer: >
+  Stage 2 projections are not measured full-model sizes.
+  Do not present them as 1–2 GB / 8 GB evidence.
+  high-potential requires projected BPW ≤ 4; one-GB qualified
+  requires a later full-container encode at ≤ 2 BPW.
