@@ -135,3 +135,44 @@ PYTHONPATH=. python scripts/run_pbr_h95e.py \
   --heldout docs/pbr_h95/heldout_v1.json \
   --max-length 256
 ```
+
+## H95Q (mixed-precision base + sparse recovery path)
+
+Guide: `PBR_H95Q_Mixed_Precision_Sparse_Recovery_Guide.pdf`
+
+Stage 1: quality-controlled mantissa keep \(K \in \{7,6,5,4,3\}\) (idempotent Q). Stage 2: exact coding of the **quantized reference** (original BF16 need not round-trip). Target ~8 total BPW ≈ 1 sign + 2.62 exp + ≤4.38 mant(+maps). Primary lever is K; codecs only if they beat packed-K.
+
+### This PoC (first recommended run §18)
+
+- `pbr_h95/policy.py` — named maps `h95q_A_7_5`, `h95q_B1_mlp_k4`, `h95q_B2_embed_k5`
+- `pbr_h95/packed_rate.py` — packed mantissa bits + `packed_K_total_bpw` (vs entropy-lb)
+- `pbr_h95/entropy_diag.py` — H(retained symbols), bit-plane bias, simple rANS table-cost estimate
+- `scripts/run_pbr_h95q.py` — run A/B1/B2 (+ optional `--with-c-sketch`), calib-v2 + heldout-v1
+- Artifacts: `artifacts/pbr_h95/h95q_qwen.{json,md}`
+
+| Candidate | Precision design |
+| --- | --- |
+| **A** | Existing 7/5 policy; packed retained bits; reproduce ~9.29 BPW |
+| **B1** | mlp_mid K5→K4; attn_mid stays K5; emb/norm/bias/first/last @K7 |
+| **B2** | embed @K5; attn_mid @K6; mlp_mid @K5; norm/bias/first/last @K7 |
+| **C sketch** (optional) | mid @K4 + restore top-magnitude % mlp rows to K7 (+ row bitmap cost) |
+
+### Honesty (H95Q — must read)
+
+- Proxy PPL on in-repo calib-v2 / heldout-v1 only — **not** a production LM benchmark.
+- heldout ppl_retention ≥ 0.95 ⇒ **proxy GO** for that map; else **NO-GO**. Not MMLU/etc.
+- Separate **packed_K total BPW** from **entropy lower-bound BPW**. Do not claim physical container size unless real bytes are written.
+- Reject rANS / advanced codecs unless complete cost (incl. tables) beats packed K.
+- Not a ≤8 BPW product claim unless packed rate **and** proxy quality both support it.
+- Full Candidate C/D codecs (matrix residuals, pair dict) are out of scope unless A/B leave clear headroom.
+
+### Run
+
+```bash
+PYTHONPATH=. .venv/bin/python scripts/run_pbr_h95q.py \
+  --model-dir outputs/models/Qwen__Qwen2.5-0.5B-Instruct \
+  --calib docs/pbr_h95/calibration_v2.json \
+  --heldout docs/pbr_h95/heldout_v1.json \
+  --max-length 256 \
+  --with-c-sketch
+```

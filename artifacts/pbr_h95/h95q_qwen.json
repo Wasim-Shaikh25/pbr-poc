@@ -1,0 +1,1164 @@
+{
+  "phase": "H95Q",
+  "repo": "Qwen/Qwen2.5-0.5B-Instruct",
+  "model_dir": "outputs/models/Qwen__Qwen2.5-0.5B-Instruct",
+  "max_length": 256,
+  "calib_path": "docs/pbr_h95/calibration_v2.json",
+  "heldout_path": "docs/pbr_h95/heldout_v1.json",
+  "calib_tokens": 1925,
+  "heldout_tokens": 1094,
+  "honesty": [
+    "Proxy PPL on in-repo calib-v2 / heldout-v1 only \u2014 not a production LM benchmark.",
+    "heldout ppl_retention \u2265 0.95 = proxy GO for that map; else NO-GO. Not MMLU/HellaSwag.",
+    "packed_K_total_bpw = 1 sign + 2.62 exp ref + avg packed K \u2014 not a physical container.",
+    "entropy_lb_total_bpw replaces packed K with empirical H(retained symbols); codecs need table cost.",
+    "Reject rANS unless gain_vs_packed > 0 after table cost (see entropy diagnostics).",
+    "Original BF16 need not round-trip; quantized reference MUST (Q idempotent).",
+    "Not a \u22648 BPW product claim unless packed rate and proxy quality both support it."
+  ],
+  "bf16": {
+    "calib": {
+      "mean_nll": 3.160408227103097,
+      "ppl": 23.580220049442257,
+      "n_tokens": 1925,
+      "n_texts": 58,
+      "max_length": 256,
+      "label": "calibration_proxy_only"
+    },
+    "heldout": {
+      "mean_nll": 3.664399068577852,
+      "ppl": 39.03267315418699,
+      "n_tokens": 1094,
+      "n_texts": 32,
+      "max_length": 256,
+      "label": "calibration_proxy_only"
+    }
+  },
+  "candidates": [
+    {
+      "name": "h95q_A_7_5",
+      "description": "Candidate A (H95 control): emb/lm/norm/bias/first/last \u2192 K7; mid attn/mlp (non-bias) \u2192 K5. Packed retained bits. Reproduce ~9.29 total est BPW.",
+      "avg_packed_K": 5.6721217650081055,
+      "packed_K_total_bpw": 9.2921,
+      "rate": {
+        "n_words": 494032768,
+        "n_unique_tensors": 290,
+        "packed_mantissa_bits": 2802214016,
+        "avg_packed_K": 5.6721217650081055,
+        "keep_hist_words": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 328007680,
+          "6": 0,
+          "7": 166025088
+        },
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_packed_K": 5.672122,
+        "metadata_bpw_estimate": 0.0,
+        "packed_K_total_bpw": 9.2921,
+        "note": "packed_K_total_bpw = 1 + 2.62 + avg packed K (+ optional tiny metadata). Not a physical container encode.",
+        "mantissa_bpw_entropy_lb": 5.645213,
+        "entropy_lb_total_bpw": 9.2652,
+        "entropy_vs_packed_mant_gain_bpw": 0.026909
+      },
+      "family_breakdown": {
+        "embed": {
+          "n_words": 136134656,
+          "keep_hist": {
+            "7": 136134656
+          },
+          "avg_keep": 7.0
+        },
+        "first_block": {
+          "n_words": 14910592,
+          "keep_hist": {
+            "7": 14910592
+          },
+          "avg_keep": 7.0
+        },
+        "norm": {
+          "n_words": 43904,
+          "keep_hist": {
+            "7": 43904
+          },
+          "avg_keep": 7.0
+        },
+        "attn_mid": {
+          "n_words": 40395520,
+          "keep_hist": {
+            "5": 40370176,
+            "7": 25344
+          },
+          "avg_keep": 5.001254792610665
+        },
+        "mlp_mid": {
+          "n_words": 287637504,
+          "keep_hist": {
+            "5": 287637504
+          },
+          "avg_keep": 5.0
+        },
+        "last_block": {
+          "n_words": 14910592,
+          "keep_hist": {
+            "7": 14910592
+          },
+          "avg_keep": 7.0
+        }
+      },
+      "calib": {
+        "mean_nll": 3.160070593697684,
+        "ppl": 23.572259923324438,
+        "n_tokens": 1925,
+        "ppl_retention": 1.0003376904099865,
+        "delta_nll": -0.0003376334054130403
+      },
+      "heldout": {
+        "mean_nll": 3.6796914855566496,
+        "ppl": 39.634164473975346,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9848239182591244,
+        "delta_nll": 0.015292416978797796
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9848239182591244,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": false,
+        "note": "proxy only \u2014 not production bench"
+      },
+      "idempotence": {
+        "checked": 8,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.mlp.down_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.input_layernorm.weight",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "entropy": {
+        "avg_fixed_rate_K": 5.672122,
+        "avg_H_retained": 5.645213,
+        "entropy_vs_packed_gain": 0.026909,
+        "entropy_lb_total_bpw": 9.2652,
+        "families": {
+          "embed": {
+            "n_words": 136134656,
+            "n_tensors": 1,
+            "avg_fixed_rate_K": 7.0,
+            "avg_H_retained": 6.971985,
+            "entropy_vs_packed_gain": 0.028015,
+            "n_tensors_rans_accept": 1
+          },
+          "first_block": {
+            "n_words": 14910592,
+            "n_tensors": 10,
+            "avg_fixed_rate_K": 7.0,
+            "avg_H_retained": 6.971803,
+            "entropy_vs_packed_gain": 0.028197,
+            "n_tensors_rans_accept": 7
+          },
+          "norm": {
+            "n_words": 43904,
+            "n_tensors": 49,
+            "avg_fixed_rate_K": 7.0,
+            "avg_H_retained": 6.583815,
+            "entropy_vs_packed_gain": 0.416185,
+            "n_tensors_rans_accept": 2
+          },
+          "attn_mid": {
+            "n_words": 40395520,
+            "n_tensors": 154,
+            "avg_fixed_rate_K": 5.001255,
+            "avg_H_retained": 4.975043,
+            "entropy_vs_packed_gain": 0.026212,
+            "n_tensors_rans_accept": 88
+          },
+          "mlp_mid": {
+            "n_words": 287637504,
+            "n_tensors": 66,
+            "avg_fixed_rate_K": 5.0,
+            "avg_H_retained": 4.97373,
+            "entropy_vs_packed_gain": 0.02627,
+            "n_tensors_rans_accept": 66
+          },
+          "last_block": {
+            "n_words": 14910592,
+            "n_tensors": 10,
+            "avg_fixed_rate_K": 7.0,
+            "avg_H_retained": 6.971419,
+            "entropy_vs_packed_gain": 0.028581,
+            "n_tensors_rans_accept": 7
+          }
+        },
+        "n_tensors_diag": 290,
+        "n_tensors_rans_accept": 171,
+        "guidance": "Use packed K unless rans_estimate.accept_rans is True after table cost. Entropy lower-bound BPW uses avg_H_retained in place of avg packed K."
+      },
+      "c_sketch": null,
+      "wall_seconds": 28.12
+    },
+    {
+      "name": "h95q_B1_mlp_k4",
+      "description": "Candidate B1: same as A, but low-sensitivity mlp_mid (layers 1..22, non-bias) \u2192 K4; attn_mid stays K5; emb/norm/bias/first/last stay K7.",
+      "avg_packed_K": 5.089898231203968,
+      "packed_K_total_bpw": 8.7099,
+      "rate": {
+        "n_words": 494032768,
+        "n_unique_tensors": 290,
+        "packed_mantissa_bits": 2514576512,
+        "avg_packed_K": 5.089898231203968,
+        "keep_hist_words": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 287637504,
+          "5": 40370176,
+          "6": 0,
+          "7": 166025088
+        },
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_packed_K": 5.089898,
+        "metadata_bpw_estimate": 0.0,
+        "packed_K_total_bpw": 8.7099,
+        "note": "packed_K_total_bpw = 1 + 2.62 + avg packed K (+ optional tiny metadata). Not a physical container encode.",
+        "mantissa_bpw_entropy_lb": 5.064535,
+        "entropy_lb_total_bpw": 8.6845,
+        "entropy_vs_packed_mant_gain_bpw": 0.025363
+      },
+      "family_breakdown": {
+        "embed": {
+          "n_words": 136134656,
+          "keep_hist": {
+            "7": 136134656
+          },
+          "avg_keep": 7.0
+        },
+        "first_block": {
+          "n_words": 14910592,
+          "keep_hist": {
+            "7": 14910592
+          },
+          "avg_keep": 7.0
+        },
+        "norm": {
+          "n_words": 43904,
+          "keep_hist": {
+            "7": 43904
+          },
+          "avg_keep": 7.0
+        },
+        "attn_mid": {
+          "n_words": 40395520,
+          "keep_hist": {
+            "5": 40370176,
+            "7": 25344
+          },
+          "avg_keep": 5.001254792610665
+        },
+        "mlp_mid": {
+          "n_words": 287637504,
+          "keep_hist": {
+            "4": 287637504
+          },
+          "avg_keep": 4.0
+        },
+        "last_block": {
+          "n_words": 14910592,
+          "keep_hist": {
+            "7": 14910592
+          },
+          "avg_keep": 7.0
+        }
+      },
+      "calib": {
+        "mean_nll": 3.1677026941869166,
+        "ppl": 23.752854059497576,
+        "n_tokens": 1925,
+        "ppl_retention": 0.992732072970141,
+        "delta_nll": 0.007294467083819534
+      },
+      "heldout": {
+        "mean_nll": 3.669942841887256,
+        "ppl": 39.24966235956167,
+        "n_tokens": 1094,
+        "ppl_retention": 0.99447156504464,
+        "delta_nll": 0.005543773309404365
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.99447156504464,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": false,
+        "note": "proxy only \u2014 not production bench"
+      },
+      "idempotence": {
+        "checked": 8,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.mlp.down_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.input_layernorm.weight",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "entropy": {
+        "avg_fixed_rate_K": 5.089898,
+        "avg_H_retained": 5.064535,
+        "entropy_vs_packed_gain": 0.025363,
+        "entropy_lb_total_bpw": 8.6845,
+        "families": {
+          "embed": {
+            "n_words": 136134656,
+            "n_tensors": 1,
+            "avg_fixed_rate_K": 7.0,
+            "avg_H_retained": 6.971985,
+            "entropy_vs_packed_gain": 0.028015,
+            "n_tensors_rans_accept": 1
+          },
+          "first_block": {
+            "n_words": 14910592,
+            "n_tensors": 10,
+            "avg_fixed_rate_K": 7.0,
+            "avg_H_retained": 6.971803,
+            "entropy_vs_packed_gain": 0.028197,
+            "n_tensors_rans_accept": 7
+          },
+          "norm": {
+            "n_words": 43904,
+            "n_tensors": 49,
+            "avg_fixed_rate_K": 7.0,
+            "avg_H_retained": 6.583815,
+            "entropy_vs_packed_gain": 0.416185,
+            "n_tensors_rans_accept": 2
+          },
+          "attn_mid": {
+            "n_words": 40395520,
+            "n_tensors": 154,
+            "avg_fixed_rate_K": 5.001255,
+            "avg_H_retained": 4.975043,
+            "entropy_vs_packed_gain": 0.026212,
+            "n_tensors_rans_accept": 88
+          },
+          "mlp_mid": {
+            "n_words": 287637504,
+            "n_tensors": 66,
+            "avg_fixed_rate_K": 4.0,
+            "avg_H_retained": 3.976385,
+            "entropy_vs_packed_gain": 0.023615,
+            "n_tensors_rans_accept": 66
+          },
+          "last_block": {
+            "n_words": 14910592,
+            "n_tensors": 10,
+            "avg_fixed_rate_K": 7.0,
+            "avg_H_retained": 6.971419,
+            "entropy_vs_packed_gain": 0.028581,
+            "n_tensors_rans_accept": 7
+          }
+        },
+        "n_tensors_diag": 290,
+        "n_tensors_rans_accept": 171,
+        "guidance": "Use packed K unless rans_estimate.accept_rans is True after table cost. Entropy lower-bound BPW uses avg_H_retained in place of avg packed K."
+      },
+      "c_sketch": null,
+      "wall_seconds": 25.65
+    },
+    {
+      "name": "h95q_B2_embed_k5",
+      "description": "Candidate B2: embedding (tied lm_head) \u2192 K5; attn_mid \u2192 K6 (sensitive); mlp_mid \u2192 K5; norm/bias/first/last \u2192 K7.",
+      "avg_packed_K": 5.202721451869363,
+      "packed_K_total_bpw": 8.8227,
+      "rate": {
+        "n_words": 494032768,
+        "n_unique_tensors": 290,
+        "packed_mantissa_bits": 2570314880,
+        "avg_packed_K": 5.202721451869363,
+        "keep_hist_words": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 423772160,
+          "6": 40370176,
+          "7": 29890432
+        },
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_packed_K": 5.202721,
+        "metadata_bpw_estimate": 0.0,
+        "packed_K_total_bpw": 8.8227,
+        "note": "packed_K_total_bpw = 1 + 2.62 + avg packed K (+ optional tiny metadata). Not a physical container encode.",
+        "mantissa_bpw_entropy_lb": 5.176302,
+        "entropy_lb_total_bpw": 8.7963,
+        "entropy_vs_packed_mant_gain_bpw": 0.026419
+      },
+      "family_breakdown": {
+        "embed": {
+          "n_words": 136134656,
+          "keep_hist": {
+            "5": 136134656
+          },
+          "avg_keep": 5.0
+        },
+        "first_block": {
+          "n_words": 14910592,
+          "keep_hist": {
+            "7": 14910592
+          },
+          "avg_keep": 7.0
+        },
+        "norm": {
+          "n_words": 43904,
+          "keep_hist": {
+            "7": 43904
+          },
+          "avg_keep": 7.0
+        },
+        "attn_mid": {
+          "n_words": 40395520,
+          "keep_hist": {
+            "6": 40370176,
+            "7": 25344
+          },
+          "avg_keep": 6.000627396305333
+        },
+        "mlp_mid": {
+          "n_words": 287637504,
+          "keep_hist": {
+            "5": 287637504
+          },
+          "avg_keep": 5.0
+        },
+        "last_block": {
+          "n_words": 14910592,
+          "keep_hist": {
+            "7": 14910592
+          },
+          "avg_keep": 7.0
+        }
+      },
+      "calib": {
+        "mean_nll": 3.1601581870735465,
+        "ppl": 23.57432478758072,
+        "n_tokens": 1925,
+        "ppl_retention": 1.0002500712921645,
+        "delta_nll": -0.00025004002955064664
+      },
+      "heldout": {
+        "mean_nll": 3.6739073828325846,
+        "ppl": 39.405578116058585,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9905367468338289,
+        "delta_nll": 0.009508314254732753
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9905367468338289,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": false,
+        "note": "proxy only \u2014 not production bench"
+      },
+      "idempotence": {
+        "checked": 8,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.mlp.down_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.input_layernorm.weight",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "entropy": {
+        "avg_fixed_rate_K": 5.202721,
+        "avg_H_retained": 5.176302,
+        "entropy_vs_packed_gain": 0.02642,
+        "entropy_lb_total_bpw": 8.7963,
+        "families": {
+          "embed": {
+            "n_words": 136134656,
+            "n_tensors": 1,
+            "avg_fixed_rate_K": 5.0,
+            "avg_H_retained": 4.974238,
+            "entropy_vs_packed_gain": 0.025762,
+            "n_tensors_rans_accept": 1
+          },
+          "first_block": {
+            "n_words": 14910592,
+            "n_tensors": 10,
+            "avg_fixed_rate_K": 7.0,
+            "avg_H_retained": 6.971803,
+            "entropy_vs_packed_gain": 0.028197,
+            "n_tensors_rans_accept": 7
+          },
+          "norm": {
+            "n_words": 43904,
+            "n_tensors": 49,
+            "avg_fixed_rate_K": 7.0,
+            "avg_H_retained": 6.583815,
+            "entropy_vs_packed_gain": 0.416185,
+            "n_tensors_rans_accept": 2
+          },
+          "attn_mid": {
+            "n_words": 40395520,
+            "n_tensors": 154,
+            "avg_fixed_rate_K": 6.000627,
+            "avg_H_retained": 5.972805,
+            "entropy_vs_packed_gain": 0.027823,
+            "n_tensors_rans_accept": 88
+          },
+          "mlp_mid": {
+            "n_words": 287637504,
+            "n_tensors": 66,
+            "avg_fixed_rate_K": 5.0,
+            "avg_H_retained": 4.97373,
+            "entropy_vs_packed_gain": 0.02627,
+            "n_tensors_rans_accept": 66
+          },
+          "last_block": {
+            "n_words": 14910592,
+            "n_tensors": 10,
+            "avg_fixed_rate_K": 7.0,
+            "avg_H_retained": 6.971419,
+            "entropy_vs_packed_gain": 0.028581,
+            "n_tensors_rans_accept": 7
+          }
+        },
+        "n_tensors_diag": 290,
+        "n_tensors_rans_accept": 171,
+        "guidance": "Use packed K unless rans_estimate.accept_rans is True after table cost. Entropy lower-bound BPW uses avg_H_retained in place of avg packed K."
+      },
+      "c_sketch": null,
+      "wall_seconds": 37.5
+    },
+    {
+      "name": "h95q_C_sketch_k4_row_recover",
+      "description": "Optional C sketch: body like Phase-C mid@K4 with emb/norm/bias/first/last@K7, then restore top-magnitude fraction of mlp_mid rows to K7 (magnitude sparse recovery).",
+      "avg_packed_K": 5.0955982579681836,
+      "packed_K_total_bpw": 8.7161,
+      "rate": {
+        "n_words": 494032768,
+        "n_unique_tensors": 290,
+        "packed_mantissa_bits": 2474206336,
+        "avg_packed_K": 5.008182647512158,
+        "keep_hist_words": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 328007680,
+          "5": 0,
+          "6": 0,
+          "7": 166025088
+        },
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_packed_K": 5.008183,
+        "metadata_bpw_estimate": 0.0,
+        "packed_K_total_bpw": 8.6282,
+        "note": "packed_K_total_bpw = 1 + 2.62 + avg packed K (+ optional tiny metadata). Not a physical container encode.",
+        "mantissa_bpw_entropy_lb": 4.983038,
+        "entropy_lb_total_bpw": 8.603,
+        "entropy_vs_packed_mant_gain_bpw": 0.025145
+      },
+      "family_breakdown": {
+        "embed": {
+          "n_words": 136134656,
+          "keep_hist": {
+            "7": 136134656
+          },
+          "avg_keep": 7.0
+        },
+        "first_block": {
+          "n_words": 14910592,
+          "keep_hist": {
+            "7": 14910592
+          },
+          "avg_keep": 7.0
+        },
+        "norm": {
+          "n_words": 43904,
+          "keep_hist": {
+            "7": 43904
+          },
+          "avg_keep": 7.0
+        },
+        "attn_mid": {
+          "n_words": 40395520,
+          "keep_hist": {
+            "4": 40370176,
+            "7": 25344
+          },
+          "avg_keep": 4.001882188915999
+        },
+        "mlp_mid": {
+          "n_words": 287637504,
+          "keep_hist": {
+            "4": 287637504
+          },
+          "avg_keep": 4.0
+        },
+        "last_block": {
+          "n_words": 14910592,
+          "keep_hist": {
+            "7": 14910592
+          },
+          "avg_keep": 7.0
+        }
+      },
+      "calib": {
+        "mean_nll": 3.1647173874099535,
+        "ppl": 23.682050241444436,
+        "n_tokens": 1925,
+        "ppl_retention": 0.995700110802739,
+        "delta_nll": 0.004309160306856352
+      },
+      "heldout": {
+        "mean_nll": 3.673516515839906,
+        "ppl": 39.39017878598658,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9909239906286799,
+        "delta_nll": 0.009117447262054323
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9909239906286799,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": false,
+        "note": "proxy only \u2014 not production bench"
+      },
+      "idempotence": {
+        "checked": 8,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.mlp.down_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.input_layernorm.weight",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "entropy": {
+        "avg_fixed_rate_K": 5.008183,
+        "avg_H_retained": 4.983038,
+        "entropy_vs_packed_gain": 0.025145,
+        "entropy_lb_total_bpw": 8.603,
+        "families": {
+          "embed": {
+            "n_words": 136134656,
+            "n_tensors": 1,
+            "avg_fixed_rate_K": 7.0,
+            "avg_H_retained": 6.971985,
+            "entropy_vs_packed_gain": 0.028015,
+            "n_tensors_rans_accept": 1
+          },
+          "first_block": {
+            "n_words": 14910592,
+            "n_tensors": 10,
+            "avg_fixed_rate_K": 7.0,
+            "avg_H_retained": 6.971803,
+            "entropy_vs_packed_gain": 0.028197,
+            "n_tensors_rans_accept": 7
+          },
+          "norm": {
+            "n_words": 43904,
+            "n_tensors": 49,
+            "avg_fixed_rate_K": 7.0,
+            "avg_H_retained": 6.583815,
+            "entropy_vs_packed_gain": 0.416185,
+            "n_tensors_rans_accept": 2
+          },
+          "attn_mid": {
+            "n_words": 40395520,
+            "n_tensors": 154,
+            "avg_fixed_rate_K": 4.001882,
+            "avg_H_retained": 3.978341,
+            "entropy_vs_packed_gain": 0.023542,
+            "n_tensors_rans_accept": 88
+          },
+          "mlp_mid": {
+            "n_words": 287637504,
+            "n_tensors": 66,
+            "avg_fixed_rate_K": 4.0,
+            "avg_H_retained": 3.976385,
+            "entropy_vs_packed_gain": 0.023615,
+            "n_tensors_rans_accept": 66
+          },
+          "last_block": {
+            "n_words": 14910592,
+            "n_tensors": 10,
+            "avg_fixed_rate_K": 7.0,
+            "avg_H_retained": 6.971419,
+            "entropy_vs_packed_gain": 0.028581,
+            "n_tensors_rans_accept": 7
+          }
+        },
+        "n_tensors_diag": 290,
+        "n_tensors_rans_accept": 171,
+        "guidance": "Use packed K unless rans_estimate.accept_rans is True after table cost. Entropy lower-bound BPW uses avg_H_retained in place of avg packed K."
+      },
+      "c_sketch": {
+        "recover_frac_target": 0.05,
+        "base_mid_keep": 4,
+        "recover_keep": 7,
+        "recovered_rows": 11682,
+        "mlp_rows_total": 233728,
+        "recovered_words": 14395392,
+        "extra_mantissa_bits": 43186176,
+        "exception_map_bits_bitmap_rows": 233728,
+        "adj_avg_mant_bpw": 5.0955982579681836,
+        "exception_map_bpw": 0.00047310222142997606,
+        "packed_K_total_bpw_with_map": 8.7161,
+        "details": [
+          {
+            "name": "model.layers.1.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.1.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.1.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.2.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.2.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.2.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.3.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.3.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.3.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.4.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.4.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.4.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.5.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.5.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.5.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.6.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.6.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.6.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.7.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.7.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.7.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.8.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.8.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.8.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.9.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.9.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.9.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.10.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.10.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.10.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.11.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.11.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.11.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.12.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.12.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.12.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.13.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.13.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.13.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.14.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.14.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.14.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.15.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.15.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.15.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.16.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.16.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.16.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.17.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.17.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.17.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.18.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.18.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.18.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.19.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.19.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.19.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.20.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.20.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.20.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.21.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.21.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.21.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          },
+          {
+            "name": "model.layers.22.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.22.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_recover": 243,
+            "recover_frac_actual": 0.049958881578947366
+          },
+          {
+            "name": "model.layers.22.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_recover": 45,
+            "recover_frac_actual": 0.05022321428571429
+          }
+        ],
+        "note": "Illustrative C sketch only \u2014 row bitmap map cost + extra mant bits. Not a full sparse-recovery codec."
+      },
+      "wall_seconds": 34.52
+    }
+  ],
+  "summary": {
+    "any_leq_8_packed": false,
+    "proxy_go_names": [
+      "h95q_A_7_5",
+      "h95q_B1_mlp_k4",
+      "h95q_B2_embed_k5",
+      "h95q_C_sketch_k4_row_recover"
+    ],
+    "best_proxy_go": {
+      "name": "h95q_B1_mlp_k4",
+      "packed_K_total_bpw": 8.7099,
+      "heldout_ppl_retention": 0.99447156504464
+    },
+    "candidate_A_packed_bpw": 9.2921,
+    "shortcuts": [
+      "entropy subsampled to \u2264250000 words/tensor",
+      "tiny C sketch only (row-magnitude recover); no D codecs",
+      "rANS is table-cost estimate only \u2014 no real encode bytes"
+    ]
+  },
+  "wall_seconds": 145.67,
+  "disclaimer": "H95Q first run: packed-K candidates A/B1/B2 + entropy diagnostics. Proxy GO/NO-GO on heldout-v1 only. Not a physical container or \u22648 product claim."
+}
