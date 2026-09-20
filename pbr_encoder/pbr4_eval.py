@@ -79,11 +79,12 @@ def _sum_stats(parts: list[dict], n_words: int, header_bytes: int) -> dict:
     }
 
 
-def evaluate_specs(specs, *, slice_words: int = 4096) -> dict:
+def evaluate_specs(specs, *, slice_words: int = 4096, settings: list[dict] | None = None) -> dict:
     t0 = time.perf_counter()
     print(DISCLAIMER, flush=True)
+    use = settings if settings is not None else SETTINGS
     n_all = 0
-    per_setting: dict[str, list[dict]] = {s["name"]: [] for s in SETTINGS}
+    per_setting: dict[str, list[dict]] = {s["name"]: [] for s in use}
     per_tensor: list[dict] = []
     c4_hist = np.zeros(16, dtype=np.int64)
     slice_report = {}
@@ -108,7 +109,7 @@ def evaluate_specs(specs, *, slice_words: int = 4096) -> dict:
         print(f"[{ti + 1}/{len(specs)}] {spec.name} {list(words.shape)}", flush=True)
         best_name = None
         best_formal = 1 << 62
-        for setting in SETTINGS:
+        for setting in use:
             bh, bw, adaptive = _hw(setting, rows, cols)
             enc = encode_tensor(words, name=spec.name, block_h=bh, block_w=bw, adaptive=adaptive)
             rec = decode_tensor(enc)
@@ -161,7 +162,7 @@ def evaluate_specs(specs, *, slice_words: int = 4096) -> dict:
     header_bytes = container_prefix + header_len
 
     setting_rows = []
-    for setting in SETTINGS:
+    for setting in use:
         parts = per_setting[setting["name"]]
         row = {"name": setting["name"], **_sum_stats(parts, n_all, header_bytes)}
         setting_rows.append(row)
@@ -317,6 +318,10 @@ def format_markdown(report: dict) -> str:
             "tiles, so |R| stays near raw 16-bit and the forced 4-bit c4 stream is extra overhead."
         )
         lines.append("")
+        lines.append(
+            "`choose_tile_hw(256)` matched 16×16 on this Qwen set; adaptive 16→8 never beat the parent."
+        )
+        lines.append("")
     if s["beats_pbre"]:
         lines.append("PBR-4 beat PBR-E on complete BPW on this set. Re-check exactness and overhead.")
         lines.append("")
@@ -416,6 +421,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--tag", default="qwen")
     parser.add_argument("--max-tensors", type=int, default=0)
     parser.add_argument("--slice-words", type=int, default=2048)
+    parser.add_argument(
+        "--settings",
+        default="",
+        help="Comma-separated setting names (default: all). Example: 16x16,8x8,1x64",
+    )
     args = parser.parse_args(argv)
     cfg = _load_config(args.config if args.config.exists() else None)
     specs = select_weight_specs(
@@ -426,7 +436,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     if args.max_tensors > 0:
         specs = specs[: args.max_tensors]
-    summary = evaluate_specs(specs, slice_words=args.slice_words)
+    settings = SETTINGS
+    if args.settings.strip():
+        want = {x.strip() for x in args.settings.split(",") if x.strip()}
+        settings = [s for s in SETTINGS if s["name"] in want]
+        if not settings:
+            raise SystemExit(f"no matching PBR-4 settings in {want}")
+    summary = evaluate_specs(specs, slice_words=args.slice_words, settings=settings)
     report = {
         "disclaimer": DISCLAIMER,
         "model": {

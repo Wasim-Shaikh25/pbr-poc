@@ -534,7 +534,48 @@ not a new principle. CTW, AR, and IDF did not beat H(M|exp). Bits-back /
 sign-fold was skipped: signs are already ~1 bit of entropy.
 
 Reports: `artifacts/mantissa_multimodel_bakeoff.{json,md}`,
-`artifacts/mantissa_principle_candidate.md` (negative).
+`artifacts/mantissa_principle_candidate.md` (negative zoo; negative PBR-4).
+
+### PBR-4 structured nibble + node formulas
+
+User structural idea: do not jump to 1-bit; give each weight **4 bits** of
+side info `c4` and let a shallow block tree supply the rest via a stored
+generator `F`. Formal, bit-exact:
+
+```
+W[i] = F(node(i), c4[i]) XOR R[i]
+complete = |S| + 4N/8 + |R| + metadata
+```
+
+Coordinates are already known (not a place to hide payload). Families
+competed per block: constant uint16 prototype, K≤16 palette, affine
+`(a·r+b·c+d·c4+e) mod 2^16`, nibble insert, shared sign/exp + 4-bit
+mantissa nibble, 16 planar-XOR templates. Sparse/bitmap XOR residual
+where F misses. Standalone `PBR4` container — **not** on `STAGE1A_CODECS`.
+
+```bash
+python scripts/run_pbr4.py --tag qwen
+```
+
+#### Measured PBR-4 (same 42 tensors / 83,836,928 words)
+
+Slice exactness **PASS**. Best complete setting `16x16`.
+
+| setting | \|S\| | c4 B | \|R\| | meta | BPW | % R=0 | vs 10.616 | vs 4 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| 16x16 | 6,724,733 | 41,918,464 | 163,750,642 | 3,279,886 | **20.580** | 8.59% | +9.96 | no |
+| 8x8 | 312,370 | 41,918,464 | 167,673,898 | 13,104,526 | 21.280 | 0.52% | +10.66 | no |
+| 1x64 | 335,753 | 41,918,464 | 167,673,898 | 13,104,526 | 21.283 | 0.55% | +10.67 | no |
+
+`choose_tile_hw(256)` = 16×16 here; 16→8 tree never split. Palette/inherit
+won almost every node; affine and SE-nibble won none. H(c4)=3.14 bits, so
+ANS-coding the nibble stream cannot remove the 4-bit floor enough to matter.
+**Does not approach 4 BPW. Does not beat PBR-E 10.616 or the zoo 10.585.
+Worse than raw 16** because F misses ~91% of weights, so \|R\| stays ~16 BPW
+and c4 is extra. Named principle: **negative**.
+
+Reports: `artifacts/pbr4_bakeoff.{json,md}`,
+`artifacts/mantissa_principle_candidate.md` (PBR-4 section).
 
 ### Job 3 — Huffman vs rANS on exponents
 
@@ -726,20 +767,21 @@ shortest.
 ```
 pbr_core/        uint16 views, tiles, container, hashing, Safetensors I/O
 pbr_codecs/      raw, predictors, residuals, dictionaries, exp-Huffman,
-                 bit-planes, grammar, transformed refs, position-value dict
+                 bit-planes, grammar, transformed refs, position-value dict,
+                 PBR-4 structured nibble (standalone container)
 pbr_encoder/     cost-based search, decoder, Stage 1A/1B/PBR-E/Phase A CLIs
 pbr_qualifier/   Stage 2 inventory, entropy, sample encode, BPW projection
 scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py,
                  run_blocker_diagnosis.py, run_blocker_ablation.py,
                  run_family_eval.py, run_phase_a_mantissa_audit.py,
                  run_pbre_full.py, run_exp_coder_ablation.py,
-                 run_checkpoint_delta.py, run_mantissa_zoo.py
+                 run_checkpoint_delta.py, run_mantissa_zoo.py, run_pbr4.py
 tests/           exactness, codecs, Stage 1B fixtures, qualifier math,
                  hierarchical leftovers, mantissa audit, checkpoint delta,
-                 mantissa zoo
+                 mantissa zoo, PBR-4
 configs/         poc_controlled.yaml, poc_real.yaml, poc_llama.yaml,
                  qualifier_default.yaml, poc_delta.yaml
-artifacts/       measured diagnosis / ablation / Phase A / delta / zoo reports
+artifacts/       measured diagnosis / ablation / Phase A / delta / zoo / PBR-4 reports
 ```
 
 Later stages (full selected-model encode vs projection, fused runtime) are

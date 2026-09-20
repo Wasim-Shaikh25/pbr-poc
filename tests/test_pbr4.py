@@ -58,6 +58,19 @@ def test_pbr4_not_on_stage1a_menu() -> None:
     assert Pbr4Codec().mode_id == MODE_PBR4
 
 
+def test_sparse_residual_uses_bitmap_when_hits() -> None:
+    from pbr_codecs.pbr4 import pack_residual
+    from pbr_codecs.residual import RES_DEFAULT_BITMAP, RES_RAW
+
+    rng = np.random.default_rng(1)
+    r = rng.integers(1, 65536, size=16384, dtype=np.uint16)
+    r[:1600] = 0  # ~9.8% hits, same regime as 16x16 on Qwen
+    payload = pack_residual(r.reshape(128, 128))
+    raw = bytes([RES_RAW]) + r.tobytes()
+    assert payload[0] == RES_DEFAULT_BITMAP
+    assert len(payload) < len(raw)
+
+
 def test_nibble_pack_roundtrip() -> None:
     rng = np.random.default_rng(0)
     for n in (1, 2, 15, 16, 17, 256, 257):

@@ -44,3 +44,12 @@ Slice SHA restore of the original BF16 words passed for uncond rANS, bit-Markov,
 A sub-0.1 BPW total trim versus raw-mantissa PBR-E is **entropy-coding M** (uncond or H(M|exp) tables), DF11-class, not a new mantissa principle. CTW / AR / IDF did not beat that table.
 
 This is not a 1–2 GB / 8 GB result.
+
+## PBR-4 (same tensor set; not a zoo method)
+
+PBR-4 is a separate first-class candidate: `W[i] = F(node(i), c4[i]) XOR R[i]`,
+complete `|S|+4N/8+|R|+metadata`. See `artifacts/pbr4_bakeoff.md`. Best
+complete **20.580 BPW** (16×16), **8.59%** R=0. Does not beat PBR-E 10.616,
+the zoo 10.585, raw 16, or stretch 4. Named principle **negative**. The zoo
+table above is unchanged.
+

@@ -19,8 +19,8 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from pbr_codecs.positions import bitmap_bytes, list_bytes
-from pbr_codecs.residual import RES_CONSTANT, RES_RAW, best_residual, decode_residuals
+from pbr_codecs.positions import bitmap_bytes, list_bytes, pack_bitmap
+from pbr_codecs.residual import RES_CONSTANT, RES_DEFAULT_BITMAP, RES_RAW, decode_residuals
 from pbr_core.hashing import words_to_bytes
 from pbr_core.metrics import bits_per_weight
 from pbr_core.tiles import as_2d, choose_tile_hw
@@ -192,7 +192,7 @@ def estimate_r_bytes(r: np.ndarray) -> int:
 
 
 def pack_residual(r: np.ndarray) -> bytes:
-    """Sparse XOR residual, 3-bit pack, zlib, or raw — whichever is shortest."""
+    """Sparse XOR residual (default 0), 3-bit pack, zlib, or raw — shortest wins."""
     flat = np.ascontiguousarray(r, dtype=np.uint16).ravel()
     n = int(flat.size)
     n_miss = int(np.count_nonzero(flat))
@@ -200,15 +200,20 @@ def pack_residual(r: np.ndarray) -> bytes:
         return bytes([RES_CONSTANT]) + struct.pack("<H", 0)
     raw = bytes([RES_RAW]) + words_to_bytes(flat)
     cands = [raw]
-    if int(flat.max()) < 8:
+    if n_miss < n:
+        mask = flat != 0
+        bit = (
+            bytes([RES_DEFAULT_BITMAP])
+            + struct.pack("<H", 0)
+            + pack_bitmap(mask)
+            + words_to_bytes(flat[mask])
+        )
+        cands.append(bit)
+    if n and int(flat.max()) < 8:
         cands.append(bytes([R_PACK3]) + pack_3bit(flat))
-    if n_miss <= max(1, int(0.45 * n)):
-        cands.append(best_residual(flat.reshape(1, n))[1])
+    if n < 8192:
         z = zlib.compress(words_to_bytes(flat), 3)
-        cands.append(bytes([R_ZLIB]) + z)
-    elif n < 4096:
-        z = zlib.compress(words_to_bytes(flat), 3)
-        if len(z) + 1 < len(raw):
+        if len(z) + 1 < min(len(c) for c in cands):
             cands.append(bytes([R_ZLIB]) + z)
     return min(cands, key=len)
 
