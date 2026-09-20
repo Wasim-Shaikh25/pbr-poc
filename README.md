@@ -714,6 +714,25 @@ subset — DF11-class, still far from ≤4. A future hierarchical scanner
 could revise the Stage 2 projection; this Stage 2 run did not include
 exponent Huffman.
 
+## Disk tunnel PoC
+
+Working-set demo, not a compression-ratio claim. Full Qwen2.5-0.5B-Instruct
+BF16 weights stay on disk (Safetensors, optional per-tensor PBR-E). Peak RAM
+holds one tensor or an embedding-row chunk plus activations, then frees it
+after a GEMM. Compare that tunnel to loading every uint16 weight into RAM.
+
+```bash
+python scripts/disk_tunnel_infer.py --model-dir outputs/models/Qwen__Qwen2.5-0.5B-Instruct --encode
+```
+
+- Mode A (`mmap`): copy one BF16 tensor (or lm_head row slice) from Safetensors, matmul, discard.
+- Mode B (`pbre`): read a per-tensor `.pbr`, bit-exact decode to uint16, matmul, discard. `embed_tokens` stays mmap because the vocab dimension exceeds the tile uint16 prefix.
+- Baseline (`full`): all 16-bit tensors resident.
+- Microbench: numpy Qwen2 forward on a short fixed token list (not HF `generate` quality). Tunnel logits must match the full-load path. PBR-E tiles SHA-256 match the BF16 source.
+- Metrics: `artifacts/disk_ram_tunnel.md` and `.json` (peak RSS, disk-read bytes, decode/compute time, tok/s, exactness).
+
+This does **not** claim phone-scale 27B, ≤8 BPW exact, or 1–2 GB / 8 GB. ≤8 BPW hunt notes stay in `artifacts/path_to_50pct.md` and are not the goal here.
+
 ## Tests
 
 ```bash
@@ -725,9 +744,9 @@ differs. Cases include special BF16 bit patterns (signed zero, Inf, NaN
 payloads, subnormals) that an FP32 detour would be likely to destroy.
 
 Stage 1B / Stage 2 / PBR-E / blocker-mitigation / hierarchical / Phase A /
-checkpoint-delta / mantissa-zoo unit tests write tiny local Safetensors fixtures.
-They do **not** download the 988 MB checkpoint. Live download tests are
-skipped unless `PBR_LIVE_HF=1`.
+checkpoint-delta / mantissa-zoo / disk-tunnel unit tests write tiny local
+Safetensors fixtures. They do **not** download the 988 MB checkpoint. Live
+download tests are skipped unless `PBR_LIVE_HF=1`.
 
 ## How size is counted
 
@@ -781,14 +800,14 @@ scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py,
                  run_blocker_ablation.py, run_family_eval.py,
                  run_phase_a_mantissa_audit.py, run_exp_coder_ablation.py,
                  run_checkpoint_delta.py, run_mantissa_zoo.py, run_pbr4.py,
-                 run_path_to_50pct.py
+                 run_path_to_50pct.py, disk_tunnel_infer.py
 tests/           exactness, codecs, Stage 1B fixtures, qualifier math,
                  hierarchical leftovers, mantissa audit, checkpoint delta,
-                 mantissa zoo, PBR-4, path-to-50pct
+                 mantissa zoo, PBR-4, path-to-50pct, disk tunnel
 configs/         poc_controlled.yaml, poc_real.yaml, poc_llama.yaml,
                  qualifier_default.yaml, poc_delta.yaml
 artifacts/       measured diagnosis / ablation / Phase A / delta / zoo /
-                 PBR-4 / path-to-50pct reports
+                 PBR-4 / path-to-50pct / disk-RAM tunnel reports
 ```
 
 Later stages (full selected-model encode vs projection, fused runtime) are
