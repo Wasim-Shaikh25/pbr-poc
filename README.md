@@ -743,6 +743,8 @@ python scripts/tunnel_fast_pbre.py --model-dir outputs/models/Qwen__Qwen2.5-0.5B
 
 Metrics: `artifacts/tunnel_fast_pbre.md`. Compare `pbre_fast` wall time to mmap / full / `pbre_slow` (original Python rANS).
 
+Measured (8 tokens, 24 layers, isolated): **pbre_slow wall 130 s / decode 126 s** vs **pbre_fast wall 8.0 s / decode 6.0 s** (C rANS + prefetch). mmap **2.1 s**, full **3.2 s**. Logits bit-identical. Sampled peak RSS: full 1007 MiB, mmap 87 MiB, pbre_fast 153 MiB (2-slot cache).
+
 ### Hybrid lossy tunnel (prototype)
 
 Embeddings, norms, biases, and first/last layers stay BF16. Middle-layer attention/MLP weights are per-group **int4 + FP16 scales**. Same disk-resident RAM tunnel. **Not bit-exact** on quantized tensors; quality is logit max_abs / KL / argmax match vs full BF16.
@@ -752,6 +754,8 @@ python scripts/tunnel_hybrid_lossy.py --model-dir outputs/models/Qwen__Qwen2.5-0
 ```
 
 Metrics: `artifacts/tunnel_hybrid_lossy.md`. Not a 27B phone runtime. Not ≤8 BPW exact.
+
+Measured (same prompt): hybrid pack **483 MiB** (317 MiB exact BF16 + 166 MiB int4). Sampled peak RSS **86 MiB** vs full **1006 MiB**, wall **2.2 s** (mmap-like). Quality vs full BF16 is **lossy**: logit max_abs 16.7, mean KL 1.01, argmax match 0.25 on 8 tokens. Uncalibrated int4 prototype, labeled clearly.
 
 This does **not** claim phone-scale 27B, ≤8 BPW exact, or 1–2 GB / 8 GB. ≤8 BPW hunt notes stay in `artifacts/path_to_50pct.md` and are not the goal here.
 
@@ -822,14 +826,17 @@ scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py,
                  run_blocker_ablation.py, run_family_eval.py,
                  run_phase_a_mantissa_audit.py, run_exp_coder_ablation.py,
                  run_checkpoint_delta.py, run_mantissa_zoo.py, run_pbr4.py,
-                 run_path_to_50pct.py, disk_tunnel_infer.py
+                 run_path_to_50pct.py, disk_tunnel_infer.py,
+                 tunnel_fast_pbre.py, tunnel_hybrid_lossy.py
 tests/           exactness, codecs, Stage 1B fixtures, qualifier math,
                  hierarchical leftovers, mantissa audit, checkpoint delta,
-                 mantissa zoo, PBR-4, path-to-50pct, disk tunnel
+                 mantissa zoo, PBR-4, path-to-50pct, disk tunnel,
+                 fast PBR-E / hybrid lossy tunnel
 configs/         poc_controlled.yaml, poc_real.yaml, poc_llama.yaml,
                  qualifier_default.yaml, poc_delta.yaml
 artifacts/       measured diagnosis / ablation / Phase A / delta / zoo /
-                 PBR-4 / path-to-50pct / disk-RAM tunnel reports
+                 PBR-4 / path-to-50pct / disk-RAM tunnel / fast PBR-E /
+                 hybrid-lossy reports
 ```
 
 Later stages (full selected-model encode vs projection, fused runtime) are
