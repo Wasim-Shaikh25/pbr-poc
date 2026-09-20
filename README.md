@@ -755,7 +755,7 @@ python scripts/tunnel_faster_pbre.py --model-dir outputs/models/Qwen__Qwen2.5-0.
 
 Metrics: `artifacts/tunnel_faster_pbre.md`. Compare `pbre_faster` / `pbre_faster_warm` wall time to `pbre_fast` / mmap / full.
 
-Warm sidecar is a decoded uint16 copy on disk (not exponents-only): join is cheap next to rANS, and RAM stays a one-tensor working set. Not an ≤8 BPW claim.
+Measured (same 8 tokens / 24 layers, isolated): prior `pbre_fast` **7.98 s** → this `pbre_fast` **3.21 s** (fused C + pending prefetch) → **`pbre_faster` cold 2.53 s** / **warm sidecar 0.75 s**. mmap **0.59 s**, full **1.16 s** this run (prior published mmap 2.13 s). Logits `max_abs=0`. Sampled peak RSS: full 1008 MiB, mmap 88 MiB, pbre_faster 320 MiB, warm 235 MiB. Warm sidecar is a decoded uint16 copy on disk (682 MiB, SHA-checked in 0.93 s); RAM stays a working set. Not an ≤8 BPW claim.
 
 ### Hybrid lossy tunnel (prototype)
 

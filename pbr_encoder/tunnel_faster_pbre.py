@@ -64,7 +64,45 @@ def format_faster_markdown(report: dict) -> str:
         "",
         "Not an ≤8 BPW claim. Decode speed ≠ compression ratio.",
         "",
+        "## Before / after",
+        "",
+        "Prior published harness (`artifacts/tunnel_fast_pbre.md`, same model/tokens): "
+        "`pbre_fast` wall **7.980 s** / decode 6.046 s, mmap **2.130 s**, full **3.190 s**, "
+        "sampled peak RSS pbre_fast 153 MiB.",
+        "",
+        "This run (isolated processes). `pbre_fast` also picks up fused C decode, no "
+        "`gc.collect` on the GEMM path, and a pending prefetch queue, so it is already "
+        "faster than 8 s. `pbre_faster` adds 4-way decode + layer cache. `decode_s` is "
+        "the **sum** of job times and exceeds wall when workers overlap.",
+        "",
     ]
+    modes = report.get("modes") or {}
+    extra += [
+        "| mode | peak sampled RSS | decode s | compute s | wall s | vs prior pbre_fast 7.98 s |",
+        "| --- | ---: | ---: | ---: | ---: | ---: |",
+    ]
+    prior = 7.980
+    for name in ("full", "mmap", "pbre_fast", "pbre_faster", "pbre_faster_warm"):
+        s = modes.get(name)
+        if not s:
+            continue
+        ratio = prior / s["wall_s"] if s.get("wall_s") else 0.0
+        extra.append(
+            f"| `{name}` | {bytes_human(s['rss_peak_sampled_bytes'])} | "
+            f"{s['decode_s']:.3f} | {s['compute_s']:.3f} | **{s['wall_s']:.3f}** | "
+            f"{ratio:.2f}× |"
+        )
+    extra += [""]
+    ba = report.get("before_after") or {}
+    if ba.get("pbre_faster_wall_s") is not None:
+        extra.append(
+            f"Cold `pbre_faster` wall {ba['pbre_faster_wall_s']:.3f} s "
+            f"({prior / ba['pbre_faster_wall_s']:.2f}× vs prior 7.98 s). "
+            f"Warm sidecar {ba.get('pbre_faster_warm_wall_s') or 0:.3f} s. "
+            f"mmap this run {ba.get('mmap_wall_s') or 0:.3f} s "
+            f"(page cache; prior published mmap was 2.13 s)."
+        )
+        extra.append("")
     pre = report.get("warm_materialize") or {}
     if pre:
         extra += [
