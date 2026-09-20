@@ -745,11 +745,42 @@ def format_markdown(report: dict) -> str:
             "cumulative high-water mark of full-load + tunnel.",
         ]
     match = report.get("logits_match")
+    if isinstance(match, dict):
+        match_txt = "; ".join(f"{k}: {v}" for k, v in match.items()) or "n/a"
+    else:
+        match_txt = str(match)
     lines += [
         "",
         "## Correctness",
         "",
-        f"Logits vs full-load: `{match}`. Same uint16 weights and the same FP32 GEMM.",
+        f"Logits vs full-load: {match_txt}. Same uint16 weights and the same FP32 GEMM.",
+        "",
+    ]
+    enc = report.get("pbre_encode") or {}
+    if full:
+        lines += [
+            "## Disk layout",
+            "",
+            f"- Safetensors on disk: {bytes_human(full.get('safetensors_bytes') or 0)} "
+            f"({bytes_human(full.get('weight_bytes') or 0)} weight payload, "
+            f"{full.get('n_tensors', 0)} tensors).",
+        ]
+    if enc:
+        orig = int(enc.get("original_bytes_encoded") or 0)
+        nenc = int(enc.get("encoded_bytes_total") or 0)
+        n_words = int(enc.get("n_words") or 0)
+        bpw = (8.0 * nenc / n_words) if n_words else 0.0
+        lines.append(
+            f"- PBR-E per-tensor dir: {enc.get('n_tensors', 0)} files, "
+            f"{bytes_human(orig)} → {bytes_human(nenc)} "
+            f"({bpw:.3f} complete BPW on encoded tensors). "
+            f"Skipped mmap: {enc.get('skipped', [])}."
+        )
+    lines += [
+        "",
+        "`ru_maxrss` is the kernel high-water for that isolated process. "
+        "Sampled peak is max `/proc/self/status` VmRSS during the forward "
+        "(the number that tracks the working set after malloc_trim).",
         "",
         "Working-set demonstration only. PBR-E is the already-measured ~10.6 BPW "
         "DF11-class codec; this tunnel does not claim ≤8 BPW.",
@@ -927,6 +958,18 @@ def main(argv: list[str] | None = None) -> int:
         "logits_match": match_notes or "single-mode",
         "subprocess_isolated": isolated,
     }
+    index_path = args.pbre_dir / "index.json"
+    if index_path.is_file():
+        idx = json.loads(index_path.read_text(encoding="utf-8"))
+        n_words = sum(int(t.get("n_words") or 0) for t in idx.get("tensors", {}).values())
+        report["pbre_encode"] = {
+            "n_tensors": idx.get("n_tensors"),
+            "original_bytes_encoded": idx.get("original_bytes_encoded"),
+            "encoded_bytes_total": idx.get("encoded_bytes_total"),
+            "n_words": n_words,
+            "skipped": idx.get("skipped"),
+            "profile": idx.get("profile"),
+        }
     args.json_out.parent.mkdir(parents=True, exist_ok=True)
     args.json_out.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     md = format_markdown(report)
