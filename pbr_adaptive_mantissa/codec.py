@@ -168,9 +168,10 @@ def encode_huffman_escape(table: HuffmanTable, mant: np.ndarray) -> bytes:
     return w.finalize()
 
 
-def decode_huffman_escape(table: HuffmanTable, data: bytes, count: int) -> np.ndarray:
+def decode_huffman_escape(table: HuffmanTable, data: bytes, count: int) -> tuple[np.ndarray, int]:
+    """Return (symbols, bytes_consumed). bytes_consumed matches BitWriter.finalize padding."""
     if count == 0:
-        return np.zeros(0, dtype=np.uint8)
+        return np.zeros(0, dtype=np.uint8), 0
     from pbr_core.huffman import _build_lut
 
     lut = _build_lut(table.codes, table.max_len)
@@ -193,7 +194,7 @@ def decode_huffman_escape(table: HuffmanTable, data: bytes, count: int) -> np.nd
             bitpos += 7
         else:
             out[i] = int(sym) & 0x7F
-    return out
+    return out, (bitpos + 7) // 8
 
 
 def encode_context(
@@ -230,7 +231,8 @@ def decode_context(
     rule: int,
     *,
     start_prev: int = 0,
-) -> np.ndarray:
+) -> tuple[np.ndarray, int]:
+    """Return (symbols, bytes_consumed). bytes_consumed matches BitWriter.finalize padding."""
     r = BitReader(data)
     out = np.empty(count, dtype=np.uint8)
     e = np.ascontiguousarray(exp, dtype=np.uint8).ravel()
@@ -246,7 +248,7 @@ def decode_context(
             rec = r.read(7) & 0x7F
         out[i] = rec
         prev = rec
-    return out
+    return out, (r._bitpos + 7) // 8
 
 
 def _block_counts(n: int, block_size: int) -> tuple[int, np.ndarray]:
@@ -354,7 +356,7 @@ def encode_mantissa(
         payload = encode_huffman_escape(table, m)
         modes = {MODE_RAW: 0, MODE_HUFF: n_blocks, MODE_CTX: 0}
         directory = b""
-        rec = decode_huffman_escape(table, payload, n)
+        rec, _ = decode_huffman_escape(table, payload, n)
         assert_exact(
             m.astype(np.uint16),
             rec.astype(np.uint16),
@@ -362,7 +364,7 @@ def encode_mantissa(
         )
     elif strat == STRAT_ALL_CTX:
         payload = encode_context(m, e, pos, rule, start_prev=0)
-        rec = decode_context(payload, n, e, pos, rule, start_prev=0)
+        rec, _ = decode_context(payload, n, e, pos, rule, start_prev=0)
         assert_exact(m.astype(np.uint16), rec.astype(np.uint16), label="all_ctx_mant")
         modes = {MODE_RAW: 0, MODE_HUFF: 0, MODE_CTX: n_blocks}
         directory = b""
@@ -380,12 +382,12 @@ def encode_mantissa(
                 chunks.append(pack_lsb(sl_m, 7))
             elif mode == MODE_HUFF:
                 blob_i = encode_huffman_escape(table, sl_m)
-                rec = decode_huffman_escape(table, blob_i, cnt)
+                rec, _ = decode_huffman_escape(table, blob_i, cnt)
                 assert_exact(sl_m.astype(np.uint16), rec.astype(np.uint16), label=f"mix_huff_{bi}")
                 chunks.append(blob_i)
             else:
                 blob_i = encode_context(sl_m, sl_e, sl_p, rule, start_prev=start_prev)
-                rec = decode_context(blob_i, cnt, sl_e, sl_p, rule, start_prev=start_prev)
+                rec, _ = decode_context(blob_i, cnt, sl_e, sl_p, rule, start_prev=start_prev)
                 assert_exact(sl_m.astype(np.uint16), rec.astype(np.uint16), label=f"mix_ctx_{bi}")
                 chunks.append(blob_i)
             if cnt:
@@ -449,9 +451,11 @@ def decode_mantissa(blob: bytes, *, exp: np.ndarray) -> np.ndarray:
     if strat == STRAT_ALL_HUFF:
         if table is None:
             raise ValueError("ALL_HUFFMAN missing table")
-        return decode_huffman_escape(table, blob[off:], n)
+        rec, _ = decode_huffman_escape(table, blob[off:], n)
+        return rec
     if strat == STRAT_ALL_CTX:
-        return decode_context(blob[off:], n, e, pos, rule, start_prev=0)
+        rec, _ = decode_context(blob[off:], n, e, pos, rule, start_prev=0)
+        return rec
     if strat != STRAT_MIXED:
         raise ValueError(f"unknown strategy {strat}")
     dir_n = _ceil_bytes(n_blocks * 2)
@@ -475,12 +479,10 @@ def decode_mantissa(blob: bytes, *, exp: np.ndarray) -> np.ndarray:
         elif mode == MODE_HUFF:
             if table is None:
                 raise ValueError("MIXED Huffman block without table")
-            rec = decode_huffman_escape(table, rest[cursor:], cnt)
-            used = len(encode_huffman_escape(table, rec))
+            rec, used = decode_huffman_escape(table, rest[cursor:], cnt)
             cursor += used
         else:
-            rec = decode_context(rest[cursor:], cnt, sl_e, sl_p, rule, start_prev=start_prev)
-            used = len(encode_context(rec, sl_e, sl_p, rule, start_prev=start_prev))
+            rec, used = decode_context(rest[cursor:], cnt, sl_e, sl_p, rule, start_prev=start_prev)
             cursor += used
         out[wpos : wpos + cnt] = rec
         if cnt:

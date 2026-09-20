@@ -125,6 +125,10 @@ class PBRContainer:
             raise ValueError(f"Container has {len(data) - offset} trailing bytes")
         return cls(tensors=tensors, extra=header.get("extra") or {})
 
+    def file_sha256(self) -> str:
+        """SHA-256 of the complete on-disk blob from dumps()."""
+        return sha256_bytes(self.dumps())
+
 
 def iter_raw_tiles(data: bytes):
     """Walk on-disk tiles without parsing the JSON header (tunnel hot path)."""
@@ -145,9 +149,6 @@ def iter_raw_tiles(data: bytes):
             raise ValueError("truncated tile payload")
         yield mode_id, int(rows), int(cols), int(row0), int(col0), data[offset:end]
         offset = end
-
-    def file_sha256(self) -> str:
-        return sha256_bytes(self.dumps())
 
 
 def attach_geometry(block: EncodedBlock, tile_rows: int, tile_cols: int, row0: int, col0: int) -> EncodedBlock:
