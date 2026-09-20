@@ -242,3 +242,37 @@ PYTHONPATH=. .venv/bin/python scripts/run_pbr_h95q_container.py \
   --model-dir outputs/models/Qwen__Qwen2.5-0.5B-Instruct \
   --calib docs/pbr_h95/calibration_v2.json
 ```
+
+## H95Q container v2 (adaptive exact exponents)
+
+Same frozen S1/Conservative/Balanced precision policies and **identical** Q(W)
+uint16 words as v1 (`sha256_quantized_reference` unchanged). Only the exponent
+stream changes: per-tensor competition among `EXP_RAW8` / `EXP_RANS` /
+`EXP_HUFFMAN` / `EXP_DELTA_RANS` / `EXP_RUN_RANS` by **complete physical
+section bytes** (payload + table + mode_id + length fields + final rANS state).
+
+| Candidate | v1 actual BPW | v2 actual BPW | exp complete BPW | ≤8? |
+| --- | ---: | ---: | ---: | --- |
+| H95Q-Conservative | ~13.29 | **~7.91** | ~2.62 | PASS |
+| H95Q-Balanced | ~13.01 | **~7.63** | ~2.62 | PASS |
+| H95Q-S1 | ~12.80 | **~7.42** | ~2.62 | **PASS** |
+
+### Code
+
+- `pbr_h95/exp_codec.py` — RAW8 / Huffman / rANS / delta / run encode+decode + cost helpers
+- `pbr_h95/container_h95q.py` — version 2 wire format; decoder still reads v1
+- `scripts/run_pbr_h95q_container.py --version 2` (default; `--from-v1` transcode)
+- Tests: `tests/test_h95q_container_v2.py` (gates E1–E4)
+- Artifacts: `artifacts/pbr_h95/h95q_container_v2_qwen.{json,md}`; `*-v2.h95q` gitignored
+
+### Honesty
+
+- Physical BPW from file size only; exp section bytes == Σ `exp_len`
+- Quality retention still prior stack proxy (≈0.990) — not re-evaluated
+- Not production / multilingual / RAM == BPW
+
+```bash
+PYTHONPATH=. .venv/bin/python scripts/run_pbr_h95q_container.py --version 2 \
+  --candidates H95Q-Conservative H95Q-Balanced H95Q-S1
+```
+

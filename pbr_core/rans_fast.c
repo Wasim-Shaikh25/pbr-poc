@@ -280,3 +280,74 @@ int pbr_decode_exp_rans_tile(
     }
     return 0;
 }
+
+/* Bit-exact match of pbr_core.rans.rans_encode.
+ * out_cap must be >= 4 + n (overflow worst-case roughly n bytes).
+ * Returns encoded length, or negative on error.
+ */
+int pbr_rans_encode(
+    const uint8_t *symbols,
+    int n,
+    const uint32_t *freq,   /* 256 */
+    const uint32_t *cumul,  /* 257: cumul[s]=start, cumul[256]=M */
+    uint8_t *out,
+    int out_cap
+) {
+    uint64_t x;
+    int i;
+    int ovr_n;
+    uint8_t *overflow;
+    const uint32_t rans_l = RANS_L;
+    const uint32_t scale = SCALE_BITS;
+
+    if (n < 0 || (n > 0 && (symbols == NULL || freq == NULL || cumul == NULL || out == NULL))) {
+        return -1;
+    }
+    if (n == 0) {
+        if (out_cap < 4) {
+            return -2;
+        }
+        out[0] = (uint8_t)(rans_l & 0xFF);
+        out[1] = (uint8_t)((rans_l >> 8) & 0xFF);
+        out[2] = (uint8_t)((rans_l >> 16) & 0xFF);
+        out[3] = (uint8_t)((rans_l >> 24) & 0xFF);
+        return 4;
+    }
+    /* overflow grows backward from end of out, state written at front */
+    if (out_cap < 4 + n + 16) {
+        return -2;
+    }
+    overflow = out + out_cap; /* grow downward */
+    ovr_n = 0;
+    x = (uint64_t)rans_l;
+    for (i = n - 1; i >= 0; i--) {
+        uint8_t s = symbols[i];
+        uint32_t f = freq[s];
+        uint32_t start = cumul[s];
+        uint64_t x_max;
+        if (f == 0) {
+            return -3;
+        }
+        x_max = ((uint64_t)((rans_l >> scale) << 8)) * (uint64_t)f;
+        while (x >= x_max) {
+            ovr_n += 1;
+            if (4 + ovr_n > out_cap) {
+                return -4;
+            }
+            overflow[-ovr_n] = (uint8_t)(x & 0xFFu);
+            x >>= 8;
+        }
+        x = ((x / (uint64_t)f) << scale) + (x % (uint64_t)f) + (uint64_t)start;
+    }
+    if (4 + ovr_n > out_cap) {
+        return -5;
+    }
+    out[0] = (uint8_t)(x & 0xFFu);
+    out[1] = (uint8_t)((x >> 8) & 0xFFu);
+    out[2] = (uint8_t)((x >> 16) & 0xFFu);
+    out[3] = (uint8_t)((x >> 24) & 0xFFu);
+    if (ovr_n) {
+        memcpy(out + 4, overflow - ovr_n, (size_t)ovr_n);
+    }
+    return 4 + ovr_n;
+}
