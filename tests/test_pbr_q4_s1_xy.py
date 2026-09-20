@@ -15,6 +15,8 @@ from pbr_q4.codecs import (
     pack_kbit_batch,
     parse_flag_byte,
     packed_baseline_len,
+    reconstruct_stack,
+    unpack_kbit_batch,
 )
 from pbr_h95.bitpack import pack_kbit
 from pbr_q4.const import (
@@ -117,8 +119,31 @@ def test_pack_kbit_batch_matches_scalar(nbits):
     rng = np.random.default_rng(nbits + 9)
     tiles = rng.integers(0, 1 << nbits, size=(4, 16, 16), dtype=np.uint16)
     batched = pack_kbit_batch(tiles, nbits)
+    unpacked = unpack_kbit_batch(batched, 256, nbits)
+    mask = (1 << nbits) - 1
     for i in range(4):
         assert batched[i].tobytes() == pack_kbit(tiles[i], nbits)
+        expect = tiles[i].ravel() & np.uint16(mask)
+        assert np.array_equal(unpacked[i], expect)
+
+
+@pytest.mark.parametrize("nbits", [3, 4, 7])
+@pytest.mark.parametrize(
+    "pred", [PRED_PREVIOUS, PRED_LEFT, PRED_UP, PRED_AVG, PRED_PAETH]
+)
+@pytest.mark.parametrize("trav", [TRAV_ROW, TRAV_ROW_SERP, TRAV_COL, TRAV_COL_SERP])
+def test_reconstruct_stack_matches_tile(nbits, pred, trav):
+    rng = np.random.default_rng(nbits * 50 + pred * 7 + trav)
+    tiles = rng.integers(0, 1 << nbits, size=(3, 16, 16), dtype=np.uint16)
+    res = np.stack(
+        [residual_tile(tiles[i], pred=pred, trav=trav, nbits=nbits) for i in range(3)]
+    )
+    rec = reconstruct_stack(res, pred=pred, trav=trav, nbits=nbits)
+    for i in range(3):
+        assert np.array_equal(
+            rec[i], reconstruct_tile(res[i], pred=pred, trav=trav, nbits=nbits)
+        )
+        assert np.array_equal(rec[i], tiles[i].astype(np.uint8))
 
 
 def test_batched_row_col_matches_sequential():
@@ -154,6 +179,7 @@ def test_encode_array_all_tiles_matrix_family():
     assert np.array_equal(rec, arr.astype(np.uint8))
     # Packed size is a metric, not the wire.
     assert enc["packed_baseline_bytes"] == 6 * packed_baseline_len(256, 3)
+    assert enc["n_tiles_xy_lt_packed"] + enc["n_tiles_xy_eq_packed"] + enc["n_tiles_xy_gt_packed"] == 6
 
 
 def test_unaligned_array_padded_xy():

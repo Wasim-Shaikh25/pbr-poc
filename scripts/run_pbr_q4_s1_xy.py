@@ -183,6 +183,10 @@ def write_report(row: dict[str, Any], wall: float) -> None:
         f"- Payload Δ (X/Y − packed): {row['xy_vs_packed_payload_bytes']:+,} B",
         f"- Tile flag bytes: {row['xy_flag_bytes']:,}",
         f"- Tiles: {row['n_tiles']:,} (all matrix-family: {row['all_tiles_matrix_family']})",
+        f"- Tiles with X/Y payload < packed-K: {row.get('n_tiles_xy_lt_packed', 0):,} "
+        f"(saved {row.get('xy_win_bytes_vs_packed', 0):,} B on those tiles)",
+        f"- Tiles with X/Y payload = packed-K: {row.get('n_tiles_xy_eq_packed', 0):,}",
+        f"- Tiles with X/Y payload > packed-K: {row.get('n_tiles_xy_gt_packed', 0):,}",
         "",
         "## Mode mix",
         "",

@@ -87,6 +87,8 @@ def _encode_one(
         packed_base = 0
         xy_payload = 0
         n_tiles = 0
+        n_xy_lt = n_xy_eq = n_xy_gt = 0
+        xy_win_bytes = 0
         for k, g in fields["groups"].items():
             enc = encode_array_xy(g["kept"], int(g["k"]))
             if not enc["all_matrix_family"]:
@@ -110,6 +112,10 @@ def _encode_one(
             packed_base += int(enc["packed_baseline_bytes"])
             xy_payload += int(enc["xy_payload_bytes"])
             n_tiles += int(enc["n_tiles"])
+            n_xy_lt += int(enc.get("n_tiles_xy_lt_packed") or 0)
+            n_xy_eq += int(enc.get("n_tiles_xy_eq_packed") or 0)
+            n_xy_gt += int(enc.get("n_tiles_xy_gt_packed") or 0)
+            xy_win_bytes += int(enc.get("xy_win_bytes_vs_packed") or 0)
         return {
             "shape": fields["shape"],
             "n_weights": int(w.size),
@@ -128,6 +134,10 @@ def _encode_one(
             "n_tiles": n_tiles,
             "packed_baseline_bytes": packed_base,
             "xy_payload_bytes": xy_payload,
+            "n_tiles_xy_lt_packed": n_xy_lt,
+            "n_tiles_xy_eq_packed": n_xy_eq,
+            "n_tiles_xy_gt_packed": n_xy_gt,
+            "xy_win_bytes_vs_packed": xy_win_bytes,
             "all_matrix_family": True,
         }
 
@@ -160,6 +170,10 @@ def _encode_one(
         "n_tiles": enc["n_tiles"],
         "packed_baseline_bytes": enc["packed_baseline_bytes"],
         "xy_payload_bytes": enc["xy_payload_bytes"],
+        "n_tiles_xy_lt_packed": enc.get("n_tiles_xy_lt_packed", 0),
+        "n_tiles_xy_eq_packed": enc.get("n_tiles_xy_eq_packed", 0),
+        "n_tiles_xy_gt_packed": enc.get("n_tiles_xy_gt_packed", 0),
+        "xy_win_bytes_vs_packed": enc.get("xy_win_bytes_vs_packed", 0),
         "all_matrix_family": True,
     }
 
@@ -308,6 +322,8 @@ def encode_container(
     packed_base_total = 0
     xy_payload_total = 0
     n_tiles_total = 0
+    n_xy_lt = n_xy_eq = n_xy_gt = 0
+    xy_win_bytes = 0
 
     for enc in encoded:
         spec: dict[str, Any] = {
@@ -389,6 +405,10 @@ def encode_container(
         packed_base_total += int(enc.get("packed_baseline_bytes") or 0)
         xy_payload_total += int(enc.get("xy_payload_bytes") or 0)
         n_tiles_total += int(enc.get("n_tiles") or 0)
+        n_xy_lt += int(enc.get("n_tiles_xy_lt_packed") or 0)
+        n_xy_eq += int(enc.get("n_tiles_xy_eq_packed") or 0)
+        n_xy_gt += int(enc.get("n_tiles_xy_gt_packed") or 0)
+        xy_win_bytes += int(enc.get("xy_win_bytes_vs_packed") or 0)
 
     payload = b"".join(chunks)
     payload_stream_bytes = len(payload)
@@ -482,6 +502,18 @@ def encode_container(
             "tensors": tensors_out,
             "alignment": ALIGN,
             "payload_start": payload_start,
+            "n_tiles": n_tiles_total,
+            "xy_mode_histogram": mode_hist,
+            "xy_pred_histogram": pred_hist,
+            "xy_trav_histogram": trav_hist,
+            "packed_baseline_bytes": packed_base_total,
+            "xy_payload_bytes": xy_payload_total,
+            "tile_win_stats": {
+                "n_tiles_xy_lt_packed": n_xy_lt,
+                "n_tiles_xy_eq_packed": n_xy_eq,
+                "n_tiles_xy_gt_packed": n_xy_gt,
+                "xy_win_bytes_vs_packed": xy_win_bytes,
+            },
             "note": (
                 "Post-codec of frozen H95Q-S1 quantized words. "
                 "Does not re-quantize from BF16. "
@@ -552,6 +584,10 @@ def encode_container(
         "xy_mode_histogram": mode_hist,
         "xy_pred_histogram": pred_hist,
         "xy_trav_histogram": trav_hist,
+        "n_tiles_xy_lt_packed": n_xy_lt,
+        "n_tiles_xy_eq_packed": n_xy_eq,
+        "n_tiles_xy_gt_packed": n_xy_gt,
+        "xy_win_bytes_vs_packed": xy_win_bytes,
         "all_tiles_matrix_family": True,
         "candidate": candidate,
     }
@@ -582,7 +618,10 @@ def decode_container(path: str | Path) -> dict[str, Any]:
         raise ValueError("header/wire version mismatch")
     mv = memoryview(data)
     tensors: dict[str, np.ndarray] = {}
-    for spec in header["tensors"]:
+    n_spec = len(header["tensors"])
+    for i, spec in enumerate(header["tensors"], 1):
+        if i == 1 or i == n_spec or i % 20 == 0:
+            print(f"  xy-decode {i}/{n_spec} {spec['name']}", flush=True)
         tensors[spec["name"]] = _decode_one(spec, mv)
     for alias, canon in (header.get("aliases") or {}).items():
         if canon in tensors:
@@ -624,8 +663,10 @@ def main_decode_cli(argv: list[str] | None = None) -> int:
     print(f"file_bytes={result['file_bytes']} actual_bpw={result['file_bytes'] * 8 / tw:.6f}")
     print(f"sha256_quantized_reference={h['sha256_quantized_reference']}")
     print(f"mantissa_packing={h.get('mantissa_packing')}")
+    dec_sha = sha256_state_u16(result["tensors"])
+    print(f"sha256_decoded={dec_sha}")
     if args.expect_sha:
-        ok = h["sha256_quantized_reference"] == args.expect_sha
+        ok = dec_sha == args.expect_sha and h["sha256_quantized_reference"] == args.expect_sha
         print(f"sha_match={ok}")
         return 0 if ok else 2
     return 0

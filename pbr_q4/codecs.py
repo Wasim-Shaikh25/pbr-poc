@@ -30,17 +30,24 @@ from pbr_q4.const import (
     MODE_RANS,
     MODE_RUN,
     MODE_TIE_ORDER,
+    PRED_AVG,
+    PRED_LEFT,
+    PRED_PAETH,
     PRED_PREVIOUS,
+    PRED_UP,
     TILE,
     TRAV_ROW,
 )
 from pbr_q4.predictors import (
+    _seen_left,
+    _seen_nw,
+    _seen_up,
     pick_best_geometry,
     pick_best_geometry_batched,
     reconstruct_from_flat,
     reconstruct_tile,
 )
-from pbr_q4.tiles import as_full_tiles, gather_traversal, scatter_traversal, tile_boxes
+from pbr_q4.tiles import as_full_tiles, gather_traversal, scatter_traversal, tile_boxes, traversal_coords
 
 PAIR_HORIZ = 0
 PAIR_VERT = 1
@@ -89,6 +96,91 @@ def parse_flag_byte(b: int) -> tuple[int, int, int]:
 
 def packed_baseline_len(n_nodes: int, nbits: int) -> int:
     return packed_bytes_for_k(n_nodes, nbits)
+
+
+def unpack_kbit_batch(packed: np.ndarray, n: int, nbits: int) -> np.ndarray:
+    """Inverse of :func:`pack_kbit_batch`. ``packed`` is ``(T, nbytes)``."""
+    p = np.ascontiguousarray(packed, dtype=np.uint8)
+    if p.ndim != 2:
+        raise ValueError("unpack_kbit_batch expects (T, nbytes)")
+    T = int(p.shape[0])
+    if nbits <= 0 or T == 0 or n <= 0:
+        return np.zeros((T, n), dtype=np.uint16)
+    bits = np.unpackbits(p, axis=1, bitorder="big")[:, : n * nbits]
+    bits = bits.reshape(T, n, nbits)
+    shifts = np.arange(nbits - 1, -1, -1, dtype=np.uint16)
+    vals = np.zeros((T, n), dtype=np.uint16)
+    for i, sh in enumerate(shifts.tolist()):
+        vals |= bits[:, :, i].astype(np.uint16) << np.uint16(sh)
+    return vals
+
+
+def reconstruct_stack(
+    residuals: np.ndarray, *, pred: int, trav: int, nbits: int
+) -> np.ndarray:
+    """Vectorized-over-tiles sequential reconstruct. ``residuals`` is (T,H,W)."""
+    res = np.ascontiguousarray(residuals, dtype=np.uint16)
+    if res.ndim != 3:
+        raise ValueError("reconstruct_stack expects (T,H,W)")
+    T, H, W = (int(x) for x in res.shape)
+    mask = (1 << nbits) - 1 if nbits else 0
+    out = np.zeros((T, H, W), dtype=np.uint16)
+    prev = np.zeros(T, dtype=np.int32)
+    coords = traversal_coords(H, W, trav)
+    for y, x in coords:
+        if pred == PRED_PREVIOUS:
+            p = prev
+        elif pred == PRED_LEFT:
+            if x > 0 and _seen_left(trav, y, x):
+                p = out[:, y, x - 1].astype(np.int32)
+            else:
+                p = prev
+        elif pred == PRED_UP:
+            if y > 0 and _seen_up(trav, y, x):
+                p = out[:, y - 1, x].astype(np.int32)
+            else:
+                p = prev
+        elif pred == PRED_AVG:
+            have_l = x > 0 and _seen_left(trav, y, x)
+            have_u = y > 0 and _seen_up(trav, y, x)
+            if have_l and have_u:
+                p = (out[:, y, x - 1].astype(np.int32) + out[:, y - 1, x].astype(np.int32)) // 2
+            elif have_l:
+                p = out[:, y, x - 1].astype(np.int32)
+            elif have_u:
+                p = out[:, y - 1, x].astype(np.int32)
+            else:
+                p = prev
+        elif pred == PRED_PAETH:
+            have_l = x > 0 and _seen_left(trav, y, x)
+            have_u = y > 0 and _seen_up(trav, y, x)
+            have_nw = y > 0 and x > 0 and _seen_nw(trav, y, x)
+            if not have_l and not have_u:
+                p = prev
+            elif not have_l:
+                p = out[:, y - 1, x].astype(np.int32)
+            elif not have_u:
+                p = out[:, y, x - 1].astype(np.int32)
+            else:
+                L = out[:, y, x - 1].astype(np.int32)
+                U = out[:, y - 1, x].astype(np.int32)
+                NW = out[:, y - 1, x - 1].astype(np.int32) if have_nw else np.zeros(T, dtype=np.int32)
+                est = L + U - NW
+                dL = np.abs(est - L)
+                dU = np.abs(est - U)
+                dNW = np.abs(est - NW)
+                p = L.copy()
+                use_u = (dU < dL) & (dU <= dNW)
+                use_nw = have_nw and ((dNW < dL) & (dNW < dU))
+                p = np.where(use_u, U, p)
+                if have_nw:
+                    p = np.where(use_nw, NW, p)
+        else:
+            raise ValueError(pred)
+        actual = (p + res[:, y, x].astype(np.int32)) & mask
+        out[:, y, x] = actual
+        prev = actual
+    return out.astype(np.uint8)
 
 
 def pack_kbit_batch(tiles: np.ndarray, nbits: int) -> np.ndarray:
@@ -607,7 +699,33 @@ def encode_array_xy(kept: np.ndarray, nbits: int, *, th: int = TILE, tw: int = T
     packed_base = 0
     xy_payload = 0
     n_tiles = 0
+    n_xy_lt = n_xy_eq = n_xy_gt = 0
+    xy_win_bytes = 0
     from pbr_q4.const import PRED_NAMES, TRAV_NAMES
+
+    def _commit(enc: TileEncoding) -> None:
+        nonlocal packed_base, xy_payload, n_tiles, n_xy_lt, n_xy_eq, n_xy_gt, xy_win_bytes
+        if enc.mode not in MATRIX_FAMILY_MODES:
+            raise RuntimeError("tile escaped matrix family")
+        flags.append(enc.flag_byte())
+        payload.extend(enc.payload)
+        hist[enc.mode_name] = hist.get(enc.mode_name, 0) + 1
+        pn = PRED_NAMES[enc.pred]
+        tn = TRAV_NAMES[enc.trav]
+        pred_hist[pn] = pred_hist.get(pn, 0) + 1
+        trav_hist[tn] = trav_hist.get(tn, 0) + 1
+        packed_base += enc.packed_baseline_bytes
+        xy_payload += len(enc.payload)
+        n_tiles += 1
+        plen = len(enc.payload)
+        pbase = enc.packed_baseline_bytes
+        if plen < pbase:
+            n_xy_lt += 1
+            xy_win_bytes += pbase - plen
+        elif plen > pbase:
+            n_xy_gt += 1
+        else:
+            n_xy_eq += 1
 
     aligned = rows % th == 0 and cols % tw == 0 and rows > 0 and cols > 0
     if aligned:
@@ -644,33 +762,10 @@ def encode_array_xy(kept: np.ndarray, nbits: int, *, th: int = TILE, tw: int = T
                         payload=matrix_payloads[i].tobytes(),
                         packed_baseline_bytes=packed_one,
                     )
-                if enc.mode not in MATRIX_FAMILY_MODES:
-                    raise RuntimeError("tile escaped matrix family")
-                flags.append(enc.flag_byte())
-                payload.extend(enc.payload)
-                hist[enc.mode_name] = hist.get(enc.mode_name, 0) + 1
-                pn = PRED_NAMES[enc.pred]
-                tn = TRAV_NAMES[enc.trav]
-                pred_hist[pn] = pred_hist.get(pn, 0) + 1
-                trav_hist[tn] = trav_hist.get(tn, 0) + 1
-                packed_base += enc.packed_baseline_bytes
-                xy_payload += len(enc.payload)
-                n_tiles += 1
+                _commit(enc)
     else:
         for r0, c0, h, w in tile_boxes(rows, cols, th=th, tw=tw):
-            enc = encode_tile(arr[r0 : r0 + h, c0 : c0 + w], nbits)
-            if enc.mode not in MATRIX_FAMILY_MODES:
-                raise RuntimeError("tile escaped matrix family")
-            flags.append(enc.flag_byte())
-            payload.extend(enc.payload)
-            hist[enc.mode_name] = hist.get(enc.mode_name, 0) + 1
-            pn = PRED_NAMES[enc.pred]
-            tn = TRAV_NAMES[enc.trav]
-            pred_hist[pn] = pred_hist.get(pn, 0) + 1
-            trav_hist[tn] = trav_hist.get(tn, 0) + 1
-            packed_base += enc.packed_baseline_bytes
-            xy_payload += len(enc.payload)
-            n_tiles += 1
+            _commit(encode_tile(arr[r0 : r0 + h, c0 : c0 + w], nbits))
 
     return {
         "rows": orig_rows,
@@ -686,6 +781,10 @@ def encode_array_xy(kept: np.ndarray, nbits: int, *, th: int = TILE, tw: int = T
         "trav_hist": trav_hist,
         "packed_baseline_bytes": packed_base,
         "xy_payload_bytes": xy_payload,
+        "n_tiles_xy_lt_packed": n_xy_lt,
+        "n_tiles_xy_eq_packed": n_xy_eq,
+        "n_tiles_xy_gt_packed": n_xy_gt,
+        "xy_win_bytes_vs_packed": xy_win_bytes,
         "all_matrix_family": True,
     }
 
@@ -704,20 +803,92 @@ def decode_array_xy(
 ) -> np.ndarray:
     pr = int(pad_rows if pad_rows is not None else rows)
     pc = int(pad_cols if pad_cols is not None else cols)
+    boxes = list(tile_boxes(pr, pc, th=th, tw=tw))
+    if len(flags) != len(boxes):
+        raise ValueError(f"flag/tile count mismatch {len(flags)} vs {len(boxes)}")
     out = np.zeros((pr, pc), dtype=np.uint8)
+    full = all(h == th and w == tw for _r, _c, h, w in boxes)
+    if full and boxes:
+        decoded = _decode_full_tiles(flags, payload, nbits=nbits, th=th, tw=tw)
+        for i, (r0, c0, h, w) in enumerate(boxes):
+            out[r0 : r0 + h, c0 : c0 + w] = decoded[i]
+        return out[:rows, :cols]
     off = 0
-    i = 0
-    for r0, c0, h, w in tile_boxes(pr, pc, th=th, tw=tw):
-        if i >= len(flags):
-            raise ValueError("tile flag underrun")
+    for i, (r0, c0, h, w) in enumerate(boxes):
         recon, used = decode_tile(flags[i], payload[off:], rows=h, cols=w, nbits=nbits)
         if used < 0 or off + used > len(payload):
             raise ValueError("tile payload overrun")
         out[r0 : r0 + h, c0 : c0 + w] = recon
         off += used
-        i += 1
-    if i != len(flags):
-        raise ValueError(f"unused tile flags: {len(flags) - i}")
     if off != len(payload):
         raise ValueError(f"trailing tile payload {len(payload) - off} bytes")
     return out[:rows, :cols]
+
+
+def _reconstruct_grouped(
+    residuals: np.ndarray, preds: np.ndarray, travs: np.ndarray, nbits: int
+) -> np.ndarray:
+    rec = np.empty(residuals.shape, dtype=np.uint8)
+    for pred in np.unique(preds).tolist():
+        for trav in np.unique(travs).tolist():
+            m = (preds == pred) & (travs == trav)
+            if not np.any(m):
+                continue
+            rec[m] = reconstruct_stack(residuals[m], pred=int(pred), trav=int(trav), nbits=nbits)
+    return rec
+
+
+def _decode_full_tiles(flags: bytes, payload: bytes, *, nbits: int, th: int, tw: int) -> np.ndarray:
+    """Decode a homogeneous 16×16 tile stack (matrix family, mixed modes)."""
+    T = len(flags)
+    n = th * tw
+    need = packed_bytes_for_k(n, nbits)
+    flag_arr = np.frombuffer(flags, dtype=np.uint8)
+    modes = flag_arr & np.uint8(7)
+    preds = (flag_arr >> 3) & np.uint8(7)
+    travs = (flag_arr >> 6) & np.uint8(3)
+
+    if T > 0 and int(modes.min()) == MODE_MATRIX and int(modes.max()) == MODE_MATRIX:
+        if len(payload) != T * need:
+            raise ValueError(f"MATRIX payload size {len(payload)} != {T * need}")
+        packed = np.frombuffer(payload, dtype=np.uint8).reshape(T, need)
+        residuals = unpack_kbit_batch(packed, n, nbits).reshape(T, th, tw)
+        return _reconstruct_grouped(residuals, preds, travs, nbits)
+
+    out = np.zeros((T, th, tw), dtype=np.uint8)
+    is_m = modes == np.uint8(MODE_MATRIX)
+    n_mat = int(np.count_nonzero(is_m))
+    mat_packed = np.empty((n_mat, need), dtype=np.uint8)
+    mat_index = np.empty(n_mat, dtype=np.int64)
+    off = 0
+    mi = 0
+    i = 0
+    mv = memoryview(payload)
+    while i < T:
+        if bool(is_m[i]):
+            j = i + 1
+            while j < T and bool(is_m[j]):
+                j += 1
+            count = j - i
+            nbytes = count * need
+            if off + nbytes > len(payload):
+                raise ValueError("short MATRIX payload")
+            mat_packed[mi : mi + count] = np.frombuffer(mv[off : off + nbytes], dtype=np.uint8).reshape(
+                count, need
+            )
+            mat_index[mi : mi + count] = np.arange(i, j, dtype=np.int64)
+            off += nbytes
+            mi += count
+            i = j
+            continue
+        recon, used = decode_tile(int(flags[i]), payload[off:], rows=th, cols=tw, nbits=nbits)
+        out[i] = recon
+        off += used
+        i += 1
+    if off != len(payload):
+        raise ValueError(f"trailing tile payload {len(payload) - off} bytes")
+    if n_mat:
+        residuals = unpack_kbit_batch(mat_packed, n, nbits).reshape(n_mat, th, tw)
+        rec = _reconstruct_grouped(residuals, preds[mat_index], travs[mat_index], nbits)
+        out[mat_index] = rec
+    return out
