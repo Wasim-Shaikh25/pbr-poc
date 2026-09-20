@@ -82,7 +82,9 @@ def test_exp_huffman_few_exponents_near_df11() -> None:
     # 8 (sign+mant) + ~2.6 exp + codebook ≈ 11; allow container slack.
     assert bpw < 12.0
     names = {t.mode_name for t in container.tensors[0].tiles}
-    assert any(n.startswith("bf16_exp_huffman") for n in names)
+    assert any(
+        n.startswith("bf16_exp_huffman") or n.startswith("exp_") for n in names
+    )
 
 
 def test_exp_huffman_random_does_not_beat_raw() -> None:
@@ -112,7 +114,9 @@ def test_exp_huffman_qwen_like_slice_exact() -> None:
     bpw = bits_per_weight(len(container.dumps()), words.size)
     assert bpw < 13.6
     names = {t.mode_name for t in container.tensors[0].tiles}
-    assert any(name.startswith("bf16_exp_huffman") for name in names)
+    assert any(
+        name.startswith("bf16_exp_huffman") or name.startswith("exp_") for name in names
+    )
 
 
 @pytest.mark.skipif(os.environ.get("PBR_LIVE_HF") != "1", reason="live Hugging Face download disabled")

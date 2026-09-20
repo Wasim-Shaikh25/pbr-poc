@@ -92,17 +92,30 @@ def run_one(
     include_baselines: bool,
     extra: dict | None = None,
     disclaimer: str | None = None,
+    codecs=None,
+    whole_codecs=None,
+    enable_whole: bool = True,
+    ref_words: np.ndarray | None = None,
 ) -> dict:
     original_bytes = int(words.size * 2)
     best: dict | None = None
     attempts = []
     for block_size in block_sizes:
         t0 = time.perf_counter()
-        container = encode_tensor(words, name=case, block_size=block_size, extra=extra)
+        container = encode_tensor(
+            words,
+            name=case,
+            block_size=block_size,
+            extra=extra,
+            codecs=codecs,
+            whole_codecs=whole_codecs,
+            enable_whole=enable_whole,
+            ref_words=ref_words,
+        )
         encode_s = time.perf_counter() - t0
         blob = container.dumps()
         t1 = time.perf_counter()
-        restored_list = decode_container(container)
+        restored_list = decode_container(container, ref_tensor=ref_words)
         decode_s = time.perf_counter() - t1
         restored = restored_list[0]
         verification = assert_exact(words, restored, label=case)

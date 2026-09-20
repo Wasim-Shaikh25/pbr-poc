@@ -238,3 +238,17 @@ def is_linear_weight(name: str) -> bool:
 def is_embedding_weight(name: str) -> bool:
     n = name.lower()
     return "weight" in n and ("embed" in n or n.endswith("lm_head.weight"))
+
+
+def tensor_role(name: str) -> str:
+    """Strip layer index so the same weight type can be matched across layers."""
+    parts = name.split(".")
+    out: list[str] = []
+    i = 0
+    while i < len(parts):
+        if parts[i] in {"layers", "layer"} and i + 1 < len(parts) and parts[i + 1].isdigit():
+            i += 2
+            continue
+        out.append(parts[i])
+        i += 1
+    return ".".join(out) if out else name

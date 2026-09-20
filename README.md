@@ -302,6 +302,35 @@ sign/mantissa + entropy-coded exponents). That is the DF11-class band
 (~11 BPW / ~32% size cut). **≤4 BPW is still out of scope** for dense
 LLMs; this run does not claim 1–2 GB / 8 GB.
 
+## Blockers & mitigations
+
+Invented tile / position / block methods lose on Qwen when they predict on
+the **full uint16**. The mantissa is near-random (~7 bits), so XOR residuals
+stay huge, exact duplicate tiles are rare, and per-tile dictionaries lose
+to header + codebook overhead.
+
+```bash
+python scripts/run_blocker_diagnosis.py --model-dir /path/to/Qwen2.5-0.5B-Instruct
+python scripts/run_blocker_ablation.py --model-dir /path/to/Qwen2.5-0.5B-Instruct
+```
+
+Reports: `artifacts/blocker_diagnosis_qwen.json` (plus `.md`) and
+`artifacts/blocker_ablation_qwen.{json,md}`.
+
+Mitigations (still lossless, still `Decode(Encode(W))==W`):
+
+| mode | what it does |
+| --- | --- |
+| `exp_spatial_huffman` | prev / prev_row / block-prototype on the **exponent byte only**, then Huffman; sign+mantissa packed raw |
+| `exp_hier_residual` | block-default exponent, then Huffman the local residual (optional residual-of-residual) |
+| `cross_layer_tile_xor` | XOR vs a previous same-role / same-shaped tensor; Huffman the exponent residual or sparse uint16 patch. Ref bytes are not stored again; decode is causal |
+
+Existing `bf16_exp_huffman` and the old uint16 spatial modes stay in the
+menu. Ablation profiles: PBR-E only, new modes on, forced uint16-spatial
+only, zlib baseline. Success for this run is **not** ≤4 BPW — it is a
+clear diagnosis plus an honest win or miss for spatial-on-exponents vs
+plain PBR-E (~10.87).
+
 ### Measured Stage 2 run (this repo)
 
 Same Qwen revision as Stage 1B
@@ -390,7 +419,8 @@ pbr_core/        uint16 views, tiles, container, hashing, Safetensors I/O
 pbr_codecs/      raw, predictors, residuals, dictionaries, exp-Huffman
 pbr_encoder/     cost-based search, decoder, Stage 1A/1B/PBR-E CLIs
 pbr_qualifier/   Stage 2 inventory, entropy, sample encode, BPW projection
-scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py
+scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py,
+                 run_blocker_diagnosis.py, run_blocker_ablation.py
 tests/           exactness, codecs, Stage 1B fixtures, qualifier math
 configs/         poc_controlled.yaml, poc_real.yaml, qualifier_default.yaml
 ```
@@ -411,7 +441,8 @@ projection** for the whole 16-bit parameter set (pre-PBR-E codecs). None
 of these is a measured 8 GB-model result.
 
 zlib / zstd columns, when present, are **general-purpose baselines**, not PBR
-modes.
+modes. Forced uint16-spatial rows in the blocker ablation exist to show
+that predictor on mixed fields still loses; they are not a compression claim.
 
 ## License
 

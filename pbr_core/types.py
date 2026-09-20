@@ -27,6 +27,9 @@ MODE_DUP_REF = 6
 MODE_COMPONENTS = 7
 MODE_REF_PREV = 8
 MODE_EXP_HUFFMAN = 9
+MODE_EXP_SPATIAL = 10
+MODE_EXP_HIER = 11
+MODE_CROSS_LAYER = 12
 
 MODE_NAMES = {
     MODE_RAW: "raw_bf16",
@@ -39,6 +42,9 @@ MODE_NAMES = {
     MODE_COMPONENTS: "bf16_components",
     MODE_REF_PREV: "ref_prev_tile",
     MODE_EXP_HUFFMAN: "bf16_exp_huffman",
+    MODE_EXP_SPATIAL: "exp_spatial_huffman",
+    MODE_EXP_HIER: "exp_hier_residual",
+    MODE_CROSS_LAYER: "cross_layer_tile_xor",
 }
 
 RES_NAMES = {
@@ -113,6 +119,9 @@ class EncodeContext:
     seen_exact: dict[bytes, int] = field(default_factory=dict)
     prev_tile: np.ndarray | None = None
     prev_index: int | None = None
+    tile_row0: int = 0
+    tile_col0: int = 0
+    ref_tensor: np.ndarray | None = None
 
     def record(self, tile: np.ndarray) -> None:
         raw = np.ascontiguousarray(tile, dtype="<u2").tobytes()
