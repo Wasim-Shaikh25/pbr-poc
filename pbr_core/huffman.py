@@ -55,6 +55,19 @@ class HuffmanTable:
             only = next(iter(self.lengths))
             return np.full(count, only, dtype=np.uint8)
         lut = _build_lut(self.codes, self.max_len)
+        from pbr_core.rans import huffman_decode_c, rans_impl
+
+        if rans_impl() == "c":
+            lut_arr = np.asarray(lut, dtype=np.uint16)
+            rec = huffman_decode_c(
+                data + b"\x00\x00\x00\x00",
+                count,
+                self.max_len,
+                lut_arr[:, 0],
+                lut_arr[:, 1],
+            )
+            if rec is not None:
+                return rec
         mask = (1 << self.max_len) - 1
         # Trailing pad so the last symbol can peek max_len bits.
         padded = data + b"\x00\x00\x00\x00"

@@ -125,6 +125,27 @@ class PBRContainer:
             raise ValueError(f"Container has {len(data) - offset} trailing bytes")
         return cls(tensors=tensors, extra=header.get("extra") or {})
 
+
+def iter_raw_tiles(data: bytes):
+    """Walk on-disk tiles without parsing the JSON header (tunnel hot path)."""
+    if data[:4] != MAGIC:
+        raise ValueError(f"Bad magic: {data[:4]!r}")
+    version, header_len = struct.unpack_from("<HI", data, 4)
+    if version != VERSION:
+        raise ValueError(f"Unsupported container version {version}")
+    offset = 10 + header_len
+    n = len(data)
+    while offset < n:
+        if offset + TILE_HEADER_BYTES > n:
+            raise ValueError("truncated tile header")
+        mode_id, rows, cols, row0, col0, plen = _TILE_PREFIX.unpack_from(data, offset)
+        offset += TILE_HEADER_BYTES
+        end = offset + plen
+        if end > n:
+            raise ValueError("truncated tile payload")
+        yield mode_id, int(rows), int(cols), int(row0), int(col0), data[offset:end]
+        offset = end
+
     def file_sha256(self) -> str:
         return sha256_bytes(self.dumps())
 

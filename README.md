@@ -745,6 +745,18 @@ Metrics: `artifacts/tunnel_fast_pbre.md`. Compare `pbre_fast` wall time to mmap 
 
 Measured (8 tokens, 24 layers, isolated): **pbre_slow wall 130 s / decode 126 s** vs **pbre_fast wall 8.0 s / decode 6.0 s** (C rANS + prefetch). mmap **2.1 s**, full **3.2 s**. Logits bit-identical. Sampled peak RSS: full 1007 MiB, mmap 87 MiB, pbre_fast 153 MiB (2-slot cache).
 
+### Even faster PBR-E decode
+
+Fused C rANS+join (skip JSON header), 4 decode threads, ~2-layer cache, optional warm uint16 sidecar. Still `Decode(Encode(W))==W`. Single-stream rANS is not rewritten with SIMD (that would change the bitstream); parallelism is across tensors.
+
+```bash
+python scripts/tunnel_faster_pbre.py --model-dir outputs/models/Qwen__Qwen2.5-0.5B-Instruct
+```
+
+Metrics: `artifacts/tunnel_faster_pbre.md`. Compare `pbre_faster` / `pbre_faster_warm` wall time to `pbre_fast` / mmap / full.
+
+Warm sidecar is a decoded uint16 copy on disk (not exponents-only): join is cheap next to rANS, and RAM stays a one-tensor working set. Not an ≤8 BPW claim.
+
 ### Hybrid lossy tunnel (prototype)
 
 Embeddings, norms, biases, and first/last layers stay BF16. Middle-layer attention/MLP weights are per-group **int4 + FP16 scales**. Same disk-resident RAM tunnel. **Not bit-exact** on quantized tensors; quality is logit max_abs / KL / argmax match vs full BF16.
@@ -827,16 +839,16 @@ scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py,
                  run_phase_a_mantissa_audit.py, run_exp_coder_ablation.py,
                  run_checkpoint_delta.py, run_mantissa_zoo.py, run_pbr4.py,
                  run_path_to_50pct.py, disk_tunnel_infer.py,
-                 tunnel_fast_pbre.py, tunnel_hybrid_lossy.py
+                 tunnel_fast_pbre.py, tunnel_faster_pbre.py, tunnel_hybrid_lossy.py
 tests/           exactness, codecs, Stage 1B fixtures, qualifier math,
                  hierarchical leftovers, mantissa audit, checkpoint delta,
                  mantissa zoo, PBR-4, path-to-50pct, disk tunnel,
-                 fast PBR-E / hybrid lossy tunnel
+                 fast / faster PBR-E / hybrid lossy tunnel
 configs/         poc_controlled.yaml, poc_real.yaml, poc_llama.yaml,
                  qualifier_default.yaml, poc_delta.yaml
 artifacts/       measured diagnosis / ablation / Phase A / delta / zoo /
                  PBR-4 / path-to-50pct / disk-RAM tunnel / fast PBR-E /
-                 hybrid-lossy reports
+                 faster PBR-E / hybrid-lossy reports
 ```
 
 Later stages (full selected-model encode vs projection, fused runtime) are

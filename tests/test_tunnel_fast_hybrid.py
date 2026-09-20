@@ -77,9 +77,22 @@ def test_fast_pbre_tiny_logits(tmp_path: Path) -> None:
         verify_pbre=True,
         lm_head_chunk=16,
     )
+    faster = run_mode(
+        mode="pbre_faster",
+        model_dir=model,
+        pbre_dir=pbre_dir,
+        token_ids=ids,
+        n_layers=None,
+        encode_if_missing=False,
+        verify_pbre=True,
+        lm_head_chunk=16,
+    )
     assert np.array_equal(full["logits"], fast["logits"])
+    assert np.array_equal(full["logits"], faster["logits"])
     assert fast["summary"]["exact"] == "PASS"
+    assert faster["summary"]["exact"] == "PASS"
     assert fast["summary"]["pbre_exact_checks"] > 0
+    assert faster["summary"]["pbre_exact_checks"] > 0
 
 
 def test_int4_roundtrip_bounded() -> None:
@@ -145,3 +158,54 @@ def test_hybrid_tiny_lossy_not_claimed_exact(tmp_path: Path) -> None:
         blob = (hy / rec["file"]).read_bytes()
         got = np.frombuffer(blob, dtype="<u2").reshape(src.shape)
         assert_exact(src, got, label=key)
+
+
+def test_pbre_faster_warm_tiny_logits(tmp_path: Path) -> None:
+    from pbr_core.container import PBRContainer
+    from pbr_encoder.decoder import decode_container, decode_pbr_blob
+    from pbr_encoder.disk_tunnel import materialize_decoded_cache
+
+    model = tmp_path / "model"
+    write_tiny_qwen_fixture(model)
+    specs = select_specs(model)
+    pbre_dir = tmp_path / "pbre"
+    encode_pbre_dir(specs, pbre_dir, skip_keys=set())
+    for key, rec in json_tensors(pbre_dir).items():
+        blob = (pbre_dir / rec["file"]).read_bytes()
+        logical = tuple(int(x) for x in rec["shape"])
+        fast = decode_pbr_blob(blob, logical)
+        slow = decode_container(PBRContainer.loads(blob))[0].reshape(logical)
+        assert_exact(fast, slow, label=f"blob:{key}")
+    dest = tmp_path / "decoded"
+    meta = materialize_decoded_cache(pbre_dir, dest, workers=2, verify_sha=True)
+    assert meta["n_tensors"] == len(json_tensors(pbre_dir))
+    ids = np.array([1, 2, 3, 4], dtype=np.int64)
+    full = run_mode(
+        mode="full",
+        model_dir=model,
+        pbre_dir=pbre_dir,
+        token_ids=ids,
+        n_layers=None,
+        encode_if_missing=False,
+        verify_pbre=False,
+        lm_head_chunk=16,
+    )
+    warm = run_mode(
+        mode="pbre_faster_warm",
+        model_dir=model,
+        pbre_dir=pbre_dir,
+        token_ids=ids,
+        n_layers=None,
+        encode_if_missing=False,
+        verify_pbre=True,
+        lm_head_chunk=16,
+        decoded_dir=dest,
+    )
+    assert np.array_equal(full["logits"], warm["logits"])
+    assert warm["summary"]["exact"] == "PASS"
+
+
+def json_tensors(pbre_dir: Path) -> dict:
+    import json
+
+    return json.loads((pbre_dir / "index.json").read_text(encoding="utf-8"))["tensors"]

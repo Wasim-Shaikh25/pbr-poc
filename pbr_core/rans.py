@@ -7,8 +7,6 @@ from __future__ import annotations
 
 import os
 import struct
-from functools import lru_cache
-
 import numpy as np
 
 RANS_L = 1 << 23
@@ -141,9 +139,13 @@ def rans_decode_python(blob: bytes, count: int, freq: np.ndarray) -> np.ndarray:
     return out
 
 
-@lru_cache(maxsize=1)
+_C_LIB = None
+_C_LIB_KEY: tuple[float, float] | None = None
+
+
 def _c_lib():
     """Compile/load librans. None if gcc/ctypes is unavailable."""
+    global _C_LIB, _C_LIB_KEY
     import ctypes
     import subprocess
     from pathlib import Path
@@ -153,31 +155,82 @@ def _c_lib():
     so = root / "_rans_fast.so"
     if not src.is_file():
         return None
-    need = (not so.is_file()) or so.stat().st_mtime < src.stat().st_mtime
+    src_mtime = src.stat().st_mtime
+    so_mtime = so.stat().st_mtime if so.is_file() else 0.0
+    key = (src_mtime, so_mtime)
+    if _C_LIB is not None and _C_LIB_KEY == key and so_mtime >= src_mtime:
+        return _C_LIB
+    need = (not so.is_file()) or so_mtime < src_mtime
     if need:
         gcc = os.environ.get("CC", "gcc")
-        try:
-            subprocess.check_call(
-                [gcc, "-O3", "-std=c99", "-shared", "-fPIC", "-o", str(so), str(src)],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-        except (OSError, subprocess.CalledProcessError):
+        base = [gcc, "-O3", "-std=c99", "-shared", "-fPIC", "-funroll-loops"]
+        cmds = [base + ["-march=native", "-o", str(so), str(src)], base + ["-o", str(so), str(src)]]
+        compiled = False
+        for cmd in cmds:
+            try:
+                subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                compiled = True
+                break
+            except (OSError, subprocess.CalledProcessError):
+                continue
+        if not compiled:
+            _C_LIB = None
+            _C_LIB_KEY = None
             return None
+        so_mtime = so.stat().st_mtime
+        key = (src_mtime, so_mtime)
     try:
         lib = ctypes.CDLL(str(so))
     except OSError:
+        _C_LIB = None
+        _C_LIB_KEY = None
         return None
-    lib.pbr_rans_decode.argtypes = [
-        ctypes.c_void_p,
-        ctypes.c_int,
-        ctypes.c_int,
-        ctypes.c_void_p,
-        ctypes.c_void_p,
-        ctypes.c_void_p,
-        ctypes.c_void_p,
-    ]
-    lib.pbr_rans_decode.restype = ctypes.c_int
+    try:
+        lib.pbr_rans_decode.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_int,
+            ctypes.c_int,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+        ]
+        lib.pbr_rans_decode.restype = ctypes.c_int
+    except AttributeError:
+        _C_LIB = None
+        _C_LIB_KEY = None
+        return None
+    if hasattr(lib, "pbr_rans_decode_u32"):
+        lib.pbr_rans_decode_u32.argtypes = list(lib.pbr_rans_decode.argtypes)
+        lib.pbr_rans_decode_u32.restype = ctypes.c_int
+    if hasattr(lib, "pbr_join_bf16"):
+        lib.pbr_join_bf16.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_int,
+            ctypes.c_void_p,
+        ]
+        lib.pbr_join_bf16.restype = ctypes.c_int
+    if hasattr(lib, "pbr_huffman_decode"):
+        lib.pbr_huffman_decode.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_int,
+            ctypes.c_int,
+            ctypes.c_int,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+        ]
+        lib.pbr_huffman_decode.restype = ctypes.c_int
+    if hasattr(lib, "pbr_decode_exp_rans_tile"):
+        lib.pbr_decode_exp_rans_tile.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_int,
+            ctypes.c_int,
+            ctypes.c_void_p,
+        ]
+        lib.pbr_decode_exp_rans_tile.restype = ctypes.c_int
+    _C_LIB = lib
+    _C_LIB_KEY = key
     return lib
 
 
@@ -205,23 +258,112 @@ def rans_decode_c(blob: bytes, count: int, freq: np.ndarray) -> np.ndarray:
         freq64 = padded
     cumul = _cumul(freq64)
     lut = np.ascontiguousarray(_symbol_lut(freq64), dtype=np.uint8)
+    freq32 = np.ascontiguousarray(freq64, dtype=np.uint32)
+    cumul32 = np.ascontiguousarray(cumul, dtype=np.uint32)
     out = np.empty(count, dtype=np.uint8)
     blob_u8 = np.frombuffer(memoryview(blob), dtype=np.uint8)
     if not blob_u8.flags.c_contiguous:
         blob_u8 = np.ascontiguousarray(blob_u8)
     import ctypes
 
-    rc = lib.pbr_rans_decode(
+    fn = getattr(lib, "pbr_rans_decode_u32", None) or lib.pbr_rans_decode
+    freq_p = freq32 if fn is getattr(lib, "pbr_rans_decode_u32", None) else freq64
+    cumul_p = cumul32 if fn is getattr(lib, "pbr_rans_decode_u32", None) else cumul
+    rc = fn(
         blob_u8.ctypes.data_as(ctypes.c_void_p),
         ctypes.c_int(int(blob_u8.size)),
         ctypes.c_int(int(count)),
-        freq64.ctypes.data_as(ctypes.c_void_p),
-        cumul.ctypes.data_as(ctypes.c_void_p),
+        freq_p.ctypes.data_as(ctypes.c_void_p),
+        cumul_p.ctypes.data_as(ctypes.c_void_p),
         lut.ctypes.data_as(ctypes.c_void_p),
         out.ctypes.data_as(ctypes.c_void_p),
     )
     if rc != 0:
         raise RuntimeError(f"pbr_rans_decode rc={rc}")
+    return out
+
+
+def join_bf16_u16(exp: np.ndarray, packed_sm: np.ndarray) -> np.ndarray | None:
+    """C join of exponent + packed SM into uint16 BF16 words. None if no lib."""
+    lib = _c_lib()
+    if lib is None or not hasattr(lib, "pbr_join_bf16"):
+        return None
+    e = np.ascontiguousarray(exp, dtype=np.uint8).ravel()
+    sm = np.ascontiguousarray(packed_sm, dtype=np.uint8).ravel()
+    n = int(e.size)
+    if int(sm.size) != n:
+        raise ValueError("join_bf16 length mismatch")
+    out = np.empty(n, dtype=np.uint16)
+    import ctypes
+
+    rc = lib.pbr_join_bf16(
+        e.ctypes.data_as(ctypes.c_void_p),
+        sm.ctypes.data_as(ctypes.c_void_p),
+        ctypes.c_int(n),
+        out.ctypes.data_as(ctypes.c_void_p),
+    )
+    if rc != 0:
+        return None
+    return out
+
+
+def huffman_decode_c(
+    data: bytes,
+    count: int,
+    max_len: int,
+    lut_sym: np.ndarray,
+    lut_nbits: np.ndarray,
+) -> np.ndarray | None:
+    lib = _c_lib()
+    if lib is None or not hasattr(lib, "pbr_huffman_decode"):
+        return None
+    packed = (lut_sym.astype(np.uint16) & np.uint16(0xFF)) | (lut_nbits.astype(np.uint16) << 8)
+    packed = np.ascontiguousarray(packed, dtype=np.uint16)
+    buf = np.frombuffer(memoryview(data), dtype=np.uint8)
+    if not buf.flags.c_contiguous:
+        buf = np.ascontiguousarray(buf)
+    out = np.empty(count, dtype=np.uint8)
+    import ctypes
+
+    rc = lib.pbr_huffman_decode(
+        buf.ctypes.data_as(ctypes.c_void_p),
+        ctypes.c_int(int(buf.size)),
+        ctypes.c_int(int(count)),
+        ctypes.c_int(int(max_len)),
+        packed.ctypes.data_as(ctypes.c_void_p),
+        out.ctypes.data_as(ctypes.c_void_p),
+    )
+    if rc != 0:
+        return None
+    return out
+
+
+def decode_exp_rans_tile_c(payload: bytes | memoryview | np.ndarray, n: int) -> np.ndarray | None:
+    """Fused C: parse PBR-E exp-rANS tile payload → uint16 words. None if unavailable."""
+    lib = _c_lib()
+    if lib is None or not hasattr(lib, "pbr_decode_exp_rans_tile") or rans_impl() != "c":
+        return None
+    if n < 0:
+        raise ValueError("negative tile length")
+    if n == 0:
+        return np.zeros(0, dtype=np.uint16)
+    if isinstance(payload, np.ndarray):
+        buf = np.ascontiguousarray(payload, dtype=np.uint8).ravel()
+    else:
+        buf = np.frombuffer(memoryview(payload), dtype=np.uint8)
+        if not buf.flags.c_contiguous:
+            buf = np.ascontiguousarray(buf)
+    out = np.empty(int(n), dtype=np.uint16)
+    import ctypes
+
+    rc = lib.pbr_decode_exp_rans_tile(
+        buf.ctypes.data_as(ctypes.c_void_p),
+        ctypes.c_int(int(buf.size)),
+        ctypes.c_int(int(n)),
+        out.ctypes.data_as(ctypes.c_void_p),
+    )
+    if rc != 0:
+        return None
     return out
 
 

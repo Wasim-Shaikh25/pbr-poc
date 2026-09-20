@@ -40,7 +40,7 @@ from pbr_core.safetensors_io import (
     write_uint16_safetensors,
 )
 from pbr_core.tiles import as_2d
-from pbr_encoder.decoder import decode_container
+from pbr_encoder.decoder import decode_container, decode_pbr_blob
 from pbr_encoder.encoder import encode_tensor
 from pbr_encoder.hf_weights import PRIMARY_LICENSE, PRIMARY_REPO
 from pbr_encoder.profiles import PROFILES
@@ -53,6 +53,7 @@ DISCLAIMER = (
 )
 DEFAULT_MODEL = Path("outputs/models/Qwen__Qwen2.5-0.5B-Instruct")
 DEFAULT_PBRE_DIR = Path("outputs/disk_tunnel/pbre")
+DEFAULT_DECODED_DIR = Path("outputs/disk_tunnel/pbre_decoded")
 DEFAULT_TOKENS = 8
 LM_HEAD_ROWS = 4096
 
@@ -98,7 +99,6 @@ def bf16_to_fp32(words: np.ndarray) -> np.ndarray:
 
 
 def _release() -> None:
-    gc.collect()
     malloc_trim()
 
 
@@ -136,6 +136,10 @@ class WeightSource:
 
     def prefetch(self, key: str) -> None:
         return
+
+    def prefetch_many(self, keys: list[str]) -> None:
+        for key in keys:
+            self.prefetch(key)
 
 
 class FullRamSource(WeightSource):
@@ -261,7 +265,12 @@ class PbrDirSource(WeightSource):
 
 
 class FastPbrDirSource(PbrDirSource):
-    """PBR-E tunnel with C rANS, a 2-slot decoded cache, and one prefetch thread."""
+    """PBR-E tunnel: fused C decode, layer-sized cache, parallel prefetch.
+
+    Prefetch submits the next N tensors on a thread pool (GIL released in C).
+    Completed-but-unused tensors sit in ``_ready`` so LRU cannot evict them.
+    Optional decoded uint16 sidecar: warm loads copy one tensor like mmap.
+    """
 
     def __init__(
         self,
@@ -273,6 +282,11 @@ class FastPbrDirSource(PbrDirSource):
         mmap_fallback: dict[str, TensorSpec] | None = None,
         cache_slots: int = 2,
         prefetch: bool = True,
+        prefetch_workers: int = 1,
+        prefetch_depth: int = 1,
+        decoded_cache_dir: Path | None = None,
+        write_decoded_cache: bool = False,
+        prefer_decoded_cache: bool = False,
     ):
         super().__init__(
             index,
@@ -283,22 +297,30 @@ class FastPbrDirSource(PbrDirSource):
         )
         self.name = "pbre_fast"
         self.cache_slots = max(1, int(cache_slots))
+        self.prefetch_depth = max(1, int(prefetch_depth))
+        self.decoded_cache_dir = Path(decoded_cache_dir) if decoded_cache_dir else None
+        self.write_decoded_cache = bool(write_decoded_cache)
+        self.prefer_decoded_cache = bool(prefer_decoded_cache)
+        if self.decoded_cache_dir is not None and self.write_decoded_cache:
+            self.decoded_cache_dir.mkdir(parents=True, exist_ok=True)
         self._cache: OrderedDict[str, np.ndarray] = OrderedDict()
+        self._ready: dict[str, np.ndarray] = {}
+        self._want: OrderedDict[str, None] = OrderedDict()
         self._lock = threading.Lock()
+        n_workers = max(1, int(prefetch_workers))
         self._pool: ThreadPoolExecutor | None = (
-            ThreadPoolExecutor(max_workers=1, thread_name_prefix="pbre-prefetch")
+            ThreadPoolExecutor(max_workers=n_workers, thread_name_prefix="pbre-prefetch")
             if prefetch
             else None
         )
-        self._fut: Future | None = None
-        self._fut_key: str | None = None
+        self._futs: OrderedDict[str, Future] = OrderedDict()
 
     def close(self) -> None:
         with self._lock:
-            fut = self._fut
-            self._fut = None
-            self._fut_key = None
-        if fut is not None:
+            futs = list(self._futs.items())
+            self._futs.clear()
+            self._want.clear()
+        for _key, fut in futs:
             try:
                 fut.result(timeout=120)
             except Exception:
@@ -307,17 +329,34 @@ class FastPbrDirSource(PbrDirSource):
             self._pool.shutdown(wait=False)
             self._pool = None
         self._cache.clear()
+        self._ready.clear()
+
+    def _decoded_path(self, key: str) -> Path | None:
+        if self.decoded_cache_dir is None:
+            return None
+        return self.decoded_cache_dir / (key.replace("/", ".") + ".u16")
+
+    def _kick_locked(self) -> None:
+        if self._pool is None:
+            return
+        while len(self._futs) < self.prefetch_depth and self._want:
+            key, _ = self._want.popitem(last=False)
+            if key in self._cache or key in self._ready or key in self._futs:
+                continue
+            self._futs[key] = self._pool.submit(self._decode_job, key)
 
     def prefetch(self, key: str) -> None:
         if self._pool is None or not key:
             return
         with self._lock:
-            if key in self._cache or key == self._fut_key:
+            if key in self._cache or key in self._ready or key in self._futs or key in self._want:
                 return
-            if self._fut is not None and not self._fut.done():
-                return
-            self._fut_key = key
-            self._fut = self._pool.submit(self._decode_job, key)
+            self._want[key] = None
+            self._kick_locked()
+
+    def prefetch_many(self, keys: list[str]) -> None:
+        for key in keys:
+            self.prefetch(key)
 
     def _remember_decoded(self, key: str, arr: np.ndarray) -> np.ndarray:
         self._cache[key] = arr
@@ -325,33 +364,85 @@ class FastPbrDirSource(PbrDirSource):
             self._cache.popitem(last=False)
         return arr
 
-    def _decode_job(self, key: str) -> tuple[str, np.ndarray, int, float, int, int]:
-        """Thread worker: decode without touching IoStats."""
+    def _load_warm_u16(self, key: str, rec: dict) -> np.ndarray | None:
+        path = self._decoded_path(key)
+        if path is None or not path.is_file():
+            return None
+        logical = tuple(int(x) for x in rec["shape"])
+        n_words = int(rec.get("n_words") or int(np.prod(logical)))
+        if path.stat().st_size != n_words * 2:
+            return None
+        mm = np.memmap(path, dtype="<u2", mode="r", shape=logical)
+        words = np.array(mm, dtype=np.uint16, copy=True)
+        del mm
+        return words
+
+    def _store_warm_u16(self, key: str, words: np.ndarray) -> None:
+        path = self._decoded_path(key)
+        if path is None or not self.write_decoded_cache:
+            return
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        np.ascontiguousarray(words, dtype="<u2").tofile(tmp)
+        tmp.replace(path)
+
+    def _decode_job(self, key: str) -> np.ndarray:
+        """Thread worker: decode (or mmap sidecar) without touching IoStats."""
         t0 = time.perf_counter()
         disk_n = 0
         checks = 0
         fail = 0
-        if key not in self.index["tensors"] and key in self.mmap_fallback:
-            words = load_uint16(self.mmap_fallback[key])
-            disk_n = int(words.nbytes)
-            return key, words, disk_n, time.perf_counter() - t0, checks, fail
-        rec = self.index["tensors"][key]
-        path = self.pbre_dir / rec["file"]
-        blob = path.read_bytes()
-        disk_n = len(blob)
-        from pbr_core.container import PBRContainer
+        try:
+            if key not in self.index["tensors"] and key in self.mmap_fallback:
+                words = load_uint16(self.mmap_fallback[key])
+                disk_n = int(words.nbytes)
+            else:
+                rec = self.index["tensors"][key]
+                words = None
+                from_warm = False
+                if self.prefer_decoded_cache:
+                    words = self._load_warm_u16(key, rec)
+                    if words is not None:
+                        disk_n = int(words.nbytes)
+                        from_warm = True
+                if words is None:
+                    path = self.pbre_dir / rec["file"]
+                    blob = path.read_bytes()
+                    disk_n = len(blob)
+                    words = decode_pbr_blob(blob, tuple(int(x) for x in rec["shape"]))
+                    del blob
+                    self._store_warm_u16(key, words)
+                if self.verify_sha and not from_warm:
+                    got = sha256_words(words)
+                    if got != rec["sha256"]:
+                        fail = 1
+                        raise AssertionError(f"PBR-E SHA mismatch {key}: {got} != {rec['sha256']}")
+                    checks = 1
+        except Exception:
+            with self._lock:
+                self._futs.pop(key, None)
+            raise
+        dt = time.perf_counter() - t0
+        with self._lock:
+            self.stats.disk_read_bytes += disk_n
+            self.stats.decode_s += dt
+            self.stats.exact_checks += checks
+            self.stats.exact_fail += fail
+            self._ready[key] = words
+            self._futs.pop(key, None)
+            self._kick_locked()
+            self.stats.note_rss()
+        return words
 
-        container = PBRContainer.loads(blob)
-        decoded = decode_container(container)[0]
-        words = decoded.reshape(tuple(int(x) for x in rec["shape"]))
-        if self.verify_sha:
-            got = sha256_words(words)
-            if got != rec["sha256"]:
-                fail = 1
-                raise AssertionError(f"PBR-E SHA mismatch {key}: {got} != {rec['sha256']}")
-            checks = 1
-        del blob, container, decoded
-        return key, words, disk_n, time.perf_counter() - t0, checks, fail
+    def _take_ready(self, key: str) -> np.ndarray | None:
+        arr = self._ready.pop(key, None)
+        if arr is None:
+            arr = self._cache.get(key)
+            if arr is None:
+                return None
+            self._cache.pop(key)
+            self._cache[key] = arr
+            return arr
+        return self._remember_decoded(key, arr)
 
     def load(self, key: str) -> np.ndarray:
         with self._lock:
@@ -361,32 +452,28 @@ class FastPbrDirSource(PbrDirSource):
                 self.stats.n_loads += 1
                 self.stats.note_rss()
                 return arr
-            fut, fkey = self._fut, self._fut_key
-        if fkey == key and fut is not None:
-            _k, arr, disk_n, dec_s, checks, fail = fut.result()
+            if key in self._ready:
+                self.stats.n_loads += 1
+                self.stats.note_rss()
+                return self._take_ready(key)  # type: ignore[return-value]
+            fut = self._futs.get(key)
+            self._want.pop(key, None)
+        if fut is not None:
+            fut.result()
             with self._lock:
-                if self._fut is fut:
-                    self._fut = None
-                    self._fut_key = None
-            self.stats.disk_read_bytes += disk_n
-            self.stats.decode_s += dec_s
-            self.stats.n_loads += 1
-            self.stats.exact_checks += checks
-            self.stats.exact_fail += fail
-            self.stats.note_rss()
-            with self._lock:
-                self._remember_decoded(key, arr)
+                arr = self._take_ready(key)
+                self.stats.n_loads += 1
+                self.stats.note_rss()
+            if arr is None:
+                raise RuntimeError(f"prefetch produced no tensor for {key}")
             return arr
-        _k, arr, disk_n, dec_s, checks, fail = self._decode_job(key)
-        self.stats.disk_read_bytes += disk_n
-        self.stats.decode_s += dec_s
-        self.stats.n_loads += 1
-        self.stats.exact_checks += checks
-        self.stats.exact_fail += fail
-        self.stats.note_rss()
+        # Caller-thread decode (still overlaps in-flight workers).
+        words = self._decode_job(key)
         with self._lock:
-            self._remember_decoded(key, arr)
-        return arr
+            arr = self._take_ready(key)
+            self.stats.n_loads += 1
+            self.stats.note_rss()
+        return arr if arr is not None else words
 
 
 def _pbre_name(key: str) -> str:
@@ -454,6 +541,64 @@ def encode_pbre_dir(
         flush=True,
     )
     return index
+
+
+def materialize_decoded_cache(
+    pbre_dir: Path,
+    dest: Path,
+    *,
+    workers: int | None = None,
+    verify_sha: bool = True,
+) -> dict:
+    """Decode every PBR-E tensor once to a uint16 sidecar (warm mmap path)."""
+    pbre_dir = Path(pbre_dir)
+    dest = Path(dest)
+    index_path = pbre_dir / "index.json"
+    if not index_path.is_file():
+        raise FileNotFoundError(index_path)
+    index = json.loads(index_path.read_text(encoding="utf-8"))
+    dest.mkdir(parents=True, exist_ok=True)
+    keys = list(index["tensors"])
+    n_workers = max(1, int(workers or min(4, os.cpu_count() or 4)))
+    t0 = time.perf_counter()
+    n_bytes = 0
+    n_checks = 0
+
+    def _one(key: str) -> int:
+        rec = index["tensors"][key]
+        blob = (pbre_dir / rec["file"]).read_bytes()
+        words = decode_pbr_blob(blob, tuple(int(x) for x in rec["shape"]))
+        if verify_sha:
+            got = sha256_words(words)
+            if got != rec["sha256"]:
+                raise AssertionError(f"PBR-E SHA mismatch {key}: {got} != {rec['sha256']}")
+        path = dest / (key.replace("/", ".") + ".u16")
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        np.ascontiguousarray(words, dtype="<u2").tofile(tmp)
+        tmp.replace(path)
+        return int(words.nbytes)
+
+    with ThreadPoolExecutor(max_workers=n_workers, thread_name_prefix="pbre-warm") as pool:
+        for nbytes in pool.map(_one, keys):
+            n_bytes += nbytes
+            n_checks += 1
+    wall = time.perf_counter() - t0
+    meta = {
+        "disclaimer": DISCLAIMER,
+        "n_tensors": len(keys),
+        "decoded_bytes": n_bytes,
+        "wall_s": wall,
+        "dir": str(dest),
+        "sha_checks": n_checks if verify_sha else 0,
+        "workers": n_workers,
+    }
+    (dest / "index.json").write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
+    print(
+        f"  materialized {len(keys)} uint16 sidecars  {bytes_human(n_bytes)}  "
+        f"in {wall:.3f}s  ({n_workers} workers)",
+        flush=True,
+    )
+    return meta
 
 
 def _rand_bf16(shape: tuple[int, ...], rng: np.random.Generator) -> np.ndarray:
@@ -647,9 +792,27 @@ def lm_head_chunked(
         stats.compute_s += time.perf_counter() - t0
         stats.n_matmuls += 1
         del sl, w
-        gc.collect()
         stats.note_rss()
     return logits
+
+
+def _layer_keys(li: int, specs: dict[str, TensorSpec]) -> list[str]:
+    prefix = f"model.layers.{li}"
+    cand = [
+        f"{prefix}.input_layernorm.weight",
+        f"{prefix}.self_attn.q_proj.weight",
+        f"{prefix}.self_attn.q_proj.bias",
+        f"{prefix}.self_attn.k_proj.weight",
+        f"{prefix}.self_attn.k_proj.bias",
+        f"{prefix}.self_attn.v_proj.weight",
+        f"{prefix}.self_attn.v_proj.bias",
+        f"{prefix}.self_attn.o_proj.weight",
+        f"{prefix}.post_attention_layernorm.weight",
+        f"{prefix}.mlp.gate_proj.weight",
+        f"{prefix}.mlp.up_proj.weight",
+        f"{prefix}.mlp.down_proj.weight",
+    ]
+    return [name for name in cand if name in specs]
 
 
 def qwen_forward(
@@ -675,13 +838,19 @@ def qwen_forward(
     tlen = int(ids.size)
 
     embed_name = "model.embed_tokens.weight"
+    src.prefetch_many(_layer_keys(0, specs) + (_layer_keys(1, specs) if n_layer > 1 else []))
     x = embed_tokens(src, embed_name, ids)
     src.stats.note_rss()
     cos, sin = _rope_cos_sin(tlen, head_dim, theta)
 
     for li in range(n_layer):
         prefix = f"model.layers.{li}"
-        _pf(src, f"{prefix}.self_attn.q_proj.weight")
+        upcoming = _layer_keys(li, specs)
+        if li + 1 < n_layer:
+            upcoming = upcoming + _layer_keys(li + 1, specs)
+        if li + 2 < n_layer:
+            upcoming = upcoming + _layer_keys(li + 2, specs)
+        src.prefetch_many(upcoming)
         n1 = src.load_compute(f"{prefix}.input_layernorm.weight")
         h = rms_norm(x, n1, eps, src.stats)
         del n1
@@ -754,6 +923,7 @@ def run_mode(
     encode_if_missing: bool,
     verify_pbre: bool,
     lm_head_chunk: int,
+    decoded_dir: Path | None = None,
 ) -> dict:
     gc.collect()
     malloc_trim()
@@ -769,7 +939,7 @@ def run_mode(
         src: WeightSource = FullRamSource(specs)
     elif mode == "mmap":
         src = MmapSafetensorsSource(specs, max_resident=1)
-    elif mode in {"pbre", "pbre_fast", "pbre_slow"}:
+    elif mode in {"pbre", "pbre_fast", "pbre_slow", "pbre_faster", "pbre_faster_warm"}:
         from pbr_core.rans import rans_impl
 
         index_path = pbre_dir / "index.json"
@@ -792,17 +962,30 @@ def run_mode(
             src.name = "pbre_slow"
         else:
             os.environ["PBR_RANS_IMPL"] = "c"
+            faster = mode in {"pbre_faster", "pbre_faster_warm"}
+            warm = mode == "pbre_faster_warm"
+            ncpu = os.cpu_count() or 4
+            decoded_dir = Path(decoded_dir or os.environ.get("PBR_DECODED_DIR") or DEFAULT_DECODED_DIR)
             src = FastPbrDirSource(
                 index,
                 pbre_dir,
                 specs=specs if verify_pbre else {},
-                verify_sha=verify_pbre,
+                verify_sha=verify_pbre and not warm,
                 mmap_fallback=mmap_fallback,
-                cache_slots=2,
+                cache_slots=32 if faster else 2,
                 prefetch=True,
+                prefetch_workers=max(2, min(4, ncpu)) if faster else 1,
+                prefetch_depth=16 if faster else 1,
+                decoded_cache_dir=decoded_dir if warm else None,
+                write_decoded_cache=False,
+                prefer_decoded_cache=warm,
             )
             if mode == "pbre":
                 src.name = "pbre_dir"
+            elif mode == "pbre_faster":
+                src.name = "pbre_faster"
+            elif mode == "pbre_faster_warm":
+                src.name = "pbre_faster_warm"
         summary_impl = rans_impl()
         rans_backend = summary_impl
     else:
@@ -891,7 +1074,7 @@ def format_markdown(report: dict) -> str:
         "| mode | peak sampled RSS | ru_maxrss | disk read | decode s | compute s | wall s | tok/s | matmuls/s | exact |",
         "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
     ]
-    for name in ("full", "mmap", "pbre", "pbre_fast", "pbre_slow", "hybrid"):
+    for name in ("full", "mmap", "pbre", "pbre_fast", "pbre_faster", "pbre_faster_warm", "pbre_slow", "hybrid"):
         if name not in modes:
             continue
         s = modes[name]
@@ -907,6 +1090,8 @@ def format_markdown(report: dict) -> str:
     pbre = modes.get("pbre") or modes.get("pbre_fast") or {}
     pbre_slow = modes.get("pbre_slow") or {}
     pbre_fast = modes.get("pbre_fast") or {}
+    pbre_faster = modes.get("pbre_faster") or {}
+    pbre_faster_warm = modes.get("pbre_faster_warm") or {}
     hybrid = modes.get("hybrid") or {}
     if full and mmap and full.get("rss_maxrss_bytes"):
         ratio = mmap["rss_maxrss_bytes"] / max(full["rss_maxrss_bytes"], 1)
@@ -918,7 +1103,14 @@ def format_markdown(report: dict) -> str:
             f"({bytes_human(mmap['rss_peak_sampled_bytes'])} vs "
             f"{bytes_human(full['rss_peak_sampled_bytes'])}).",
         ]
-    for label, row in (("pbre", pbre), ("pbre_fast", pbre_fast), ("pbre_slow", pbre_slow), ("hybrid", hybrid)):
+    for label, row in (
+        ("pbre", pbre),
+        ("pbre_fast", pbre_fast),
+        ("pbre_faster", pbre_faster),
+        ("pbre_faster_warm", pbre_faster_warm),
+        ("pbre_slow", pbre_slow),
+        ("hybrid", hybrid),
+    ):
         if not (full and row and full.get("rss_maxrss_bytes") and row.get("rss_maxrss_bytes")):
             continue
         if label == "pbre" and pbre_fast and row is pbre_fast:
@@ -1014,6 +1206,8 @@ def _spawn_isolated_mode(args: argparse.Namespace, mode: str, worker_dir: Path) 
         str(args.layers),
         "--lm-head-chunk",
         str(args.lm_head_chunk),
+        "--decoded-dir",
+        str(getattr(args, "decoded_dir", DEFAULT_DECODED_DIR)),
         "--config",
         str(args.config),
         "--worker-dir",
@@ -1030,7 +1224,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--pbre-dir", type=Path, default=DEFAULT_PBRE_DIR)
     parser.add_argument(
         "--mode",
-        choices=["full", "mmap", "pbre", "pbre_fast", "pbre_slow", "all"],
+        choices=["full", "mmap", "pbre", "pbre_fast", "pbre_slow", "pbre_faster", "pbre_faster_warm", "all"],
         default="all",
     )
     parser.add_argument("--tokens", type=int, default=DEFAULT_TOKENS)
@@ -1038,6 +1232,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--encode", action="store_true", help="Build per-tensor PBR-E dir if missing")
     parser.add_argument("--no-verify", action="store_true")
     parser.add_argument("--lm-head-chunk", type=int, default=LM_HEAD_ROWS)
+    parser.add_argument("--decoded-dir", type=Path, default=DEFAULT_DECODED_DIR)
     parser.add_argument("--config", type=Path, default=Path("configs/poc_real.yaml"))
     parser.add_argument("--json-out", type=Path, default=Path("artifacts/disk_ram_tunnel.json"))
     parser.add_argument("--md-out", type=Path, default=Path("artifacts/disk_ram_tunnel.md"))
@@ -1070,6 +1265,7 @@ def main(argv: list[str] | None = None) -> int:
             encode_if_missing=encode,
             verify_pbre=not args.no_verify,
             lm_head_chunk=args.lm_head_chunk,
+            decoded_dir=args.decoded_dir,
         )
         s = out["summary"]
         print(

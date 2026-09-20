@@ -53,3 +53,34 @@ def test_exp_rans_not_worse_than_raw_on_few_exponents() -> None:
     assert TILE_HEADER_BYTES + len(rans.payload) < raw
     rans.rows, rans.cols = 64, 128
     assert_exact(words, Bf16ExpRansCodec().decode(rans), label="exp_rans_few")
+
+
+def test_fused_c_tile_matches_python_decode() -> None:
+    import os
+
+    from pbr_core.rans import decode_exp_rans_tile_c, rans_impl
+
+    rng = np.random.default_rng(11)
+    n = 4096
+    words = make_bf16_bits(
+        rng.integers(0, 2, size=n, dtype=np.uint16),
+        rng.choice(np.array([120, 126, 127, 128], dtype=np.uint16), size=n),
+        rng.integers(0, 128, size=n, dtype=np.uint16),
+    ).reshape(32, 128)
+    enc = Bf16ExpRansCodec().encode(words)
+    assert enc is not None
+    enc.rows, enc.cols = 32, 128
+    fused = decode_exp_rans_tile_c(enc.payload, n)
+    prev = os.environ.get("PBR_RANS_IMPL")
+    os.environ["PBR_RANS_IMPL"] = "python"
+    try:
+        py = Bf16ExpRansCodec().decode(enc)
+    finally:
+        if prev is None:
+            os.environ.pop("PBR_RANS_IMPL", None)
+        else:
+            os.environ["PBR_RANS_IMPL"] = prev
+    if rans_impl() == "c":
+        assert fused is not None
+        assert_exact(words, fused.reshape(32, 128), label="fused_c")
+    assert_exact(words, py, label="python_fallback")

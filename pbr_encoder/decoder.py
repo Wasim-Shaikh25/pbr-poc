@@ -20,7 +20,7 @@ from pbr_codecs.residual import decode_residuals
 from pbr_codecs.transforms import apply_transform
 from pbr_codecs.value_dictionary import ValueDictCodec
 from pbr_codecs.xor_predictor import ConstPredCodec, PrevRowCodec, PrevValueCodec
-from pbr_core.container import PBRContainer, TensorBlob
+from pbr_core.container import PBRContainer, TensorBlob, iter_raw_tiles
 from pbr_core.safetensors_io import tensor_role
 from pbr_core.tiles import place_tile
 from pbr_core.types import (
@@ -42,6 +42,7 @@ from pbr_core.types import (
     MODE_REF_PREV,
     MODE_VALUE_DICT,
     MODE_XFORM_REF,
+    MODE_NAMES,
     EncodedBlock,
     EncodeContext,
 )
@@ -142,3 +143,49 @@ def decode_container(
         refs[key] = words
         out.append(words)
     return out
+
+
+def decode_pbr_blob(data: bytes, logical_shape: tuple[int, ...]) -> np.ndarray:
+    """Fast path: skip JSON header, fused C rANS+join per tile, bit-exact uint16."""
+    from pbr_core.rans import decode_exp_rans_tile_c
+
+    shape = tuple(int(x) for x in logical_shape)
+    if len(shape) == 1:
+        shape2d = (1, shape[0])
+    elif len(shape) == 2:
+        shape2d = shape
+    else:
+        shape2d = (shape[0], int(np.prod(shape[1:])))
+    out = np.empty(shape2d, dtype=np.uint16)
+    context = EncodeContext(ncols=int(shape2d[1]))
+    decoded_tiles: list[np.ndarray] = []
+    for i, (mode_id, rows, cols, row0, col0, payload) in enumerate(iter_raw_tiles(data)):
+        n = int(rows) * int(cols)
+        words = None
+        fused = False
+        if mode_id == MODE_EXP_RANS:
+            words = decode_exp_rans_tile_c(payload, n)
+            if words is not None:
+                words = words.reshape(int(rows), int(cols))
+                fused = True
+        if words is None:
+            block = EncodedBlock(
+                mode_id=mode_id,
+                mode_name=MODE_NAMES.get(mode_id, f"mode_{mode_id}"),
+                payload=payload,
+                rows=int(rows),
+                cols=int(cols),
+                row0=int(row0),
+                col0=int(col0),
+            )
+            context.tile_index = i
+            context.tile_row0 = int(row0)
+            context.tile_col0 = int(col0)
+            words = decode_tile(block, context, decoded_tiles)
+        if words.shape != (int(rows), int(cols)):
+            raise ValueError(f"Decoded tile shape {words.shape} != ({rows}, {cols})")
+        place_tile(out, words, int(row0), int(col0))
+        decoded_tiles.append(words)
+        if not fused:
+            context.record(words)
+    return out.reshape(shape)

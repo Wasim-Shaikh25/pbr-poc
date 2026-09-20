@@ -99,6 +99,12 @@ class Bf16ExpHuffmanCodec:
             )
         stream = table.decode_symbols(bitstream, n)
         exp = stream if pred == PRED_NONE else _exp_from_residuals(stream)
-        sign, mant = unpack_sign_mantissa(np.frombuffer(packed_sm, dtype=np.uint8))
+        packed = np.frombuffer(packed_sm, dtype=np.uint8)
+        from pbr_core.rans import join_bf16_u16
+
+        joined = join_bf16_u16(exp, packed)
+        if joined is not None:
+            return joined.reshape(encoded.rows, encoded.cols)
+        sign, mant = unpack_sign_mantissa(packed)
         words = join_components(sign, exp, mant)
         return words.reshape(encoded.rows, encoded.cols)

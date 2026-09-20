@@ -63,6 +63,11 @@ class Bf16ExpRansCodec:
     def decode(self, encoded: EncodedBlock, context: EncodeContext | None = None) -> np.ndarray:
         del context
         n = encoded.rows * encoded.cols
+        from pbr_core.rans import decode_exp_rans_tile_c, join_bf16_u16
+
+        fused = decode_exp_rans_tile_c(encoded.payload, n)
+        if fused is not None:
+            return fused.reshape(encoded.rows, encoded.cols)
         pred, book_len, bit_len = struct.unpack_from("<BHI", encoded.payload, 0)
         offset = 7
         freq, book_end = load_freq_table(encoded.payload, offset)
@@ -74,6 +79,10 @@ class Bf16ExpRansCodec:
             raise ValueError(f"exp-rANS sign/mantissa length {len(packed_sm)} != {n}")
         stream = rans_decode(bitstream, n, freq)
         exp = stream if pred == PRED_NONE else _exp_from_residuals(stream)
-        sign, mant = unpack_sign_mantissa(np.frombuffer(packed_sm, dtype=np.uint8))
+        packed = np.frombuffer(packed_sm, dtype=np.uint8)
+        joined = join_bf16_u16(exp, packed)
+        if joined is not None:
+            return joined.reshape(encoded.rows, encoded.cols)
+        sign, mant = unpack_sign_mantissa(packed)
         words = join_components(sign, exp, mant)
         return words.reshape(encoded.rows, encoded.cols)
