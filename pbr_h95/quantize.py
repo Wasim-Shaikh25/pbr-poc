@@ -84,27 +84,12 @@ def reconstruct_from_fields(
 
 
 def pack_kept_mantissas(mant_full: np.ndarray, keep_bits: int) -> bytes:
-    """Pack the top keep_bits of each full 7-bit mantissa into a bitsteam (MSB-first per value)."""
-    if keep_bits == 0:
-        return b""
-    m = np.asarray(mant_full, dtype=np.uint16).ravel()
-    removed = 7 - keep_bits
-    kept = (m >> np.uint16(removed)) & np.uint16((1 << keep_bits) - 1)
-    # MSB-first within each symbol, concatenate.
-    bits = []
-    for v in kept.tolist():
-        for i in range(keep_bits - 1, -1, -1):
-            bits.append((v >> i) & 1)
-    # pad to byte
-    pad = (-len(bits)) % 8
-    bits.extend([0] * pad)
-    out = bytearray()
-    for i in range(0, len(bits), 8):
-        b = 0
-        for bit in bits[i : i + 8]:
-            b = (b << 1) | bit
-        out.append(b)
-    return bytes(out)
+    """Pack the top keep_bits of each full 7-bit mantissa into a bitstream (MSB-first).
+
+    Delegates to ``pbr_h95.bitpack.pack_kept_mantissas`` (vectorized).
+    """
+    from pbr_h95.bitpack import pack_kept_mantissas as _pack
+    return _pack(mant_full, keep_bits)
 
 
 def mantissa_storage_bpw(n_words: int, keep_bits: int) -> float:
