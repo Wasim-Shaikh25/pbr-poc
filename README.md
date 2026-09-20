@@ -566,8 +566,41 @@ must be shipped too. Success is SHA-256 exact restore of the target, not
 python scripts/run_checkpoint_delta.py --tag qwen
 ```
 
-Reports: `artifacts/checkpoint_delta_qwen.{json,md}` (measured tables
-are filled by that run). Config: `configs/poc_delta.yaml`.
+Config: `configs/poc_delta.yaml`.
+
+#### Measured Qwen 0.5B → Instruct (this repo)
+
+**290 / 290** paired 16-bit tensors, **988,065,536 B** original. Every
+method **PASS** (uint16 / SHA-256 reconstruct of Instruct from base+delta).
+
+| metric | value |
+| --- | ---: |
+| % weights unchanged | 2.07 |
+| mean XOR popcount (of 16 bits) | 3.71 |
+| XOR Hamming fraction | 0.232 |
+| H(uint16 XOR) | 8.09 |
+| H(sign XOR) | 0.19 |
+| H(exp XOR) | 1.41 |
+| H(mant XOR) | 6.75 |
+
+| method | complete B | delta-only BPW | bundle B | bundle BPW | exact |
+| --- | ---: | ---: | ---: | ---: | --- |
+| 1. target PBR-E rANS (standalone) | 655839276 | n/a | 655839276 | **10.62** | PASS |
+| 2a. uint16 XOR + zlib | 644202227 | 10.43 | 1300022374 | 21.05 | PASS |
+| 2b. uint16 XOR + rANS lo/hi | 516005521 | **8.36** | 1171825668 | 18.98 | PASS |
+| 3. sign/exp/mantissa field deltas | 546290439 | 8.85 | 1202110586 | 19.47 | PASS |
+| 4. sparse changed-position patches | 1029449871 | 16.67 | 1685270018 | 27.29 | PASS |
+| 5. default XOR residual + dict/raw | 988076895 | 16.00 | 1643897042 | 26.62 | PASS |
+| base PBR-E rANS (bundle addend) | 655820147 | n/a | 655820147 | 10.62 | PASS |
+
+Standalone Instruct is **10.62 BPW** (same DF11-class band as rANS PBR-E).
+Best residual is whole-word XOR + rANS (**8.36 delta-only BPW**) — cheaper
+than the finetune alone *only if the base is already on disk*. If the base
+must be shipped too, the honest total is **base PBR-E + delta ≈ 19 BPW**,
+worse than sending Instruct standalone. Sparse patches lose: 98% of
+weights change. Not ≤4 BPW. Not a 1–2 GB / 8 GB claim.
+
+Reports: `artifacts/checkpoint_delta_qwen.{json,md}`.
 
 ### Measured Stage 2 run (this repo)
 
@@ -684,10 +717,11 @@ Stage 1B BPW (13.61, `bf16_components`) and PBR-E BPW (10.87,
 `bf16_exp_huffman`) on real Qwen tensors are measurements of **this encoder
 on those tensors**, including headers. Llama-3.2-1B (unsloth BF16 mirror)
 measured **10.84 BPW** on an 11-tensor sample. Stage 2 BPW is a **sample
-projection** for the whole 16-bit parameter set (pre-PBR-E codecs). None
-of these is a measured 8 GB-model result. PBR-E ≈ DF11/ZipNN-class; the
-hierarchical/position program is the distinctive bet and has not won on
-these dense samples.
+projection** for the whole 16-bit parameter set (pre-PBR-E codecs). The
+base→Instruct delta is **8.36 BPW** only as a residual assuming the base
+is already present; shipping both is ~19 BPW. None of these is a measured
+8 GB-model result. PBR-E ≈ DF11/ZipNN-class; related-checkpoint XOR is
+not a way to hide a second full checkpoint.
 
 zlib / zstd columns, when present, are **general-purpose baselines**, not PBR
 modes. Forced uint16-spatial rows in the blocker ablation exist to show
