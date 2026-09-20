@@ -255,9 +255,11 @@ def _summarize(rows: list[dict]) -> dict:
         "weighted_H_exp_prev_row": wavg(["residual_entropy", "exp_prev_row"]),
         "spatial_win_fraction_tile256": win256,
         "note": (
-            "Mantissa entropy stays near 7 bits; uint16 residuals stay near 16 bits. "
-            "Exponent residuals can drop below H(exp). Exact duplicate tiles are rare. "
-            "These numbers explain why uint16 spatial/dict modes lose to exponent Huffman."
+            "Mantissa entropy stays near 7 bits. On this Qwen sample, uint16 spatial "
+            "residuals are *higher* than H(uint16), and exponent spatial residuals "
+            "are *higher* than H(exp). Exact duplicate tiles are zero at 64/256/1024 "
+            "(including same-role across layers). uint16 spatial beats raw only in "
+            "the ideal no-codebook sense; complete container cost loses on every tile."
         ),
     }
 
@@ -282,7 +284,8 @@ def format_markdown(report: dict) -> str:
         f"| H(exponent prev_value residual) | {s['weighted_H_exp_prev_value']:.4f} |",
         f"| H(exponent prev_row residual) | {s['weighted_H_exp_prev_row']:.4f} |",
         "",
-        "Tile-256 fraction where spatial residual entropy beats raw:",
+        "Tile-256 fraction where spatial residual entropy beats *raw uint16* "
+        "(not vs exponent Huffman):",
         "",
         "| | ideal (ignore meta) | complete container |",
         "| --- | ---: | ---: |",

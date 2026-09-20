@@ -331,6 +331,40 @@ only, zlib baseline. Success for this run is **not** ≤4 BPW — it is a
 clear diagnosis plus an honest win or miss for spatial-on-exponents vs
 plain PBR-E (~10.87).
 
+### Measured blocker diagnosis (same 42 tensors)
+
+Weighted entropies on 83,836,928 BF16 words. Checkpoint has 290 16-bit
+tensors; this table is the Stage 1B sample.
+
+| field | bits |
+| --- | ---: |
+| H(uint16) | 10.54 |
+| H(exponent) | **2.61** |
+| H(mantissa) | **6.97** |
+| H(sign) | 1.00 |
+| H(uint16 prev_value residual) | 11.11 |
+| H(uint16 prev_row residual) | 11.12 |
+| H(exponent prev_value residual) | 3.12 |
+| H(exponent prev_row residual) | 3.13 |
+
+Spatial-on-uint16 residuals are **worse** than storing the words. Spatial-on-exponent residuals are **worse** than raw exponents. Exact duplicate tile rate is **0** at tile sizes 64 / 256 / 1024, including same-role tiles across layers. Ideal (no-codebook) uint16 residuals beat raw 16-bit storage, but **0%** of those tiles beat raw once tile headers + codebooks are counted.
+
+### Measured blocker ablation (same 42 tensors, all exact PASS)
+
+| profile | enc B | BPW | ratio | winning modes |
+| --- | ---: | ---: | ---: | --- |
+| PBR-E only | 113,900,442 | **10.87** | 0.679 | `bf16_exp_huffman` 42/42 |
+| New modes (A/B/C enabled) | 113,900,652 | **10.87** | 0.679 | `bf16_exp_huffman` 42/42 |
+| Forced uint16 spatial | 176,866,107 | **16.88** | 1.055 | `raw_bf16` 327,488/327,488 tiles |
+| zlib (baseline, not PBR) | 133,488,038 | 12.74 | 0.796 | — |
+
+**Honest negative:** spatial / hierarchical / cross-layer predictors on
+exponents did **not** beat plain `bf16_exp_huffman` on this Qwen sample.
+They stay in the menu and remain bit-exact; the winner is still PBR-E at
+~10.87 BPW. Forced spatial-on-uint16 documents the original blocker
+(raw fallback, worse than uncompressed because of tile headers). ≤4 BPW
+is still out of scope. Not a 1–2 GB / 8 GB claim.
+
 ### Measured Stage 2 run (this repo)
 
 Same Qwen revision as Stage 1B
@@ -370,7 +404,7 @@ The suite fails loudly (`ExactnessError: EXACTNESS FAIL ...`) if any uint16 word
 differs. Cases include special BF16 bit patterns (signed zero, Inf, NaN
 payloads, subnormals) that an FP32 detour would be likely to destroy.
 
-Stage 1B / Stage 2 / PBR-E unit tests write tiny local Safetensors fixtures.
+Stage 1B / Stage 2 / PBR-E / blocker-mitigation unit tests write tiny local Safetensors fixtures.
 They do **not** download the 988 MB checkpoint. Live download tests are
 skipped unless `PBR_LIVE_HF=1`.
 
