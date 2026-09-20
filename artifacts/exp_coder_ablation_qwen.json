@@ -1,0 +1,992 @@
+{
+  "disclaimer": "Exponent coder ablation (canonical Huffman vs rANS). Complete bytes include table + stream + packed sign/mantissa + one tile header. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+  "model": {
+    "repo_id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "license": "Apache-2.0",
+    "selected": [
+      "model.layers.0.mlp.down_proj.weight",
+      "model.layers.0.mlp.gate_proj.weight",
+      "model.layers.0.mlp.up_proj.weight",
+      "model.layers.0.self_attn.k_proj.weight",
+      "model.layers.0.self_attn.o_proj.weight",
+      "model.layers.0.self_attn.q_proj.weight",
+      "model.layers.0.self_attn.v_proj.weight",
+      "model.layers.12.mlp.down_proj.weight",
+      "model.layers.12.mlp.gate_proj.weight",
+      "model.layers.12.mlp.up_proj.weight",
+      "model.layers.12.self_attn.k_proj.weight",
+      "model.layers.12.self_attn.o_proj.weight",
+      "model.layers.12.self_attn.q_proj.weight",
+      "model.layers.12.self_attn.v_proj.weight",
+      "model.layers.23.mlp.down_proj.weight",
+      "model.layers.23.mlp.gate_proj.weight",
+      "model.layers.23.mlp.up_proj.weight",
+      "model.layers.23.self_attn.k_proj.weight",
+      "model.layers.23.self_attn.o_proj.weight",
+      "model.layers.23.self_attn.q_proj.weight",
+      "model.layers.23.self_attn.v_proj.weight",
+      "model.layers.1.mlp.down_proj.weight",
+      "model.layers.1.mlp.gate_proj.weight",
+      "model.layers.1.mlp.up_proj.weight",
+      "model.layers.1.self_attn.k_proj.weight",
+      "model.layers.1.self_attn.o_proj.weight",
+      "model.layers.1.self_attn.q_proj.weight",
+      "model.layers.1.self_attn.v_proj.weight",
+      "model.layers.2.mlp.down_proj.weight",
+      "model.layers.2.mlp.gate_proj.weight",
+      "model.layers.2.mlp.up_proj.weight",
+      "model.layers.2.self_attn.k_proj.weight",
+      "model.layers.2.self_attn.o_proj.weight",
+      "model.layers.2.self_attn.q_proj.weight",
+      "model.layers.2.self_attn.v_proj.weight",
+      "model.layers.3.mlp.down_proj.weight",
+      "model.layers.3.mlp.gate_proj.weight",
+      "model.layers.3.self_attn.k_proj.weight",
+      "model.layers.3.self_attn.v_proj.weight",
+      "model.layers.4.self_attn.k_proj.weight",
+      "model.layers.4.self_attn.v_proj.weight",
+      "model.layers.5.self_attn.k_proj.weight"
+    ]
+  },
+  "totals": {
+    "tensor_count": 42,
+    "n_words": 83836928,
+    "original_bytes": 167673856,
+    "weighted_H_exp": 2.6123648655118297,
+    "bound_bytes": 111216676,
+    "bound_bpw": 10.612667105359586,
+    "huffman_bytes": 113875515,
+    "huffman_bpw": 10.86638241324873,
+    "huffman_exact": "PASS",
+    "rans_bytes": 111253029,
+    "rans_bpw": 10.616136030175152,
+    "rans_exact": "PASS"
+  },
+  "tensors": [
+    {
+      "name": "model.layers.0.mlp.down_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.598946716791184,
+      "bound_bytes": 5774050,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5891401,
+        "complete_bytes": 5891418,
+        "bpw": 10.81454490718985,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5776106,
+        "complete_bytes": 5776123,
+        "bpw": 10.602904355615602,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.0.mlp.gate_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.603015984377265,
+      "bound_bytes": 5776262,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5935585,
+        "complete_bytes": 5935602,
+        "bpw": 10.895650992716165,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5777949,
+        "complete_bytes": 5777966,
+        "bpw": 10.60628744713346,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.0.mlp.up_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.567576268591605,
+      "bound_bytes": 5756958,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5931985,
+        "complete_bytes": 5932002,
+        "bpw": 10.889042675046992,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5758912,
+        "complete_bytes": 5758929,
+        "bpw": 10.571342296170112,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.0.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "H_exp": 2.897507017699085,
+      "bound_bytes": 156299,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 159774,
+        "complete_bytes": 159791,
+        "bpw": 11.146135602678571,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 156332,
+        "complete_bytes": 156349,
+        "bpw": 10.906040736607142,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.0.self_attn.o_proj.weight",
+      "n_words": 802816,
+      "H_exp": 2.7153329319291815,
+      "bound_bytes": 1075384,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 1102712,
+        "complete_bytes": 1102729,
+        "bpw": 10.98861009247449,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 1075664,
+        "complete_bytes": 1075681,
+        "bpw": 10.71907884247449,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.0.self_attn.q_proj.weight",
+      "n_words": 802816,
+      "H_exp": 2.85861517142191,
+      "bound_bytes": 1089760,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 1115334,
+        "complete_bytes": 1115351,
+        "bpw": 11.114387356505102,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 1089978,
+        "complete_bytes": 1089995,
+        "bpw": 10.861716757015307,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.0.self_attn.v_proj.weight",
+      "n_words": 114688,
+      "H_exp": 2.652849617486033,
+      "bound_bytes": 152790,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 156821,
+        "complete_bytes": 156838,
+        "bpw": 10.940150669642858,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 152819,
+        "complete_bytes": 152836,
+        "bpw": 10.660993303571429,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.12.mlp.down_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.6607030083425065,
+      "bound_bytes": 5807692,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5968913,
+        "complete_bytes": 5968930,
+        "bpw": 10.95682932918233,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5809689,
+        "complete_bytes": 5809706,
+        "bpw": 10.66455078125,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.12.mlp.gate_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.641514702090167,
+      "bound_bytes": 5797231,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5961988,
+        "complete_bytes": 5962005,
+        "bpw": 10.944117495888158,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5798477,
+        "complete_bytes": 5798494,
+        "bpw": 10.64396954299812,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.12.mlp.up_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.6094862680104782,
+      "bound_bytes": 5779789,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5946918,
+        "complete_bytes": 5946935,
+        "bpw": 10.916454343867482,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5781676,
+        "complete_bytes": 5781693,
+        "bpw": 10.61312889156485,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.12.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "H_exp": 2.6937368128966765,
+      "bound_bytes": 153372,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 153802,
+        "complete_bytes": 153819,
+        "bpw": 10.729561941964286,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 153391,
+        "complete_bytes": 153408,
+        "bpw": 10.700892857142858,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.12.self_attn.o_proj.weight",
+      "n_words": 802816,
+      "H_exp": 2.7494782186244486,
+      "bound_bytes": 1078808,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 1106262,
+        "complete_bytes": 1106279,
+        "bpw": 11.023985570790817,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 1079086,
+        "complete_bytes": 1079103,
+        "bpw": 10.753178810586734,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.12.self_attn.q_proj.weight",
+      "n_words": 802816,
+      "H_exp": 2.7055085915806014,
+      "bound_bytes": 1074396,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 1102628,
+        "complete_bytes": 1102645,
+        "bpw": 10.987773038903061,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 1074668,
+        "complete_bytes": 1074685,
+        "bpw": 10.70915377869898,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.12.self_attn.v_proj.weight",
+      "n_words": 114688,
+      "H_exp": 2.62911066605276,
+      "bound_bytes": 152443,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 152926,
+        "complete_bytes": 152943,
+        "bpw": 10.66845703125,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 152464,
+        "complete_bytes": 152481,
+        "bpw": 10.63623046875,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.23.mlp.down_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.6064922999311952,
+      "bound_bytes": 5778162,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5895371,
+        "complete_bytes": 5895388,
+        "bpw": 10.821832413063909,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5780391,
+        "complete_bytes": 5780408,
+        "bpw": 10.610770089285714,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.23.mlp.gate_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.591174891018552,
+      "bound_bytes": 5769814,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5932968,
+        "complete_bytes": 5932985,
+        "bpw": 10.890847112899436,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5771713,
+        "complete_bytes": 5771730,
+        "bpw": 10.594840372415414,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.23.mlp.up_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.579612881255245,
+      "bound_bytes": 5763517,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5926317,
+        "complete_bytes": 5926334,
+        "bpw": 10.87863824600564,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5765682,
+        "complete_bytes": 5765699,
+        "bpw": 10.583769604675751,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.23.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "H_exp": 2.786497893735338,
+      "bound_bytes": 154708,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 158466,
+        "complete_bytes": 158483,
+        "bpw": 11.054896763392858,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 154740,
+        "complete_bytes": 154757,
+        "bpw": 10.794991629464286,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.23.self_attn.o_proj.weight",
+      "n_words": 802816,
+      "H_exp": 2.7155312132826595,
+      "bound_bytes": 1075399,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 1103562,
+        "complete_bytes": 1103579,
+        "bpw": 10.99708027742347,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 1075608,
+        "complete_bytes": 1075625,
+        "bpw": 10.718520806760203,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.23.self_attn.q_proj.weight",
+      "n_words": 802816,
+      "H_exp": 2.8605640481595866,
+      "bound_bytes": 1089952,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 1115518,
+        "complete_bytes": 1115535,
+        "bpw": 11.11622090242347,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 1090142,
+        "complete_bytes": 1090159,
+        "bpw": 10.863351004464286,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.23.self_attn.v_proj.weight",
+      "n_words": 114688,
+      "H_exp": 2.667610026206608,
+      "bound_bytes": 152995,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 153653,
+        "complete_bytes": 153670,
+        "bpw": 10.719168526785714,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 153016,
+        "complete_bytes": 153033,
+        "bpw": 10.674734933035714,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.1.mlp.down_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.585587056582555,
+      "bound_bytes": 5766770,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5884488,
+        "complete_bytes": 5884505,
+        "bpw": 10.801855101621241,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5768675,
+        "complete_bytes": 5768692,
+        "bpw": 10.58926368656015,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.1.mlp.gate_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.5847740778678063,
+      "bound_bytes": 5766325,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5878708,
+        "complete_bytes": 5878725,
+        "bpw": 10.791245080474624,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5767949,
+        "complete_bytes": 5767966,
+        "bpw": 10.587931009163533,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.1.mlp.up_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.567524370126606,
+      "bound_bytes": 5756934,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5874323,
+        "complete_bytes": 5874340,
+        "bpw": 10.783195782424812,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5759284,
+        "complete_bytes": 5759301,
+        "bpw": 10.572025155662594,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.1.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "H_exp": 2.691122743056399,
+      "bound_bytes": 153338,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 153653,
+        "complete_bytes": 153670,
+        "bpw": 10.719168526785714,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 153374,
+        "complete_bytes": 153391,
+        "bpw": 10.69970703125,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.1.self_attn.o_proj.weight",
+      "n_words": 802816,
+      "H_exp": 2.670099894384289,
+      "bound_bytes": 1070840,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 1095089,
+        "complete_bytes": 1095106,
+        "bpw": 10.912647480867347,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 1071065,
+        "complete_bytes": 1071082,
+        "bpw": 10.673250159438776,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.1.self_attn.q_proj.weight",
+      "n_words": 802816,
+      "H_exp": 2.698222456622058,
+      "bound_bytes": 1073665,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 1097298,
+        "complete_bytes": 1097315,
+        "bpw": 10.934659996811224,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 1073945,
+        "complete_bytes": 1073962,
+        "bpw": 10.701949139030612,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.1.self_attn.v_proj.weight",
+      "n_words": 114688,
+      "H_exp": 2.644782549501993,
+      "bound_bytes": 152672,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 153170,
+        "complete_bytes": 153187,
+        "bpw": 10.685477120535714,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 152699,
+        "complete_bytes": 152716,
+        "bpw": 10.652622767857142,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.2.mlp.down_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.5965364078795496,
+      "bound_bytes": 5772734,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5890694,
+        "complete_bytes": 5890711,
+        "bpw": 10.813247107025376,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5774626,
+        "complete_bytes": 5774643,
+        "bpw": 10.600187602796053,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.2.mlp.gate_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.5825735275435653,
+      "bound_bytes": 5765126,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5879746,
+        "complete_bytes": 5879763,
+        "bpw": 10.793150478735901,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5766800,
+        "complete_bytes": 5766817,
+        "bpw": 10.58582185444079,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.2.mlp.up_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.5775912396383163,
+      "bound_bytes": 5762416,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5879752,
+        "complete_bytes": 5879769,
+        "bpw": 10.793161492598685,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5764357,
+        "complete_bytes": 5764374,
+        "bpw": 10.581337376644736,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.2.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "H_exp": 2.69663395685612,
+      "bound_bytes": 153415,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 157410,
+        "complete_bytes": 157427,
+        "bpw": 10.981236049107142,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 153446,
+        "complete_bytes": 153463,
+        "bpw": 10.704729352678571,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.2.self_attn.o_proj.weight",
+      "n_words": 802816,
+      "H_exp": 2.68092014969863,
+      "bound_bytes": 1071932,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 1095957,
+        "complete_bytes": 1095974,
+        "bpw": 10.921297034438776,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 1072247,
+        "complete_bytes": 1072264,
+        "bpw": 10.685028698979592,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.2.self_attn.q_proj.weight",
+      "n_words": 802816,
+      "H_exp": 2.755489308484344,
+      "bound_bytes": 1079407,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 1105617,
+        "complete_bytes": 1105634,
+        "bpw": 11.017558195153061,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 1079609,
+        "complete_bytes": 1079626,
+        "bpw": 10.758390465561224,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.2.self_attn.v_proj.weight",
+      "n_words": 114688,
+      "H_exp": 2.684824449849272,
+      "bound_bytes": 153248,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 157280,
+        "complete_bytes": 157297,
+        "bpw": 10.97216796875,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 153282,
+        "complete_bytes": 153299,
+        "bpw": 10.693289620535714,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.3.mlp.down_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.6029750304461445,
+      "bound_bytes": 5776246,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5893457,
+        "complete_bytes": 5893474,
+        "bpw": 10.818318990836467,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5778550,
+        "complete_bytes": 5778567,
+        "bpw": 10.607390669055452,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.3.mlp.gate_proj.weight",
+      "n_words": 4358144,
+      "H_exp": 2.5832170304130915,
+      "bound_bytes": 5765478,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 5926250,
+        "complete_bytes": 5926267,
+        "bpw": 10.878515257871241,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 5767404,
+        "complete_bytes": 5767421,
+        "bpw": 10.586930583294173,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.3.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "H_exp": 2.735280170152072,
+      "bound_bytes": 153969,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 154587,
+        "complete_bytes": 154604,
+        "bpw": 10.784319196428571,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 153998,
+        "complete_bytes": 154015,
+        "bpw": 10.743233816964286,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.3.self_attn.v_proj.weight",
+      "n_words": 114688,
+      "H_exp": 2.6682691632166335,
+      "bound_bytes": 153005,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 153490,
+        "complete_bytes": 153507,
+        "bpw": 10.707798549107142,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 153022,
+        "complete_bytes": 153039,
+        "bpw": 10.675153459821429,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.4.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "H_exp": 2.6881216959637064,
+      "bound_bytes": 153293,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 156524,
+        "complete_bytes": 156541,
+        "bpw": 10.91943359375,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 153324,
+        "complete_bytes": 153341,
+        "bpw": 10.696219308035714,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.4.self_attn.v_proj.weight",
+      "n_words": 114688,
+      "H_exp": 2.632673426945658,
+      "bound_bytes": 152501,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 156918,
+        "complete_bytes": 156935,
+        "bpw": 10.946916852678571,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 152535,
+        "complete_bytes": 152552,
+        "bpw": 10.641183035714286,
+        "exact": "PASS"
+      }
+    },
+    {
+      "name": "model.layers.5.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "H_exp": 2.7078956957938365,
+      "bound_bytes": 153581,
+      "huffman": {
+        "codec": "huffman",
+        "mode_name": "bf16_exp_huffman",
+        "payload_bytes": 157486,
+        "complete_bytes": 157503,
+        "bpw": 10.986537388392858,
+        "exact": "PASS"
+      },
+      "rans": {
+        "codec": "rans",
+        "mode_name": "bf16_exp_rans",
+        "payload_bytes": 153621,
+        "complete_bytes": 153638,
+        "bpw": 10.716936383928571,
+        "exact": "PASS"
+      }
+    }
+  ]
+}

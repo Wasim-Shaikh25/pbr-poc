@@ -495,6 +495,25 @@ are rejected (they do not beat unconditional H(M) after tables). Not ≤4 BPW.
 Llama-3.2-1B lite (11 tensors, 167,772,160 B): best `H(M|exp)` complete
 **6.932** mantissa BPW, implied total ≈ 10.53, same **MISS**.
 
+Leftover 2-D tensors (embedding + layer-10 MLP, **298,418,176 B**):
+best `H(M|exp)` **6.944**, same **MISS**. Embeddings are not a hidden
+easy set.
+
+### Job 3 — Huffman vs rANS on exponents
+
+Same Qwen 42-tensor set. One tile header + freq/code table + exponent
+stream + packed sign/mantissa. Exact PASS both coders.
+
+| coder | enc B | BPW | vs bound |
+| --- | ---: | ---: | --- |
+| entropy bound | 111216676 | **10.613** | 0 |
+| rANS | 111253029 | **10.616** | +0.003 |
+| canonical Huffman | 113875515 | 10.866 | +0.254 |
+
+rANS closes **0.25 BPW** of the old 0.26 Huffman-vs-bound gap. Whole-tensor
+PBR-E now competes `bf16_exp_rans` against Huffman on complete bytes.
+Still DF11-class. Not ≤4 BPW.
+
 Full-checkpoint PBR-E (every 16-bit tensor, `pbre_whole`):
 
 ```bash
@@ -615,7 +634,8 @@ pbr_encoder/     cost-based search, decoder, Stage 1A/1B/PBR-E/Phase A CLIs
 pbr_qualifier/   Stage 2 inventory, entropy, sample encode, BPW projection
 scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py,
                  run_blocker_diagnosis.py, run_blocker_ablation.py,
-                 run_family_eval.py, run_phase_a_mantissa_audit.py
+                 run_family_eval.py, run_phase_a_mantissa_audit.py,
+                 run_pbre_full.py, run_exp_coder_ablation.py
 tests/           exactness, codecs, Stage 1B fixtures, qualifier math,
                  hierarchical leftovers, mantissa audit
 configs/         poc_controlled.yaml, poc_real.yaml, poc_llama.yaml,

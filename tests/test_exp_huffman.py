@@ -83,7 +83,10 @@ def test_exp_huffman_few_exponents_near_df11() -> None:
     assert bpw < 12.0
     names = {t.mode_name for t in container.tensors[0].tiles}
     assert any(
-        n.startswith("bf16_exp_huffman") or n.startswith("exp_") for n in names
+        n.startswith("bf16_exp_huffman")
+        or n.startswith("bf16_exp_rans")
+        or n.startswith("exp_")
+        for n in names
     )
 
 
@@ -115,7 +118,10 @@ def test_exp_huffman_qwen_like_slice_exact() -> None:
     assert bpw < 13.6
     names = {t.mode_name for t in container.tensors[0].tiles}
     assert any(
-        name.startswith("bf16_exp_huffman") or name.startswith("exp_") for name in names
+        name.startswith("bf16_exp_huffman")
+        or name.startswith("bf16_exp_rans")
+        or name.startswith("exp_")
+        for name in names
     )
 
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pbr_codecs.bf16_components import ComponentsCodec
 from pbr_codecs.bf16_exp_huffman import Bf16ExpHuffmanCodec
+from pbr_codecs.bf16_exp_rans import Bf16ExpRansCodec
 from pbr_codecs.bit_planes import BitPlanesCodec
 from pbr_codecs.constant import ConstantCodec
 from pbr_codecs.cross_layer_tile_xor import CrossLayerTileXorCodec
@@ -49,15 +50,16 @@ HIER_CODECS = [
     PositionValueDictCodec(),
 ]
 
-WHOLE_PBRE = [Bf16ExpHuffmanCodec()]
+WHOLE_PBRE = [Bf16ExpHuffmanCodec(), Bf16ExpRansCodec()]
 WHOLE_NEW = [
     Bf16ExpHuffmanCodec(),
+    Bf16ExpRansCodec(),
     ExpSpatialHuffmanCodec(),
     ExpHierResidualCodec(),
     CrossLayerTileXorCodec(),
 ]
 WHOLE_HIER = [*WHOLE_NEW, BitPlanesCodec()]
-PBRE_WHOLE_CODECS = [RawCodec(), Bf16ExpHuffmanCodec()]
+PBRE_WHOLE_CODECS = [RawCodec(), Bf16ExpHuffmanCodec(), Bf16ExpRansCodec()]
 
 PROFILES = {
     "pbre": {
