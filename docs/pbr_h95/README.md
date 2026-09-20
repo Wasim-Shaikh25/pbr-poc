@@ -276,3 +276,14 @@ PYTHONPATH=. .venv/bin/python scripts/run_pbr_h95q_container.py --version 2 \
   --candidates H95Q-Conservative H95Q-Balanced H95Q-S1
 ```
 
+## S1 + all-tile 256-node X/Y (post-codec)
+
+A **new line beside** H95Q v2: re-encode the frozen S1 quantized mantissa
+codes with the 16×16 X/Y matrix family on every tile. Does not change Q(W).
+See `docs/pbr_q4/README.md`.
+
+```bash
+PYTHONPATH=. python scripts/run_pbr_q4_s1_xy.py \
+  --s1-container artifacts/pbr_h95/containers/H95Q-S1-v2.h95q
+```
+
