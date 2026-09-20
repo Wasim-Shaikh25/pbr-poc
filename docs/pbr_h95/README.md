@@ -176,3 +176,23 @@ PYTHONPATH=. .venv/bin/python scripts/run_pbr_h95q.py \
   --max-length 256 \
   --with-c-sketch
 ```
+
+
+## H95Q stack follow-up (Track1 / Track2 / Track3)
+
+Follow-ups on `feat/pbr-h95q-stack` stacking toward packed ≤8 with heldout ≥0.95 (proxy dual-gate):
+
+| Track | Idea |
+| --- | --- |
+| **T1** | B1 body + H95E embed frequency tiers (default / aggressive / conservative), fit calib-v2 only |
+| **T2** | Proper Candidate C: aggressive body (mlp@K4, attn@K4) + sparse |w|-magnitude row/channel recovery to K7; **map_bpw charged** (bitmap vs absolute indices, auto=min) + correction bits |
+| **T3** | Selective mlp_mid@K3 (all / bands 1–7, 8–15, 16–22 / robust-50% low-|w| rows) |
+| **Stacks** | B1+embed tiers+band K3; C with K3 base + sparse K7 recovery |
+
+- Code: `pbr_h95/h95q_stack.py`, `scripts/run_pbr_h95q_stack.py`
+- Artifacts: `artifacts/pbr_h95/h95q_stack_qwen.{json,md}`
+- Packed = 1 + 2.62 + avg_K (+ map for C). Not a physical container. Dual-gate = packed≤8 **and** heldout≥0.95.
+
+```bash
+PYTHONPATH=. .venv/bin/python scripts/run_pbr_h95q_stack.py   --model-dir outputs/models/Qwen__Qwen2.5-0.5B-Instruct   --calib docs/pbr_h95/calibration_v2.json   --heldout docs/pbr_h95/heldout_v1.json   --max-length 256
+```

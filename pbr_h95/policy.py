@@ -341,3 +341,32 @@ def family_keep_breakdown(
         slot["avg_keep"] = (slot["sum_k"] / nw) if nw else 0.0
         del slot["sum_k"]
     return fams
+
+
+# --- H95Q stack follow-up (Track1/2/3) ---
+# Implementation lives in pbr_h95/h95q_stack.py; names listed for discovery.
+
+H95Q_STACK_POLICY_NAMES = (
+    "REF_B1_mlp_k4",
+    "T1_B1_embed_default",
+    "T1_B1_embed_aggressive",
+    "T1_B1_embed_conservative",
+    "T2_C_row_mag_0.02",
+    "T2_C_row_mag_0.05",
+    "T2_C_row_mag_0.10",
+    "T2_C_channel_mag_0.05",
+    "T3_mlp_all_k3",
+    "T3_mlp_band_1_7_k3",
+    "T3_mlp_band_8_15_k3",
+    "T3_mlp_band_16_22_k3",
+    "T3_mlp_robust50_k3",
+    "S1_B1_aggr_embed_band815_k3",
+    "S2_C_k3_base_row05_k7",
+)
+
+
+def h95q_stack_policy_description(name: str) -> str:
+    """Delegate to h95q_stack.stack_description (lazy import)."""
+    from pbr_h95.h95q_stack import stack_description
+
+    return stack_description(name)

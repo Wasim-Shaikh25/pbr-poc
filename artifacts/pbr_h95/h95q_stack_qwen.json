@@ -1,0 +1,1387 @@
+{
+  "phase": "H95Q-stack",
+  "repo": "Qwen/Qwen2.5-0.5B-Instruct",
+  "model_dir": "outputs/models/Qwen__Qwen2.5-0.5B-Instruct",
+  "max_length": 256,
+  "calib_path": "docs/pbr_h95/calibration_v2.json",
+  "heldout_path": "docs/pbr_h95/heldout_v1.json",
+  "calib_tokens": 1925,
+  "heldout_tokens": 1094,
+  "honesty": [
+    "Proxy PPL on in-repo calib-v2 / heldout-v1 only \u2014 not a production LM benchmark.",
+    "heldout ppl_retention \u2265 0.95 = proxy GO for that map; else NO-GO. Not MMLU/HellaSwag.",
+    "packed_K_total_bpw = 1 sign + 2.62 exp ref + avg packed K (+ exception map_bpw for C).",
+    "Candidate C map format: per-tensor bitmap (1 bit/unit) OR absolute indices; auto=min; + correction bits.",
+    "Embed frequency tiers fit on calib-v2 only \u2014 risk of calib overfitting for rare tokens.",
+    "Not a physical container encode; not a \u22648 BPW product claim unless packed\u22648 AND heldout\u22650.95.",
+    "Original BF16 need not round-trip; quantized reference MUST (Q idempotent on samples)."
+  ],
+  "c_map_format_doc": "Per targeted 2D mlp weight: select top-|w|-mean rows **or** channels at `recover_frac`. Exception map = cheaper of (a) bitmap 1 bit/unit or (b) absolute indices `n_recover * ceil(log2(n_units))`. Correction stream = `(K_recover - K_base) * recovered_words` extra mantissa bits, folded into avg K. Packed total = 1 + 2.62 + adj_avg_K + map_bpw. Not a serialized container.",
+  "bf16": {
+    "calib": {
+      "mean_nll": 3.160408227103097,
+      "ppl": 23.580220049442257,
+      "n_tokens": 1925
+    },
+    "heldout": {
+      "mean_nll": 3.6646522752109787,
+      "ppl": 39.042557737306495,
+      "n_tokens": 1094
+    }
+  },
+  "candidates": [
+    {
+      "name": "REF_B1_mlp_k4",
+      "track": "REF",
+      "description": "Reference: plain B1 (mlp@K4 attn@K5 emb@K7) for apples-to-apples.",
+      "avg_packed_K": 5.089898231203968,
+      "packed_K_total_bpw": 8.7099,
+      "exception_map_bpw": 0.0,
+      "rate": {
+        "n_words": 494032768,
+        "n_unique_tensors": 290,
+        "packed_mantissa_bits": 2514576512,
+        "avg_packed_K": 5.089898231203968,
+        "keep_hist_words": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 287637504,
+          "5": 40370176,
+          "6": 0,
+          "7": 166025088
+        },
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_packed_K": 5.089898,
+        "metadata_bpw_estimate": 0.0,
+        "packed_K_total_bpw": 8.7099,
+        "note": "packed_K_total_bpw = 1 + 2.62 + avg packed K (+ optional tiny metadata). Not a physical container encode."
+      },
+      "family_breakdown": {
+        "embed": {
+          "n_words": 136134656,
+          "keep_hist": {
+            "7": 136134656
+          },
+          "avg_keep": 7.0
+        },
+        "first_block": {
+          "n_words": 14910592,
+          "keep_hist": {
+            "7": 14910592
+          },
+          "avg_keep": 7.0
+        },
+        "norm": {
+          "n_words": 43904,
+          "keep_hist": {
+            "7": 43904
+          },
+          "avg_keep": 7.0
+        },
+        "attn_mid": {
+          "n_words": 40395520,
+          "keep_hist": {
+            "5": 40370176,
+            "7": 25344
+          },
+          "avg_keep": 5.001254792610665
+        },
+        "mlp_mid": {
+          "n_words": 287637504,
+          "keep_hist": {
+            "4": 287637504
+          },
+          "avg_keep": 4.0
+        },
+        "last_block": {
+          "n_words": 14910592,
+          "keep_hist": {
+            "7": 14910592
+          },
+          "avg_keep": 7.0
+        }
+      },
+      "calib": {
+        "mean_nll": 3.167282336346515,
+        "ppl": 23.74287145934086,
+        "n_tokens": 1925,
+        "ppl_retention": 0.9931494634009563,
+        "delta_nll": 0.006874109243417692
+      },
+      "heldout": {
+        "mean_nll": 3.6702582552838368,
+        "ppl": 39.26204418147474,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9944097041113359,
+        "delta_nll": 0.005605980072858063
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9944097041113359,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": false,
+        "dual_gate_pass": false,
+        "note": "proxy only \u2014 dual_gate = packed\u22648 AND heldout\u22650.95; not product claim"
+      },
+      "idempotence": {
+        "checked": 6,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "c_recovery": null,
+      "embed_tiers": null,
+      "k3_variant": null,
+      "wall_seconds": 28.38
+    },
+    {
+      "name": "T1_B1_embed_default",
+      "track": "T1",
+      "description": "Track1: B1 body (mlp_mid@K4, attn_mid@K5, norm/bias/first/last@K7) + H95E default frequency embed row tiers (fit calib-v2 only).",
+      "avg_packed_K": 4.268837616860265,
+      "packed_K_total_bpw": 7.8888,
+      "exception_map_bpw": 0.0,
+      "rate": {
+        "avg_mant_bpw": 4.268837616860265,
+        "exception_map_bpw": 0.0,
+        "packed_K_total_bpw": 7.8888,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "avg_packed_K": 4.268837616860265,
+        "n_words": 494032768,
+        "embed_detail": {
+          "avg_keep_bits": 4.268837616860265,
+          "total_words_in_estimate": 494032768,
+          "embed_words_counted": 136134656,
+          "embed_words_omitted_padded": 0,
+          "body_words": 357898112,
+          "omit_padded_from_storage": false
+        },
+        "omit_padded_from_storage": false
+      },
+      "rate_omit_padded_bookkeeping": {
+        "avg_mant_bpw": 4.269461554373629,
+        "exception_map_bpw": 0.0,
+        "packed_K_total_bpw": 7.8895,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "avg_packed_K": 4.269461554373629,
+        "n_words": 493789952,
+        "embed_detail": {
+          "avg_keep_bits": 4.269461554373629,
+          "total_words_in_estimate": 493789952,
+          "embed_words_counted": 135891840,
+          "embed_words_omitted_padded": 242816,
+          "body_words": 357898112,
+          "omit_padded_from_storage": true
+        },
+        "omit_padded_from_storage": true
+      },
+      "family_breakdown": null,
+      "calib": {
+        "mean_nll": 3.1786362972507227,
+        "ppl": 24.013983277669528,
+        "n_tokens": 1925,
+        "ppl_retention": 0.9819370562887572,
+        "delta_nll": 0.01822807014762562
+      },
+      "heldout": {
+        "mean_nll": 3.673542622456385,
+        "ppl": 39.39120714370059,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9911490550385468,
+        "delta_nll": 0.008890347245406272
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9911490550385468,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": true,
+        "dual_gate_pass": true,
+        "note": "proxy only \u2014 dual_gate = packed\u22648 AND heldout\u22650.95; not product claim"
+      },
+      "idempotence": {
+        "checked": 6,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "c_recovery": null,
+      "embed_tiers": {
+        "schedule": "default",
+        "tier_meta": {
+          "schedule": "default",
+          "total_calib_tokens": 1983,
+          "n_unique_seen_ids": 1162,
+          "top_cut_n": 1000,
+          "band_row_counts": {
+            "special": 14,
+            "top": 1000,
+            "band2": 162,
+            "band3": 0,
+            "seen_rest": 0,
+            "unseen": 150489,
+            "padded": 271
+          },
+          "keep_hist_rows": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 271,
+            "4": 150489,
+            "5": 0,
+            "6": 162,
+            "7": 1014
+          },
+          "keeps_by_band": {
+            "special": 7,
+            "top": 7,
+            "band2": 6,
+            "band3": 5,
+            "seen_rest": 4,
+            "unseen_reachable": 4,
+            "padded": 3
+          }
+        },
+        "avg_embed_row_keep": 4.020370419123841,
+        "row_keep_hist": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 271,
+          "4": 150489,
+          "5": 0,
+          "6": 162,
+          "7": 1014
+        }
+      },
+      "k3_variant": null,
+      "wall_seconds": 53.11
+    },
+    {
+      "name": "T1_B1_embed_aggressive",
+      "track": "T1",
+      "description": "Track1: B1 body + H95E aggressive embed frequency tiers.",
+      "avg_packed_K": 3.9933794189133622,
+      "packed_K_total_bpw": 7.6134,
+      "exception_map_bpw": 0.0,
+      "rate": {
+        "avg_mant_bpw": 3.9933794189133622,
+        "exception_map_bpw": 0.0,
+        "packed_K_total_bpw": 7.6134,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "avg_packed_K": 3.9933794189133622,
+        "n_words": 494032768,
+        "embed_detail": {
+          "avg_keep_bits": 3.9933794189133622,
+          "total_words_in_estimate": 494032768,
+          "embed_words_counted": 136134656,
+          "embed_words_omitted_padded": 0,
+          "body_words": 357898112,
+          "omit_padded_from_storage": false
+        },
+        "omit_padded_from_storage": false
+      },
+      "rate_omit_padded_bookkeeping": {
+        "avg_mant_bpw": 3.9938679027636432,
+        "exception_map_bpw": 0.0,
+        "packed_K_total_bpw": 7.6139,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "avg_packed_K": 3.9938679027636432,
+        "n_words": 493789952,
+        "embed_detail": {
+          "avg_keep_bits": 3.9938679027636432,
+          "total_words_in_estimate": 493789952,
+          "embed_words_counted": 135891840,
+          "embed_words_omitted_padded": 242816,
+          "body_words": 357898112,
+          "omit_padded_from_storage": true
+        },
+        "omit_padded_from_storage": true
+      },
+      "family_breakdown": null,
+      "calib": {
+        "mean_nll": 3.1699570782153637,
+        "ppl": 23.8064625186421,
+        "n_tokens": 1925,
+        "ppl_retention": 0.9904965944006725,
+        "delta_nll": 0.009548851112266554
+      },
+      "heldout": {
+        "mean_nll": 3.6750089342023164,
+        "ppl": 39.4490093010564,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9896967865365628,
+        "delta_nll": 0.010356658991337753
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9896967865365628,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": true,
+        "dual_gate_pass": true,
+        "note": "proxy only \u2014 dual_gate = packed\u22648 AND heldout\u22650.95; not product claim"
+      },
+      "idempotence": {
+        "checked": 6,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "c_recovery": null,
+      "embed_tiers": {
+        "schedule": "aggressive",
+        "tier_meta": {
+          "schedule": "aggressive",
+          "total_calib_tokens": 1983,
+          "n_unique_seen_ids": 1162,
+          "top_cut_n": 500,
+          "band_row_counts": {
+            "special": 14,
+            "top": 500,
+            "band2": 100,
+            "band3": 397,
+            "seen_rest": 165,
+            "unseen": 150489,
+            "padded": 271
+          },
+          "keep_hist_rows": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 150925,
+            "4": 0,
+            "5": 397,
+            "6": 100,
+            "7": 514
+          },
+          "keeps_by_band": {
+            "special": 7,
+            "top": 7,
+            "band2": 6,
+            "band3": 5,
+            "seen_rest": 3,
+            "unseen_reachable": 3,
+            "padded": 3
+          }
+        },
+        "avg_embed_row_keep": 3.0207324136478517,
+        "row_keep_hist": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 150925,
+          "4": 0,
+          "5": 397,
+          "6": 100,
+          "7": 514
+        }
+      },
+      "k3_variant": null,
+      "wall_seconds": 39.08
+    },
+    {
+      "name": "T1_B1_embed_conservative",
+      "track": "T1",
+      "description": "Track1: B1 body + H95E conservative embed frequency tiers.",
+      "avg_packed_K": 4.273690930557869,
+      "packed_K_total_bpw": 7.8937,
+      "exception_map_bpw": 0.0,
+      "rate": {
+        "avg_mant_bpw": 4.273690930557869,
+        "exception_map_bpw": 0.0,
+        "packed_K_total_bpw": 7.8937,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "avg_packed_K": 4.273690930557869,
+        "n_words": 494032768,
+        "embed_detail": {
+          "avg_keep_bits": 4.273690930557869,
+          "total_words_in_estimate": 494032768,
+          "embed_words_counted": 136134656,
+          "embed_words_omitted_padded": 0,
+          "body_words": 357898112,
+          "omit_padded_from_storage": false
+        },
+        "omit_padded_from_storage": false
+      },
+      "rate_omit_padded_bookkeeping": {
+        "avg_mant_bpw": 4.274317254637048,
+        "exception_map_bpw": 0.0,
+        "packed_K_total_bpw": 7.8943,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "avg_packed_K": 4.274317254637048,
+        "n_words": 493789952,
+        "embed_detail": {
+          "avg_keep_bits": 4.274317254637048,
+          "total_words_in_estimate": 493789952,
+          "embed_words_counted": 135891840,
+          "embed_words_omitted_padded": 242816,
+          "body_words": 357898112,
+          "omit_padded_from_storage": true
+        },
+        "omit_padded_from_storage": true
+      },
+      "family_breakdown": null,
+      "calib": {
+        "mean_nll": 3.1799472085531657,
+        "ppl": 24.045484122660618,
+        "n_tokens": 1925,
+        "ppl_retention": 0.9806506672585605,
+        "delta_nll": 0.019538981450068604
+      },
+      "heldout": {
+        "mean_nll": 3.672425882036115,
+        "ppl": 39.34724194390695,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9922565295164827,
+        "delta_nll": 0.00777360682513617
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9922565295164827,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": true,
+        "dual_gate_pass": true,
+        "note": "proxy only \u2014 dual_gate = packed\u22648 AND heldout\u22650.95; not product claim"
+      },
+      "idempotence": {
+        "checked": 6,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "c_recovery": null,
+      "embed_tiers": {
+        "schedule": "conservative",
+        "tier_meta": {
+          "schedule": "conservative",
+          "total_calib_tokens": 1983,
+          "n_unique_seen_ids": 1162,
+          "top_cut_n": 2000,
+          "band_row_counts": {
+            "special": 14,
+            "top": 2000,
+            "band2": 0,
+            "band3": 0,
+            "seen_rest": 0,
+            "unseen": 149651,
+            "padded": 271
+          },
+          "keep_hist_rows": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 271,
+            "4": 149651,
+            "5": 0,
+            "6": 0,
+            "7": 2014
+          },
+          "keeps_by_band": {
+            "special": 7,
+            "top": 7,
+            "band2": 6,
+            "band3": 5,
+            "seen_rest": 5,
+            "unseen_reachable": 4,
+            "padded": 3
+          }
+        },
+        "avg_embed_row_keep": 4.037983098146588,
+        "row_keep_hist": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 271,
+          "4": 149651,
+          "5": 0,
+          "6": 0,
+          "7": 2014
+        }
+      },
+      "k3_variant": null,
+      "wall_seconds": 37.85
+    },
+    {
+      "name": "T2_C_row_mag_0.02",
+      "track": "T2",
+      "description": "Track2: aggressive body mlp@K4 attn@K4 emb@K7; restore top-2% |w| mlp rows to K7; charge bitmap/index map + correction bits.",
+      "avg_packed_K": 5.043101011469749,
+      "packed_K_total_bpw": 8.6632,
+      "exception_map_bpw": 0.00012032400247588435,
+      "rate": {
+        "avg_mant_bpw": 5.043101011469749,
+        "exception_map_bpw": 0.00012032400247588435,
+        "packed_K_total_bpw": 8.6632,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62
+      },
+      "family_breakdown": null,
+      "calib": {
+        "mean_nll": 3.1663656873826858,
+        "ppl": 23.721117552690544,
+        "n_tokens": 1925,
+        "ppl_retention": 0.9940602501996241,
+        "delta_nll": 0.0059574602795886555
+      },
+      "heldout": {
+        "mean_nll": 3.673634834219812,
+        "ppl": 39.39483964385189,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9910576636501077,
+        "delta_nll": 0.00898255900883349
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9910576636501077,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": false,
+        "dual_gate_pass": false,
+        "note": "proxy only \u2014 dual_gate = packed\u22648 AND heldout\u22650.95; not product claim"
+      },
+      "idempotence": {
+        "checked": 6,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "c_recovery": {
+        "recover_frac_target": 0.02,
+        "mode": "row_magnitude",
+        "base_mlp_keep": 4,
+        "base_attn_keep": 4,
+        "recover_keep": 7,
+        "recovered_units": 4664,
+        "units_total": 233728,
+        "recovered_words": 5750272,
+        "extra_mantissa_bits": 17250816,
+        "exception_map_bits": 59444,
+        "map_scheme_hist": {
+          "absolute_indices": 66
+        },
+        "map_format": "Per targeted 2D weight: select top-|w| mean rows or channels. Store exception map (bitmap 1 bit/unit OR absolute indices n_recover*ceil(log2(n_units)), auto=min) + correction stream of (recover_keep-base_keep) extra mantissa bits on recovered units. No physical container bytes in this PoC; map_bpw counted in packed total.",
+        "n_tensors_recovered": 66
+      },
+      "embed_tiers": null,
+      "k3_variant": null,
+      "wall_seconds": 28.84
+    },
+    {
+      "name": "T2_C_row_mag_0.05",
+      "track": "T2",
+      "description": "Track2: aggressive body; top-5% |w| mlp rows \u2192 K7 + honest map cost.",
+      "avg_packed_K": 5.0955982579681836,
+      "packed_K_total_bpw": 8.7159,
+      "exception_map_bpw": 0.0003013889151579516,
+      "rate": {
+        "avg_mant_bpw": 5.0955982579681836,
+        "exception_map_bpw": 0.0003013889151579516,
+        "packed_K_total_bpw": 8.7159,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62
+      },
+      "family_breakdown": null,
+      "calib": {
+        "mean_nll": 3.1647173874099535,
+        "ppl": 23.682050241444436,
+        "n_tokens": 1925,
+        "ppl_retention": 0.995700110802739,
+        "delta_nll": 0.004309160306856352
+      },
+      "heldout": {
+        "mean_nll": 3.673516515839906,
+        "ppl": 39.39017878598658,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9911749309245645,
+        "delta_nll": 0.008864240628927433
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9911749309245645,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": false,
+        "dual_gate_pass": false,
+        "note": "proxy only \u2014 dual_gate = packed\u22648 AND heldout\u22650.95; not product claim"
+      },
+      "idempotence": {
+        "checked": 6,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "c_recovery": {
+        "recover_frac_target": 0.05,
+        "mode": "row_magnitude",
+        "base_mlp_keep": 4,
+        "base_attn_keep": 4,
+        "recover_keep": 7,
+        "recovered_units": 11682,
+        "units_total": 233728,
+        "recovered_words": 14395392,
+        "extra_mantissa_bits": 43186176,
+        "exception_map_bits": 148896,
+        "map_scheme_hist": {
+          "absolute_indices": 66
+        },
+        "map_format": "Per targeted 2D weight: select top-|w| mean rows or channels. Store exception map (bitmap 1 bit/unit OR absolute indices n_recover*ceil(log2(n_units)), auto=min) + correction stream of (recover_keep-base_keep) extra mantissa bits on recovered units. No physical container bytes in this PoC; map_bpw counted in packed total.",
+        "n_tensors_recovered": 66
+      },
+      "embed_tiers": null,
+      "k3_variant": null,
+      "wall_seconds": 30.44
+    },
+    {
+      "name": "T2_C_row_mag_0.10",
+      "track": "T2",
+      "description": "Track2: aggressive body; top-10% |w| mlp rows \u2192 K7 + honest map cost.",
+      "avg_packed_K": 5.183013868424209,
+      "packed_K_total_bpw": 8.8035,
+      "exception_map_bpw": 0.00047310222142997606,
+      "rate": {
+        "avg_mant_bpw": 5.183013868424209,
+        "exception_map_bpw": 0.00047310222142997606,
+        "packed_K_total_bpw": 8.8035,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62
+      },
+      "family_breakdown": null,
+      "calib": {
+        "mean_nll": 3.1645873746004973,
+        "ppl": 23.678971471702955,
+        "n_tokens": 1925,
+        "ppl_retention": 0.995829572987209,
+        "delta_nll": 0.004179147497400226
+      },
+      "heldout": {
+        "mean_nll": 3.672521772506686,
+        "ppl": 39.35101515035701,
+        "n_tokens": 1094,
+        "ppl_retention": 0.992161386132685,
+        "delta_nll": 0.007869497295707184
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.992161386132685,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": false,
+        "dual_gate_pass": false,
+        "note": "proxy only \u2014 dual_gate = packed\u22648 AND heldout\u22650.95; not product claim"
+      },
+      "idempotence": {
+        "checked": 6,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "c_recovery": {
+        "recover_frac_target": 0.1,
+        "mode": "row_magnitude",
+        "base_mlp_keep": 4,
+        "base_attn_keep": 4,
+        "recover_keep": 7,
+        "recovered_units": 23364,
+        "units_total": 233728,
+        "recovered_words": 28790784,
+        "extra_mantissa_bits": 86372352,
+        "exception_map_bits": 233728,
+        "map_scheme_hist": {
+          "bitmap": 66
+        },
+        "map_format": "Per targeted 2D weight: select top-|w| mean rows or channels. Store exception map (bitmap 1 bit/unit OR absolute indices n_recover*ceil(log2(n_units)), auto=min) + correction stream of (recover_keep-base_keep) extra mantissa bits on recovered units. No physical container bytes in this PoC; map_bpw counted in packed total.",
+        "n_tensors_recovered": 66
+      },
+      "embed_tiers": null,
+      "k3_variant": null,
+      "wall_seconds": 29.83
+    },
+    {
+      "name": "T2_C_channel_mag_0.05",
+      "track": "T2",
+      "description": "Track2: aggressive body; top-5% |w| mlp channels \u2192 K7 + honest map cost.",
+      "avg_packed_K": 5.095752158690818,
+      "packed_K_total_bpw": 8.7159,
+      "exception_map_bpw": 0.00018075319246839918,
+      "rate": {
+        "avg_mant_bpw": 5.095752158690818,
+        "exception_map_bpw": 0.00018075319246839918,
+        "packed_K_total_bpw": 8.7159,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62
+      },
+      "family_breakdown": null,
+      "calib": {
+        "mean_nll": 3.169009368698318,
+        "ppl": 23.78391159509627,
+        "n_tokens": 1925,
+        "ppl_retention": 0.9914357423992439,
+        "delta_nll": 0.008601141595220962
+      },
+      "heldout": {
+        "mean_nll": 3.6753368691508905,
+        "ppl": 39.4619481313242,
+        "n_tokens": 1094,
+        "ppl_retention": 0.989372283582604,
+        "delta_nll": 0.010684593939911835
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.989372283582604,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": false,
+        "dual_gate_pass": false,
+        "note": "proxy only \u2014 dual_gate = packed\u22648 AND heldout\u22650.95; not product claim"
+      },
+      "idempotence": {
+        "checked": 6,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "c_recovery": {
+        "recover_frac_target": 0.05,
+        "mode": "channel_magnitude",
+        "base_mlp_keep": 4,
+        "base_attn_keep": 4,
+        "recover_keep": 7,
+        "recovered_units": 7326,
+        "units_total": 146432,
+        "recovered_words": 14420736,
+        "extra_mantissa_bits": 43262208,
+        "exception_map_bits": 89298,
+        "map_scheme_hist": {
+          "absolute_indices": 66
+        },
+        "map_format": "Per targeted 2D weight: select top-|w| mean rows or channels. Store exception map (bitmap 1 bit/unit OR absolute indices n_recover*ceil(log2(n_units)), auto=min) + correction stream of (recover_keep-base_keep) extra mantissa bits on recovered units. No physical container bytes in this PoC; map_bpw counted in packed total.",
+        "n_tensors_recovered": 66
+      },
+      "embed_tiers": null,
+      "k3_variant": null,
+      "wall_seconds": 32.63
+    },
+    {
+      "name": "T3_mlp_all_k3",
+      "track": "T3",
+      "description": "Track3: B1 body with all mlp_mid \u2192 K3 (attn@K5).",
+      "avg_packed_K": 4.507674697399829,
+      "packed_K_total_bpw": 8.1277,
+      "exception_map_bpw": 0.0,
+      "rate": {
+        "avg_mant_bpw": 4.507674697399829,
+        "exception_map_bpw": 0.0,
+        "packed_K_total_bpw": 8.1277,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "avg_packed_K": 4.507674697399829,
+        "n_words": 494032768,
+        "keep_hist_words": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 287637504,
+          "4": 0,
+          "5": 40370176,
+          "6": 0,
+          "7": 166025088
+        }
+      },
+      "family_breakdown": null,
+      "calib": {
+        "mean_nll": 3.1922276157527776,
+        "ppl": 24.34259303434045,
+        "n_tokens": 1925,
+        "ppl_retention": 0.9686815211582964,
+        "delta_nll": 0.03181938864968048
+      },
+      "heldout": {
+        "mean_nll": 3.7208306279435237,
+        "ppl": 41.298683706407544,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9453705114395448,
+        "delta_nll": 0.05617835273254501
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9453705114395448,
+        "decision": "proxy_NO_GO",
+        "approaches_8_packed_bpw": false,
+        "dual_gate_pass": false,
+        "note": "proxy only \u2014 dual_gate = packed\u22648 AND heldout\u22650.95; not product claim"
+      },
+      "idempotence": {
+        "checked": 6,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "c_recovery": null,
+      "embed_tiers": null,
+      "k3_variant": {
+        "variant": "all_mlp_k3"
+      },
+      "wall_seconds": 26.14
+    },
+    {
+      "name": "T3_mlp_band_1_7_k3",
+      "track": "T3",
+      "description": "Track3: B1 body; mlp layers 1\u20137 \u2192 K3; other mlp_mid@K4.",
+      "avg_packed_K": 4.904645288629923,
+      "packed_K_total_bpw": 8.5246,
+      "exception_map_bpw": 0.0,
+      "rate": {
+        "avg_mant_bpw": 4.904645288629923,
+        "exception_map_bpw": 0.0,
+        "packed_K_total_bpw": 8.5246,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "avg_packed_K": 4.904645288629923,
+        "n_words": 494032768,
+        "keep_hist_words": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 91521024,
+          "4": 196116480,
+          "5": 40370176,
+          "6": 0,
+          "7": 166025088
+        }
+      },
+      "family_breakdown": null,
+      "calib": {
+        "mean_nll": 3.1649056887936284,
+        "ppl": 23.686510024151612,
+        "n_tokens": 1925,
+        "ppl_retention": 0.9955126367455156,
+        "delta_nll": 0.004497461690531335
+      },
+      "heldout": {
+        "mean_nll": 3.664658119299294,
+        "ppl": 39.04278590612869,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9999941559287612,
+        "delta_nll": 5.844088315498652e-06
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9999941559287612,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": false,
+        "dual_gate_pass": false,
+        "note": "proxy only \u2014 dual_gate = packed\u22648 AND heldout\u22650.95; not product claim"
+      },
+      "idempotence": {
+        "checked": 6,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "c_recovery": null,
+      "embed_tiers": null,
+      "k3_variant": {
+        "variant": "band_1_7",
+        "band": "mlp_band_1_7"
+      },
+      "wall_seconds": 26.61
+    },
+    {
+      "name": "T3_mlp_band_8_15_k3",
+      "track": "T3",
+      "description": "Track3: B1 body; mlp layers 8\u201315 \u2192 K3; other mlp_mid@K4.",
+      "avg_packed_K": 4.878180582547917,
+      "packed_K_total_bpw": 8.4982,
+      "exception_map_bpw": 0.0,
+      "rate": {
+        "avg_mant_bpw": 4.878180582547917,
+        "exception_map_bpw": 0.0,
+        "packed_K_total_bpw": 8.4982,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "avg_packed_K": 4.878180582547917,
+        "n_words": 494032768,
+        "keep_hist_words": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 104595456,
+          "4": 183042048,
+          "5": 40370176,
+          "6": 0,
+          "7": 166025088
+        }
+      },
+      "family_breakdown": null,
+      "calib": {
+        "mean_nll": 3.1696185946774174,
+        "ppl": 23.798405786595307,
+        "n_tokens": 1925,
+        "ppl_retention": 0.9908319179398166,
+        "delta_nll": 0.009210367574320255
+      },
+      "heldout": {
+        "mean_nll": 3.670741445621581,
+        "ppl": 39.28101980591332,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9939293310157156,
+        "delta_nll": 0.006089170410602307
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9939293310157156,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": false,
+        "dual_gate_pass": false,
+        "note": "proxy only \u2014 dual_gate = packed\u22648 AND heldout\u22650.95; not product claim"
+      },
+      "idempotence": {
+        "checked": 6,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "c_recovery": null,
+      "embed_tiers": null,
+      "k3_variant": {
+        "variant": "band_8_15",
+        "band": "mlp_band_8_15"
+      },
+      "wall_seconds": 25.39
+    },
+    {
+      "name": "T3_mlp_band_16_22_k3",
+      "track": "T3",
+      "description": "Track3: B1 body; mlp layers 16\u201322 \u2192 K3; other mlp_mid@K4.",
+      "avg_packed_K": 4.904645288629923,
+      "packed_K_total_bpw": 8.5246,
+      "exception_map_bpw": 0.0,
+      "rate": {
+        "avg_mant_bpw": 4.904645288629923,
+        "exception_map_bpw": 0.0,
+        "packed_K_total_bpw": 8.5246,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "avg_packed_K": 4.904645288629923,
+        "n_words": 494032768,
+        "keep_hist_words": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 91521024,
+          "4": 196116480,
+          "5": 40370176,
+          "6": 0,
+          "7": 166025088
+        }
+      },
+      "family_breakdown": null,
+      "calib": {
+        "mean_nll": 3.193129787692776,
+        "ppl": 24.36456414809377,
+        "n_tokens": 1925,
+        "ppl_retention": 0.9678079979644176,
+        "delta_nll": 0.03272156058967868
+      },
+      "heldout": {
+        "mean_nll": 3.7197038695842735,
+        "ppl": 41.252176275553985,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9464363159051827,
+        "delta_nll": 0.055051594373294765
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9464363159051827,
+        "decision": "proxy_NO_GO",
+        "approaches_8_packed_bpw": false,
+        "dual_gate_pass": false,
+        "note": "proxy only \u2014 dual_gate = packed\u22648 AND heldout\u22650.95; not product claim"
+      },
+      "idempotence": {
+        "checked": 6,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "c_recovery": null,
+      "embed_tiers": null,
+      "k3_variant": {
+        "variant": "band_16_22",
+        "band": "mlp_band_16_22"
+      },
+      "wall_seconds": 24.95
+    },
+    {
+      "name": "T3_mlp_robust50_k3",
+      "track": "T3",
+      "description": "Track3: B1 body; per mlp_mid matrix lowest-|w| 50% rows@K3 rest@K4.",
+      "avg_packed_K": 4.798786464301898,
+      "packed_K_total_bpw": 8.4188,
+      "exception_map_bpw": 0.0,
+      "rate": {
+        "avg_mant_bpw": 4.798786464301898,
+        "exception_map_bpw": 0.0,
+        "packed_K_total_bpw": 8.4188,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "avg_packed_K": 4.798786464301898,
+        "n_words": 494032768
+      },
+      "family_breakdown": null,
+      "calib": {
+        "mean_nll": 3.170061461213347,
+        "ppl": 23.808947638271036,
+        "n_tokens": 1925,
+        "ppl_retention": 0.9903932087926004,
+        "delta_nll": 0.009653234110249986
+      },
+      "heldout": {
+        "mean_nll": 3.671000485882245,
+        "ppl": 39.291196489551474,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9936718966471001,
+        "delta_nll": 0.00634821067126623
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9936718966471001,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": false,
+        "dual_gate_pass": false,
+        "note": "proxy only \u2014 dual_gate = packed\u22648 AND heldout\u22650.95; not product claim"
+      },
+      "idempotence": {
+        "checked": 6,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "c_recovery": null,
+      "embed_tiers": null,
+      "k3_variant": {
+        "variant": "robust50_rows",
+        "k3_words": 143818752,
+        "k4_words": 143818752,
+        "n_tensors": 66,
+        "details_head": [
+          {
+            "name": "model.layers.1.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_k3": 2432
+          },
+          {
+            "name": "model.layers.1.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_k3": 2432
+          },
+          {
+            "name": "model.layers.1.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_k3": 448
+          },
+          {
+            "name": "model.layers.2.mlp.gate_proj.weight",
+            "n_rows": 4864,
+            "n_k3": 2432
+          },
+          {
+            "name": "model.layers.2.mlp.up_proj.weight",
+            "n_rows": 4864,
+            "n_k3": 2432
+          },
+          {
+            "name": "model.layers.2.mlp.down_proj.weight",
+            "n_rows": 896,
+            "n_k3": 448
+          }
+        ],
+        "note": "Per mlp_mid matrix: lowest-|w| 50% rows @K3, rest @K4; no exception map (keeps are explicit per-row schedule, charged in avg K)."
+      },
+      "wall_seconds": 28.59
+    },
+    {
+      "name": "S1_B1_aggr_embed_band815_k3",
+      "track": "STACK",
+      "description": "Stack: B1 + aggressive embed tiers + mlp band 8\u201315 @K3.",
+      "avg_packed_K": 3.7816617702573123,
+      "packed_K_total_bpw": 7.4017,
+      "exception_map_bpw": 0.0,
+      "rate": {
+        "avg_mant_bpw": 3.7816617702573123,
+        "exception_map_bpw": 0.0,
+        "packed_K_total_bpw": 7.4017,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "avg_packed_K": 3.7816617702573123,
+        "n_words": 494032768,
+        "embed_detail": {
+          "avg_keep_bits": 3.7816617702573123,
+          "total_words_in_estimate": 494032768,
+          "embed_words_counted": 136134656,
+          "embed_words_omitted_padded": 0,
+          "body_words": 357898112,
+          "omit_padded_from_storage": false
+        }
+      },
+      "family_breakdown": null,
+      "calib": {
+        "mean_nll": 3.1707042565283836,
+        "ppl": 23.824256838082697,
+        "n_tokens": 1925,
+        "ppl_retention": 0.9897567932423248,
+        "delta_nll": 0.010296029425286513
+      },
+      "heldout": {
+        "mean_nll": 3.674689535249086,
+        "ppl": 39.43641134077442,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9900129451418743,
+        "delta_nll": 0.01003726003810712
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9900129451418743,
+        "decision": "proxy_GO",
+        "approaches_8_packed_bpw": true,
+        "dual_gate_pass": true,
+        "note": "proxy only \u2014 dual_gate = packed\u22648 AND heldout\u22650.95; not product claim"
+      },
+      "idempotence": {
+        "checked": 6,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "c_recovery": null,
+      "embed_tiers": {
+        "schedule": "aggressive",
+        "avg_embed_row_keep": 3.0207324136478517
+      },
+      "k3_variant": {
+        "variant": "band_8_15",
+        "band": "mlp_band_8_15"
+      },
+      "wall_seconds": 35.41
+    },
+    {
+      "name": "S2_C_k3_base_row05_k7",
+      "track": "STACK",
+      "description": "Stack: C with mlp@K3 attn@K4 base + top-5% |w| mlp row recovery to K7 (+ map).",
+      "avg_packed_K": 4.542513260982721,
+      "packed_K_total_bpw": 8.1628,
+      "exception_map_bpw": 0.0003013889151579516,
+      "rate": {
+        "avg_mant_bpw": 4.542513260982721,
+        "exception_map_bpw": 0.0003013889151579516,
+        "packed_K_total_bpw": 8.1628,
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62
+      },
+      "family_breakdown": null,
+      "calib": {
+        "mean_nll": 3.200290725509842,
+        "ppl": 24.539663466320036,
+        "n_tokens": 1925,
+        "ppl_retention": 0.9609023400750957,
+        "delta_nll": 0.03988249840674474
+      },
+      "heldout": {
+        "mean_nll": 3.728211327924153,
+        "ppl": 41.60462454035723,
+        "n_tokens": 1094,
+        "ppl_retention": 0.9384187014939773,
+        "delta_nll": 0.06355905271317441
+      },
+      "proxy_gate": {
+        "heldout_threshold": 0.95,
+        "heldout_ppl_retention": 0.9384187014939773,
+        "decision": "proxy_NO_GO",
+        "approaches_8_packed_bpw": false,
+        "dual_gate_pass": false,
+        "note": "proxy only \u2014 dual_gate = packed\u22648 AND heldout\u22650.95; not product claim"
+      },
+      "idempotence": {
+        "checked": 6,
+        "all_idempotent": true,
+        "failures": [],
+        "sampled": [
+          "model.embed_tokens.weight",
+          "model.layers.0.mlp.gate_proj.weight",
+          "model.layers.0.mlp.up_proj.weight",
+          "model.layers.0.self_attn.q_proj.weight",
+          "model.layers.0.self_attn.q_proj.bias",
+          "model.layers.0.self_attn.k_proj.weight"
+        ]
+      },
+      "c_recovery": {
+        "recover_frac_target": 0.05,
+        "mode": "row_magnitude",
+        "base_mlp_keep": 3,
+        "base_attn_keep": 4,
+        "recover_keep": 7,
+        "recovered_units": 11682,
+        "units_total": 233728,
+        "extra_mantissa_bits": 57581568,
+        "exception_map_bits": 148896,
+        "map_scheme_hist": {
+          "absolute_indices": 66
+        },
+        "map_format": "Per targeted 2D weight: select top-|w| mean rows or channels. Store exception map (bitmap 1 bit/unit OR absolute indices n_recover*ceil(log2(n_units)), auto=min) + correction stream of (recover_keep-base_keep) extra mantissa bits on recovered units. No physical container bytes in this PoC; map_bpw counted in packed total."
+      },
+      "embed_tiers": null,
+      "k3_variant": {
+        "variant": "k3_base_with_sparse_k7"
+      },
+      "wall_seconds": 29.4
+    }
+  ],
+  "summary": {
+    "any_leq_8_packed": true,
+    "any_dual_gate": true,
+    "dual_gate_names": [
+      "T1_B1_embed_default",
+      "T1_B1_embed_aggressive",
+      "T1_B1_embed_conservative",
+      "S1_B1_aggr_embed_band815_k3"
+    ],
+    "proxy_go_names": [
+      "REF_B1_mlp_k4",
+      "T1_B1_embed_default",
+      "T1_B1_embed_aggressive",
+      "T1_B1_embed_conservative",
+      "T2_C_row_mag_0.02",
+      "T2_C_row_mag_0.05",
+      "T2_C_row_mag_0.10",
+      "T2_C_channel_mag_0.05",
+      "T3_mlp_band_1_7_k3",
+      "T3_mlp_band_8_15_k3",
+      "T3_mlp_robust50_k3",
+      "S1_B1_aggr_embed_band815_k3"
+    ],
+    "best_proxy_go": {
+      "name": "S1_B1_aggr_embed_band815_k3",
+      "packed_K_total_bpw": 7.4017,
+      "heldout_ppl_retention": 0.9900129451418743,
+      "kind": "dual_gate"
+    },
+    "best_leq8_or_closest": {
+      "name": "S1_B1_aggr_embed_band815_k3",
+      "packed_K_total_bpw": 7.4017,
+      "heldout_ppl_retention": 0.9900129451418743,
+      "kind": "dual_gate",
+      "dual_gate_pass": true
+    },
+    "best_track1_schedule": "aggressive",
+    "shortcuts": [
+      "entropy diagnostics skipped (packed-K + map honesty only)",
+      "C recovery salience = |w| magnitude (no per-row calib sensitivity sweep)",
+      "no physical container bytes; map_bpw estimated",
+      "embed tiers fit calib-v2 only; stack used schedule=aggressive"
+    ]
+  },
+  "wall_seconds": 499.63,
+  "disclaimer": "H95Q stack follow-up. Proxy GO/NO-GO on heldout-v1. Not a physical container or \u22648 product claim unless dual-gate passes."
+}
