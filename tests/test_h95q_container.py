@@ -67,3 +67,42 @@ def test_container_uniform_and_embed_roundtrip(tmp_path):
     v = verify_decoded_against_reference(dec["tensors"], tensors)
     assert v["exact_match"] and v["sha_ok"]
     assert np.array_equal(quantize_bf16_mantissas(w1.ravel(), 4), w1.ravel())
+
+
+def test_embed_tiers_nan_payload_0x7fc1_roundtrip(tmp_path):
+    """NaN 0x7FC1 in a k<7 embed row must survive encode/decode (not collapse to 0x7FC0)."""
+    rows, cols = 8, 4
+    emb = np.zeros((rows, cols), dtype=np.uint16)
+    # Finite quantized-looking values in most cells
+    emb[:] = 0x3F80  # 1.0 bf16-ish pattern; exact value irrelevant
+    # Inject dirty-NaN into a k=3 row (row 5)
+    emb[5, 1] = np.uint16(0x7FC1)
+    row_keeps = np.array([7, 7, 5, 5, 4, 3, 3, 7], dtype=np.int8)
+    # Simulate quantized reference: preserve specials, quantize finites per row
+    from pbr_h95.quantize import quantize_bf16_mantissas
+
+    ref = emb.copy()
+    for r, k in enumerate(row_keeps.tolist()):
+        ref[r] = quantize_bf16_mantissas(emb[r], int(k))
+    assert int(ref[5, 1]) == 0x7FC1  # quantize must keep NaN payload
+
+    tensors = {"model.embed_tokens.weight": ref}
+    keep_map = {"model.embed_tokens.weight": -1}
+    path = tmp_path / "nan.h95q"
+    encode_container(
+        path,
+        tensors,
+        keep_map=keep_map,
+        model_id="toy-nan",
+        candidate="nan-fix",
+        embed_name="model.embed_tokens.weight",
+        embed_row_keeps=row_keeps,
+    )
+    dec = decode_container(path)
+    got = dec["tensors"]["model.embed_tokens.weight"]
+    assert int(got[5, 1]) == 0x7FC1, f"got 0x{int(got[5, 1]):04X}"
+    v = verify_decoded_against_reference(dec["tensors"], tensors)
+    assert v["exact_match"] and v["sha_ok"]
+    # Ensure an exception was actually recorded (regression guard)
+    emb_spec = next(t for t in dec["header"]["tensors"] if t["name"] == "model.embed_tokens.weight")
+    assert emb_spec.get("exceptions", {}).get("n", 0) >= 1

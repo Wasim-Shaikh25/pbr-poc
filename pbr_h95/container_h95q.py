@@ -129,7 +129,39 @@ def _encode_one(
                 "row_indices": idx,
                 "payload": payload,
             }
-        out.update(mode="embed_tiers", row_keeps=rk, mant_groups=groups, base_keep=None)
+        # Reconstruct what pack/unpack would yield and store any dirty lower
+        # bits (NaN payloads, etc.) as raw u16 exceptions — same rule as uniform.
+        recon = np.empty_like(flat)
+        mant2r = mant.reshape(rows, cols)
+        sign2 = sign.reshape(rows, cols)
+        exp2 = exp.reshape(rows, cols)
+        for k_str, g in groups.items():
+            k = int(g["k"])
+            idx = g["row_indices"]
+            block = mant2r[idx].reshape(-1)
+            if k <= 0:
+                kept = np.zeros(block.size, dtype=np.uint16)
+            elif k >= 7:
+                kept = block & np.uint16(0x7F)
+            else:
+                removed = 7 - k
+                kept = (block >> np.uint16(removed)) & np.uint16((1 << k) - 1)
+            s = sign2[idx].ravel()
+            e = exp2[idx].ravel()
+            words = _words_from_fields(s, e, kept, k).reshape(idx.size, cols)
+            # scatter into flat via row indices
+            for local_i, row_i in enumerate(idx.tolist()):
+                recon[row_i * cols : (row_i + 1) * cols] = words[local_i]
+        dirty = recon != flat
+        exc_idx = np.flatnonzero(dirty).astype(np.int64)
+        out.update(
+            mode="embed_tiers",
+            row_keeps=rk,
+            mant_groups=groups,
+            base_keep=None,
+            exception_indices=exc_idx,
+            exception_words=flat[exc_idx].astype(np.uint16) if exc_idx.size else np.zeros(0, dtype=np.uint16),
+        )
         return out
 
     if keep is None:
@@ -200,6 +232,14 @@ def _decode_one(spec: dict[str, Any], data: memoryview) -> np.ndarray:
                 kept = unpack_kept_mantissas(blob, nw, k)
                 block = _words_from_fields(s, e, kept, k)
             out[idx] = block.reshape(idx.size, cols)
+        words = out.ravel()
+        exc = spec.get("exceptions") or {}
+        if int(exc.get("n", 0)):
+            eidx = np.frombuffer(bytes(data[exc["idx_off"] : exc["idx_off"] + exc["idx_len"]]), dtype="<i8")
+            raw = np.frombuffer(bytes(data[exc["words_off"] : exc["words_off"] + exc["words_len"]]), dtype="<u2")
+            words = words.copy()
+            words[eidx] = raw
+            out = words.reshape(shape)
         return out
 
     raise ValueError(f"unknown mode {spec['mode']!r}")
@@ -310,6 +350,22 @@ def encode_container(
                     }
                 )
             spec["mant_groups"] = gout
+            ei = enc.get("exception_indices", np.zeros(0, dtype=np.int64))
+            ew = enc.get("exception_words", np.zeros(0, dtype=np.uint16))
+            if getattr(ei, "size", 0):
+                ib = np.ascontiguousarray(ei, dtype="<i8").tobytes()
+                wb = np.ascontiguousarray(ew, dtype="<u2").tobytes()
+                io, il = add(ib)
+                wo, wl = add(wb)
+                spec["exceptions"] = {
+                    "n": int(ei.size),
+                    "idx_rel": io,
+                    "idx_len": il,
+                    "words_rel": wo,
+                    "words_len": wl,
+                }
+            else:
+                spec["exceptions"] = {"n": 0}
         specs.append(spec)
 
     payload = b"".join(chunks)
@@ -360,6 +416,17 @@ def encode_container(
                     }
                     for g in spec["mant_groups"]
                 ]
+                exc = spec.get("exceptions") or {"n": 0}
+                if exc.get("n", 0):
+                    item["exceptions"] = {
+                        "n": exc["n"],
+                        "idx_off": payload_start + exc["idx_rel"],
+                        "idx_len": exc["idx_len"],
+                        "words_off": payload_start + exc["words_rel"],
+                        "words_len": exc["words_len"],
+                    }
+                else:
+                    item["exceptions"] = {"n": 0}
             tensors_out.append(item)
 
         header_obj = {
