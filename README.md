@@ -6,24 +6,26 @@ is `Decode(Encode(W)) == W` on the original uint16 words.
 
 This repository implements **Stage 1A** (controlled tensors), **Stage 1B**
 (real public-checkpoint tensors), **Stage 2** (a qualification *scanner*),
-and **PBR-E / Stage 2.5** (exponent-Huffman so typical models can hit the
-published ~11 BPW lossless band). **PBR-E is DF11/ZipNN-class, not a novel
-rate.** The distinctive bet is a Hierarchical / position program on top of
-that; it has been implemented and, on the Qwen and Llama samples below, did
-not win vs PBR-E. This repo is **not** a production model compressor and
-**not evidence that an 8 GB checkpoint becomes 1–2 GB**.
+and **PBR-E / Stage 2.5** (exponent entropy coding so typical models hit the
+published ~11 BPW lossless band). **PBR-E is the working product in this
+repo** (DF11/ZipNN-class, not a novel rate). Hierarchical / position
+programs on top of it did not win vs PBR-E on the Qwen and Llama samples
+below. This is **not evidence that an 8 GB checkpoint becomes 1–2 GB**.
+
+This repository ships **PBR-E as the working product**: bit-exact BF16
+compression at **~10.6–10.7 BPW** (~30% smaller than raw). That is
+DF11/ZipNN-class, not a novel rate, and **not** a 1–2 GB / 8 GB or ≤4 BPW
+claim. Research tracks (qualifier, mantissa zoo, PBR-4) stay below.
 
 > **Research status:** concept and early proof of concept. Stage 1A uses
 > synthetic tensors. Stage 1B checks that the same codecs stay bit-exact on
 > real BF16/F16 weights and reports complete-container BPW. Stage 2 projects
 > whole-model BPW from sampled encodings. PBR-E adds exponent entropy coding
-> and measured **10.87 complete-container BPW** (DF11/ZipNN-class, not novel)
-> on the same Qwen 42-tensor set that Stage 1B encoded at 13.61. Hierarchical
-> leftovers (bit-planes, residual grammar, transformed refs, position+value
-> dicts) compete on complete encoded bytes and **won 0 / 42** Qwen tensors
-> vs PBR-E. The same story holds on a Llama-3.2-1B BF16 sample (~10.84 BPW).
-> None of these is a production ratio claim. ≤4 BPW remains out of scope for
-> dense LLMs.
+> and measured **10.62 complete-container BPW (rANS)** / **10.87 Huffman**
+> (DF11/ZipNN-class, not novel) on the Stage 1B Qwen 42-tensor set.
+> Hierarchical leftovers and **PBR-4 (experimental, negative, 20.58 BPW)**
+> do not beat PBR-E. None of these is a production ratio claim. ≤4 BPW
+> remains out of scope for dense LLMs.
 
 ## What Stage 1A proves (Gate 1)
 
@@ -67,8 +69,44 @@ raw fallback or stay within bounded container overhead.
 python3 -m pip install -e ".[dev,stage1b]"
 ```
 
-Runtime: `numpy`. Tests: `pytest`. Stage 1B download: `huggingface_hub`.
+Runtime: `numpy`. Tests: `pytest`. Stage 1B / product download: `huggingface_hub`.
 Optional baseline: `zstandard`.
+
+## Working product — PBR-E (~30% bit-exact)
+
+Encode every 16-bit tensor with exponent Huffman/rANS (profile `pbre_whole`).
+Expected **~10.6–10.7 complete BPW** on dense LLMs (Qwen2.5-0.5B-Instruct:
+42-tensor rANS **10.616**, full-checkpoint Huffman **10.683**). SHA-256
+restore of the original uint16 words is required. This is the DF11/ZipNN
+bar, not a 4 BPW codec.
+
+```bash
+# Local checkpoint directory (safetensors + config)
+python scripts/pbr.py compress --model-dir outputs/models/Qwen__Qwen2.5-0.5B-Instruct \
+    -o outputs/qwen_pbre
+
+# Or Hugging Face id (downloads then encodes)
+python scripts/pbr.py compress --repo Qwen/Qwen2.5-0.5B-Instruct \
+    --revision 7ae557604adf67be50417f59c2c2f167def9a775 \
+    -o outputs/qwen_pbre
+
+python scripts/pbr.py verify outputs/qwen_pbre \
+    --model-dir outputs/models/Qwen__Qwen2.5-0.5B-Instruct
+
+python scripts/pbr.py decompress outputs/qwen_pbre -o outputs/qwen_restored
+```
+
+Equivalent installable entry point: `pbr compress|decompress|verify`.
+
+The bundle contains `weights.pbr`, `manifest.json`, and copied sidecars
+(`config.json`, tokenizer files, LICENSE). `verify` checks SHA-256 per
+tensor against the source checkpoint. Do not scale these BPW numbers to
+an 8 GB → 1–2 GB story.
+
+Research CLIs (`pbr-e`, `pbr-poc1b`, `pbr-mantissa-zoo`, `pbr-4`) remain
+for ablations. **PBR-4 is experimental and negative** (20.58 BPW on the
+same Qwen set). See `artifacts/path_to_8bpw.md` for why 8 BPW is not a
+measured next step on standalone dense weights.
 
 ## Run Stage 1A (one command)
 
@@ -536,7 +574,7 @@ sign-fold was skipped: signs are already ~1 bit of entropy.
 Reports: `artifacts/mantissa_multimodel_bakeoff.{json,md}`,
 `artifacts/mantissa_principle_candidate.md` (negative zoo; negative PBR-4).
 
-### PBR-4 structured nibble + node formulas
+### PBR-4 structured nibble + node formulas (experimental, negative)
 
 User structural idea: do not jump to 1-bit; give each weight **4 bits** of
 side info `c4` and let a shallow block tree supply the rest via a stored
@@ -576,6 +614,15 @@ and c4 is extra. Named principle: **negative**.
 
 Reports: `artifacts/pbr4_bakeoff.{json,md}`,
 `artifacts/mantissa_principle_candidate.md` (PBR-4 section).
+
+### Zoo vs PBR-E accounting
+
+The zoo's **10.585 vs 10.616** is a **0.03–0.06 BPW DF11 mantissa-rANS
+micro-gain**, not a new axis. Codec-view NLL + amortized tables vs a
+synthetic raw-M split (−0.062) or vs the measured rANS container (−0.031).
+Holdout-charged tables land at ~10.611. Does not transfer toward 8 BPW.
+Report: `artifacts/zoo_vs_pbre_analysis.{md,json}`. Next-step ranking:
+`artifacts/path_to_8bpw.md`.
 
 ### Job 3 — Huffman vs rANS on exponents
 
@@ -771,17 +818,19 @@ pbr_codecs/      raw, predictors, residuals, dictionaries, exp-Huffman,
                  PBR-4 structured nibble (standalone container)
 pbr_encoder/     cost-based search, decoder, Stage 1A/1B/PBR-E/Phase A CLIs
 pbr_qualifier/   Stage 2 inventory, entropy, sample encode, BPW projection
-scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py,
+scripts/         pbr.py (product CLI), run_poc1.py, run_poc1b.py,
+                 run_qualifier.py, run_pbre.py, run_pbre_full.py,
                  run_blocker_diagnosis.py, run_blocker_ablation.py,
                  run_family_eval.py, run_phase_a_mantissa_audit.py,
-                 run_pbre_full.py, run_exp_coder_ablation.py,
-                 run_checkpoint_delta.py, run_mantissa_zoo.py, run_pbr4.py
+                 run_exp_coder_ablation.py, run_checkpoint_delta.py,
+                 run_mantissa_zoo.py, run_zoo_vs_pbre.py, run_pbr4.py
 tests/           exactness, codecs, Stage 1B fixtures, qualifier math,
                  hierarchical leftovers, mantissa audit, checkpoint delta,
-                 mantissa zoo, PBR-4
+                 mantissa zoo, PBR-4, product CLI
 configs/         poc_controlled.yaml, poc_real.yaml, poc_llama.yaml,
                  qualifier_default.yaml, poc_delta.yaml
-artifacts/       measured diagnosis / ablation / Phase A / delta / zoo / PBR-4 reports
+artifacts/       measured diagnosis / ablation / Phase A / delta / zoo /
+                 PBR-4 / zoo-vs-PBR-E / path-to-8-BPW reports
 ```
 
 Later stages (full selected-model encode vs projection, fused runtime) are

@@ -187,6 +187,7 @@ def write_uint16_safetensors(
     *,
     storage_dtype: str = "BF16",
     metadata: dict | None = None,
+    dtypes: dict[str, str] | None = None,
 ) -> None:
     """Write uint16 arrays as a Safetensors file tagged BF16 or F16."""
     if storage_dtype not in TWO_BYTE_DTYPES:
@@ -197,9 +198,12 @@ def write_uint16_safetensors(
     blobs: list[bytes] = []
     offset = 0
     for name, arr in tensors.items():
+        tag = (dtypes or {}).get(name, storage_dtype)
+        if tag not in TWO_BYTE_DTYPES:
+            raise ValueError(f"{name}: dtype {tag} is not 16-bit")
         raw = np.ascontiguousarray(arr, dtype="<u2").tobytes()
         header[name] = {
-            "dtype": storage_dtype,
+            "dtype": tag,
             "shape": [int(x) for x in arr.shape],
             "data_offsets": [offset, offset + len(raw)],
         }

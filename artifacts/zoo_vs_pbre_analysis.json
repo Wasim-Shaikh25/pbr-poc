@@ -1,0 +1,317 @@
+{
+  "disclaimer": "Zoo vs PBR-E accounting. Held-out NLL is not a bitstream. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW.",
+  "n_tensors": 42,
+  "n_words": 83836928,
+  "n_hold": 16767104,
+  "hold_frac": 0.1999966410982998,
+  "mixture_winner": {
+    "name": "mixture_argmin",
+    "models_used": [
+      "exp_cond",
+      "gbdt"
+    ],
+    "model_bytes": 67124,
+    "model_byte_breakdown": {
+      "exp_cond_tables_256x128_u16": 65536,
+      "gbdt_hist_16x2": 1588
+    },
+    "tensors_by_choice": {
+      "exp_cond": 34,
+      "gbdt": 8
+    },
+    "holdout_words_by_choice": {
+      "exp_cond": 16306560,
+      "gbdt": 460544
+    },
+    "holdout_word_share_by_choice": {
+      "exp_cond": 0.9725328834365196,
+      "gbdt": 0.02746711656348049
+    },
+    "original_words_by_choice": {
+      "exp_cond": 81534169,
+      "gbdt": 2302759
+    },
+    "original_bytes_by_choice": {
+      "exp_cond": 163068338,
+      "gbdt": 4605518
+    },
+    "tensors": [
+      {
+        "name": "model.layers.0.mlp.down_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 870656
+      },
+      {
+        "name": "model.layers.0.mlp.gate_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.0.mlp.up_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.0.self_attn.k_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.0.self_attn.o_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.0.self_attn.q_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.0.self_attn.v_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.12.mlp.down_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 870656
+      },
+      {
+        "name": "model.layers.12.mlp.gate_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.12.mlp.up_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.12.self_attn.k_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.12.self_attn.o_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.12.self_attn.q_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.12.self_attn.v_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.23.mlp.down_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 870656
+      },
+      {
+        "name": "model.layers.23.mlp.gate_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.23.mlp.up_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.23.self_attn.k_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.23.self_attn.o_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.23.self_attn.q_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.23.self_attn.v_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.1.mlp.down_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 870656
+      },
+      {
+        "name": "model.layers.1.mlp.gate_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.1.mlp.up_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.1.self_attn.k_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.1.self_attn.o_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.1.self_attn.q_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.1.self_attn.v_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.2.mlp.down_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 870656
+      },
+      {
+        "name": "model.layers.2.mlp.gate_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.2.mlp.up_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.2.self_attn.k_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.2.self_attn.o_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.2.self_attn.q_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.2.self_attn.v_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.3.mlp.down_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 870656
+      },
+      {
+        "name": "model.layers.3.mlp.gate_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.3.self_attn.k_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.3.self_attn.v_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.4.self_attn.k_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.4.self_attn.v_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.5.self_attn.k_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      }
+    ]
+  },
+  "breakdown": {
+    "zoo_mixture_codec_view": {
+      "sign_raw_bpw": 1.0,
+      "sign_raw_bytes": 10479616.0,
+      "exp_complete_bpw": 2.6469155358371066,
+      "exp_complete_bytes": 27738658.400007114,
+      "mantissa_complete_bpw": 6.937993052158235,
+      "mantissa_complete_bytes": 72707502.99728628,
+      "mantissa_ideal_nll_bpw": 6.931587855631951,
+      "headers_bpw": 6.813226744186046e-05,
+      "headers_bytes": 714.0,
+      "tables_bytes": 67124,
+      "tables_codec_view_bpw": 0.0064051965262849325,
+      "total_bpw": 10.584976720262784,
+      "total_bytes_codec_view": 110926491.39729339,
+      "mantissa_nll_bits": 116222654.4605179,
+      "tables_amortized_bits": 107396.5962966582
+    },
+    "pbre_split_synthetic": {
+      "note": "Sign raw + exp rANS-NLL complete + mantissa stored raw 7 bits + amortized 17-byte headers. NOT the on-disk PBR-E container.",
+      "sign_raw_bpw": 1.0,
+      "sign_raw_bytes": 10479616.0,
+      "exp_complete_bpw": 2.6469155358371066,
+      "exp_complete_bytes": 27738658.400007114,
+      "mantissa_raw_bpw": 7.0,
+      "mantissa_raw_bytes": 73357312.0,
+      "headers_bpw": 6.813226744186046e-05,
+      "headers_bytes": 714.0,
+      "total_bpw": 10.646983668104548,
+      "total_bytes": 111576300.40000711
+    },
+    "pbre_measured_fullset": {
+      "note": "Job 3 rANS complete container on the same 42 tensors, all words.",
+      "encoded_bytes": 111253029,
+      "original_bytes": 167673856,
+      "bpw": 10.6161,
+      "entropy_bound_bpw": 10.6127,
+      "packed_sign_mantissa_bytes": 83836928,
+      "exp_plus_headers_bytes": 27416101,
+      "sign_raw_bpw": 1.0,
+      "mantissa_raw_bpw": 7.0,
+      "exp_bitstream_bpw_approx": 2.6161360301751513
+    }
+  },
+  "deltas": {
+    "zoo_vs_pbre_split": -0.062006947841764415,
+    "zoo_vs_pbre_measured": -0.031123279737215626,
+    "zoo_holdout_charged_total_bpw": 10.610598044237594,
+    "zoo_holdout_charged_vs_measured": -0.005501955762404975,
+    "mantissa_ideal_vs_raw7": -0.06841214436804943,
+    "mantissa_complete_vs_raw7": -0.0620069478417653,
+    "exp_cond_vs_mixture": 0.001005952718172054,
+    "uncond_M_vs_raw7_complete": -0.027955504687472654,
+    "zoo_plus_exp_rans_overhead_bpw": 10.588376720262783
+  },
+  "accounting_verdict": {
+    "is_0_03_real": "The 0.03\u20130.06 BPW is a real mantissa entropy gap (H(M|exp)\u22486.93 vs raw 7), not random noise. It is NOT a like-for-like container comparison: zoo totals use held-out NLL plus amortized tables; PBR-E 10.616 is an on-disk bitstream over all words. Charge the 67 KB tables to the 20% holdout only and the zoo total is ~10.611, within 0.005 of measured PBR-E. Realizing NLL as rANS would add ~0.003 BPW (the exponent overhead).",
+    "headline_0_062_is": "vs synthetic split PBR-E (raw-M 7.0), codec-view amortization",
+    "headline_0_031_is": "vs measured PBR-E rANS 10.616, still NLL not bitstream",
+    "transferable_trick": "Entropy-code the 7-bit mantissa, preferably 256 exp-conditional tables (DF11-class, same move already used on exponents). ~0.06 BPW vs raw-M, ~0.03 vs current PBR-E. Not a new axis.",
+    "toward_8bpw": "dead-end micro-gain",
+    "bits_needed_for_8bpw": 2.6159999999999997,
+    "bits_found": 0.0620069478417653
+  },
+  "pbre_ref_fullset": 10.616,
+  "raw_m_total_split": 10.646983668104548
+}

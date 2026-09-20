@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pbr-poc"
 version = "0.1.0"
-description = "PBR Stage 1A/1B/2/E proof of concept (exact codecs + exponent Huffman)"
+description = "PBR-E bit-exact BF16 compressor (~10.6 BPW) plus research PoC"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -21,6 +21,7 @@ baselines = ["zstandard>=0.22"]
 stage1b = ["huggingface_hub>=0.23", "safetensors>=0.4"]
 
 [project.scripts]
+pbr = "pbr_encoder.product:main"
 pbr-poc1 = "pbr_encoder.cli:main"
 pbr-poc1b = "pbr_encoder.poc1b:main"
 pbr-qualify = "pbr_qualifier.cli:main"
@@ -31,7 +32,9 @@ pbr-phase-a = "pbr_encoder.mantissa_audit:main"
 pbr-exp-ablate = "pbr_encoder.exp_coder_ablation:main"
 pbr-delta = "pbr_encoder.checkpoint_delta:main"
 pbr-mantissa-zoo = "pbr_encoder.mantissa_zoo:main"
+pbr-zoo-vs-pbre = "pbr_encoder.zoo_vs_pbre:main"
 pbr-generate-controlled = "pbr_encoder.controlled_data:main"
+pbr-4 = "pbr_encoder.pbr4_eval:main"
 
 [project.urls]
 Repository = "https://github.com/Wasim-Shaikh25/pbr-poc"

@@ -88,7 +88,7 @@ PROFILES = {
         "whole_codecs": WHOLE_PBRE,
         "enable_whole": True,
         "use_refs": False,
-        "label": "PBR-E whole-tensor (fast full-checkpoint: raw + exp-Huffman only)",
+        "label": "PBR-E whole-tensor (raw + exp Huffman/rANS; product default)",
     },
     "hierarchical": {
         "codecs": HIER_CODECS,
