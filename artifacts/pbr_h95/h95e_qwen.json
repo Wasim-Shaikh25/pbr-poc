@@ -1,0 +1,741 @@
+{
+  "phase": "H95E",
+  "model_dir": "outputs/models/Qwen__Qwen2.5-0.5B-Instruct",
+  "repo": "Qwen/Qwen2.5-0.5B-Instruct",
+  "max_length": 256,
+  "calibration": {
+    "version": "calib-v2",
+    "path": "docs/pbr_h95/calibration_v2.json",
+    "n_texts": 58,
+    "n_tokens_scored": 1925
+  },
+  "heldout": {
+    "version": "heldout-v1",
+    "path": "docs/pbr_h95/heldout_v1.json",
+    "n_texts": 32,
+    "n_tokens_scored": 1094
+  },
+  "inventory_path": "artifacts/pbr_h95/h95e_inventory.json",
+  "baseline_calib": {
+    "mean_nll": 3.160408227103097,
+    "ppl": 23.580220049442257,
+    "n_tokens": 1925,
+    "wall_seconds": 11.58
+  },
+  "baseline_heldout": {
+    "mean_nll": 3.6643996264860443,
+    "ppl": 39.03269493084119,
+    "n_tokens": 1094,
+    "wall_seconds": 6.24
+  },
+  "phase_c_reference": {
+    "heldout_ppl_retention": 0.9934229083179162,
+    "est_total_bpw": 8.628182647512158,
+    "note": "Phase C body + embed@7 (live k=7 ladder row when available)"
+  },
+  "freq_report": {
+    "calib_total_tokens": 1983,
+    "calib_unique_ids": 1162,
+    "heldout_total_tokens": 1126,
+    "heldout_unique_ids": 702,
+    "heldout_ids_unseen_in_calib": 490,
+    "note": "Tiers fit on calib only; heldout counts are reporting-only."
+  },
+  "e1_uniform_ladder": [
+    {
+      "name": "uniform_embed_k7",
+      "calib": {
+        "mean_nll": 3.1671586569253503,
+        "ppl": 23.739935136327095,
+        "n_tokens": 1925,
+        "delta_nll_vs_bf16": 0.006750429822253157,
+        "ppl_retention_vs_bf16": 0.9932723031479375,
+        "delta_nll_vs_phase_c": 0.006750429822253157,
+        "ppl_retention_vs_phase_c": 1.0
+      },
+      "heldout": {
+        "mean_nll": 3.6709984425434903,
+        "ppl": 39.29111620440899,
+        "n_tokens": 1094,
+        "delta_nll_vs_bf16": 0.006598816057445944,
+        "ppl_retention_vs_bf16": 0.9934229083179162,
+        "ppl_retention_vs_phase_c": 1.0
+      },
+      "avg_keep_bits": 5.008182647512158,
+      "avg_keep_bits_including_padded": 5.008182647512158,
+      "est_total_bpw": 8.628182647512158,
+      "est_total_bpw_including_padded": 8.628182647512158,
+      "bytes_saved_vs_bf16_mantissa": 123002880.0,
+      "bytes_saved_including_padded_rows": 123002880.0,
+      "avg_keep_detail": {
+        "avg_keep_bits": 5.008182647512158,
+        "total_words_in_estimate": 494032768,
+        "embed_words_counted": 136134656,
+        "embed_words_omitted_padded": 0,
+        "body_words": 357898112,
+        "omit_padded_from_storage": false
+      },
+      "embed_row_keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 151936
+      },
+      "avg_embed_row_keep": 7.0,
+      "wall_seconds": 24.39,
+      "embed_keep": 7
+    },
+    {
+      "name": "uniform_embed_k6",
+      "calib": {
+        "mean_nll": 3.1714628442541346,
+        "ppl": 23.84233648352676,
+        "n_tokens": 1925,
+        "delta_nll_vs_bf16": 0.011054617151037505,
+        "ppl_retention_vs_bf16": 0.9890062605959107,
+        "delta_nll_vs_phase_c": 0.011054617151037505,
+        "ppl_retention_vs_phase_c": 0.9957050624098683
+      },
+      "heldout": {
+        "mean_nll": 3.6786025498859187,
+        "ppl": 39.591028908690326,
+        "n_tokens": 1094,
+        "delta_nll_vs_bf16": 0.01420292339987439,
+        "ppl_retention_vs_bf16": 0.9858974622979151,
+        "ppl_retention_vs_phase_c": 0.9924247307395565
+      },
+      "avg_keep_bits": 4.732624699096883,
+      "avg_keep_bits_including_padded": 4.732624699096883,
+      "est_total_bpw": 8.352624699096882,
+      "est_total_bpw_including_padded": 8.352624699096882,
+      "bytes_saved_vs_bf16_mantissa": 140019712.0,
+      "bytes_saved_including_padded_rows": 140019712.0,
+      "avg_keep_detail": {
+        "avg_keep_bits": 4.732624699096883,
+        "total_words_in_estimate": 494032768,
+        "embed_words_counted": 136134656,
+        "embed_words_omitted_padded": 0,
+        "body_words": 357898112,
+        "omit_padded_from_storage": false
+      },
+      "embed_row_keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 151936,
+        "7": 0
+      },
+      "avg_embed_row_keep": 6.0,
+      "wall_seconds": 28.68,
+      "embed_keep": 6
+    },
+    {
+      "name": "uniform_embed_k5",
+      "calib": {
+        "mean_nll": 3.167924962229543,
+        "ppl": 23.75813414665175,
+        "n_tokens": 1925,
+        "delta_nll_vs_bf16": 0.007516735126445795,
+        "ppl_retention_vs_bf16": 0.9925114448756253,
+        "delta_nll_vs_phase_c": 0.007516735126445795,
+        "ppl_retention_vs_phase_c": 0.9992339882327326
+      },
+      "heldout": {
+        "mean_nll": 3.675453022149625,
+        "ppl": 39.466532021146676,
+        "n_tokens": 1094,
+        "delta_nll_vs_bf16": 0.011053395663580545,
+        "ppl_retention_vs_bf16": 0.9890074686553906,
+        "ppl_retention_vs_phase_c": 0.9955553273177463
+      },
+      "avg_keep_bits": 4.457066750681607,
+      "avg_keep_bits_including_padded": 4.457066750681607,
+      "est_total_bpw": 8.077066750681606,
+      "est_total_bpw_including_padded": 8.077066750681606,
+      "bytes_saved_vs_bf16_mantissa": 157036544.0,
+      "bytes_saved_including_padded_rows": 157036544.0,
+      "avg_keep_detail": {
+        "avg_keep_bits": 4.457066750681607,
+        "total_words_in_estimate": 494032768,
+        "embed_words_counted": 136134656,
+        "embed_words_omitted_padded": 0,
+        "body_words": 357898112,
+        "omit_padded_from_storage": false
+      },
+      "embed_row_keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 151936,
+        "6": 0,
+        "7": 0
+      },
+      "avg_embed_row_keep": 5.0,
+      "wall_seconds": 27.05,
+      "embed_keep": 5
+    },
+    {
+      "name": "uniform_embed_k4",
+      "calib": {
+        "mean_nll": 3.1756193453305728,
+        "ppl": 23.941643422511742,
+        "n_tokens": 1925,
+        "delta_nll_vs_bf16": 0.015211118227475673,
+        "ppl_retention_vs_bf16": 0.9849039864686295,
+        "delta_nll_vs_phase_c": 0.015211118227475673,
+        "ppl_retention_vs_phase_c": 0.9915750024914753
+      },
+      "heldout": {
+        "mean_nll": 3.6730629225317695,
+        "ppl": 39.37231571607371,
+        "n_tokens": 1094,
+        "delta_nll_vs_bf16": 0.008663296045725133,
+        "ppl_retention_vs_bf16": 0.9913741221704704,
+        "ppl_retention_vs_phase_c": 0.9979376495847928
+      },
+      "avg_keep_bits": 4.181508802266331,
+      "avg_keep_bits_including_padded": 4.181508802266331,
+      "est_total_bpw": 7.801508802266331,
+      "est_total_bpw_including_padded": 7.801508802266331,
+      "bytes_saved_vs_bf16_mantissa": 174053376.0,
+      "bytes_saved_including_padded_rows": 174053376.0,
+      "avg_keep_detail": {
+        "avg_keep_bits": 4.181508802266331,
+        "total_words_in_estimate": 494032768,
+        "embed_words_counted": 136134656,
+        "embed_words_omitted_padded": 0,
+        "body_words": 357898112,
+        "omit_padded_from_storage": false
+      },
+      "embed_row_keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 151936,
+        "5": 0,
+        "6": 0,
+        "7": 0
+      },
+      "avg_embed_row_keep": 4.0,
+      "wall_seconds": 27.54,
+      "embed_keep": 4
+    },
+    {
+      "name": "uniform_embed_k3",
+      "calib": {
+        "mean_nll": 3.1729784264502587,
+        "ppl": 23.87849890085107,
+        "n_tokens": 1925,
+        "delta_nll_vs_bf16": 0.012570199347161637,
+        "ppl_retention_vs_bf16": 0.9875084756103248,
+        "delta_nll_vs_phase_c": 0.012570199347161637,
+        "ppl_retention_vs_phase_c": 0.994197132529171
+      },
+      "heldout": {
+        "mean_nll": 3.684022328099559,
+        "ppl": 39.80618602989583,
+        "n_tokens": 1094,
+        "delta_nll_vs_bf16": 0.01962270161351487,
+        "ppl_retention_vs_bf16": 0.9805685704610404,
+        "ppl_retention_vs_phase_c": 0.987060558248409
+      },
+      "avg_keep_bits": 3.9059508538510546,
+      "avg_keep_bits_including_padded": 3.9059508538510546,
+      "est_total_bpw": 7.525950853851055,
+      "est_total_bpw_including_padded": 7.525950853851055,
+      "bytes_saved_vs_bf16_mantissa": 191070208.0,
+      "bytes_saved_including_padded_rows": 191070208.0,
+      "avg_keep_detail": {
+        "avg_keep_bits": 3.9059508538510546,
+        "total_words_in_estimate": 494032768,
+        "embed_words_counted": 136134656,
+        "embed_words_omitted_padded": 0,
+        "body_words": 357898112,
+        "omit_padded_from_storage": false
+      },
+      "embed_row_keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 151936,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0
+      },
+      "avg_embed_row_keep": 3.0,
+      "wall_seconds": 27.24,
+      "embed_keep": 3
+    }
+  ],
+  "e2_tiers": [
+    {
+      "name": "tier_default",
+      "calib": {
+        "mean_nll": 3.1783782711276762,
+        "ppl": 24.007787841991984,
+        "n_tokens": 1925,
+        "delta_nll_vs_bf16": 0.017970044024579135,
+        "ppl_retention_vs_bf16": 0.9821904543907262,
+        "delta_nll_vs_phase_c": 0.017970044024579135,
+        "ppl_retention_vs_phase_c": 0.9888430909408326
+      },
+      "heldout": {
+        "mean_nll": 3.674689001749377,
+        "ppl": 39.43639030146606,
+        "n_tokens": 1094,
+        "delta_nll_vs_bf16": 0.010289375263332623,
+        "ppl_retention_vs_bf16": 0.989763379266234,
+        "ppl_retention_vs_phase_c": 0.9963162425377541
+      },
+      "avg_keep_bits": 4.187705787905543,
+      "avg_keep_bits_including_padded": 4.187122033168456,
+      "est_total_bpw": 7.807705787905543,
+      "est_total_bpw_including_padded": 7.807122033168456,
+      "bytes_saved_vs_bf16_mantissa": 173797792.0,
+      "bytes_saved_including_padded_rows": 173706736.0,
+      "avg_keep_detail": {
+        "avg_keep_bits": 4.187705787905543,
+        "total_words_in_estimate": 493789952,
+        "embed_words_counted": 135891840,
+        "embed_words_omitted_padded": 242816,
+        "body_words": 357898112,
+        "omit_padded_from_storage": true
+      },
+      "embed_row_keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 271,
+        "4": 150489,
+        "5": 0,
+        "6": 162,
+        "7": 1014
+      },
+      "avg_embed_row_keep": 4.020370419123841,
+      "wall_seconds": 27.92,
+      "tier_meta": {
+        "schedule": "default",
+        "total_calib_tokens": 1983,
+        "n_unique_seen_ids": 1162,
+        "top_cut_n": 1000,
+        "top_mass_frac_target": 0.01,
+        "top_n_cap": 1000,
+        "band2_end_n": 1162,
+        "band3_end_n": 1162,
+        "band_row_counts": {
+          "special": 14,
+          "top": 1000,
+          "band2": 162,
+          "band3": 0,
+          "seen_rest": 0,
+          "unseen": 150489,
+          "padded": 271
+        },
+        "keep_hist_rows": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 271,
+          "4": 150489,
+          "5": 0,
+          "6": 162,
+          "7": 1014
+        },
+        "keeps_by_band": {
+          "special": 7,
+          "top": 7,
+          "band2": 6,
+          "band3": 5,
+          "seen_rest": 4,
+          "unseen_reachable": 4,
+          "padded": 3
+        },
+        "storage_note": "Forward pass leaves padded rows at keep=k_pad (not zeroed). est BPW may omit padded rows from storage (count as 0 stored words)."
+      },
+      "schedule": "default"
+    },
+    {
+      "name": "tier_aggressive",
+      "calib": {
+        "mean_nll": 3.1721670750209263,
+        "ppl": 23.859132904014533,
+        "n_tokens": 1925,
+        "delta_nll_vs_bf16": 0.011758847917829218,
+        "ppl_retention_vs_bf16": 0.9883100171454535,
+        "delta_nll_vs_phase_c": 0.011758847917829218,
+        "ppl_retention_vs_phase_c": 0.9950041031177884
+      },
+      "heldout": {
+        "mean_nll": 3.6748875229188687,
+        "ppl": 39.44422003694765,
+        "n_tokens": 1094,
+        "delta_nll_vs_bf16": 0.010487896432824328,
+        "ppl_retention_vs_bf16": 0.9895669097849829,
+        "ppl_retention_vs_phase_c": 0.9961184723035406
+      },
+      "avg_keep_bits": 3.9121121362955558,
+      "avg_keep_bits_including_padded": 3.9116638352215536,
+      "est_total_bpw": 7.532112136295556,
+      "est_total_bpw_including_padded": 7.531663835221554,
+      "bytes_saved_vs_bf16_mantissa": 190808464.0,
+      "bytes_saved_including_padded_rows": 190717408.0,
+      "avg_keep_detail": {
+        "avg_keep_bits": 3.9121121362955558,
+        "total_words_in_estimate": 493789952,
+        "embed_words_counted": 135891840,
+        "embed_words_omitted_padded": 242816,
+        "body_words": 357898112,
+        "omit_padded_from_storage": true
+      },
+      "embed_row_keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 150925,
+        "4": 0,
+        "5": 397,
+        "6": 100,
+        "7": 514
+      },
+      "avg_embed_row_keep": 3.0207324136478517,
+      "wall_seconds": 27.63,
+      "tier_meta": {
+        "schedule": "aggressive",
+        "total_calib_tokens": 1983,
+        "n_unique_seen_ids": 1162,
+        "top_cut_n": 500,
+        "top_mass_frac_target": 0.005,
+        "top_n_cap": 500,
+        "band2_end_n": 600,
+        "band3_end_n": 997,
+        "band_row_counts": {
+          "special": 14,
+          "top": 500,
+          "band2": 100,
+          "band3": 397,
+          "seen_rest": 165,
+          "unseen": 150489,
+          "padded": 271
+        },
+        "keep_hist_rows": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 150925,
+          "4": 0,
+          "5": 397,
+          "6": 100,
+          "7": 514
+        },
+        "keeps_by_band": {
+          "special": 7,
+          "top": 7,
+          "band2": 6,
+          "band3": 5,
+          "seen_rest": 3,
+          "unseen_reachable": 3,
+          "padded": 3
+        },
+        "storage_note": "Forward pass leaves padded rows at keep=k_pad (not zeroed). est BPW may omit padded rows from storage (count as 0 stored words)."
+      },
+      "schedule": "aggressive"
+    },
+    {
+      "name": "tier_conservative",
+      "calib": {
+        "mean_nll": 3.1793243081229074,
+        "ppl": 24.030510844169793,
+        "n_tokens": 1925,
+        "delta_nll_vs_bf16": 0.01891608101981035,
+        "ppl_retention_vs_bf16": 0.9812617052692917,
+        "delta_nll_vs_phase_c": 0.01891608101981035,
+        "ppl_retention_vs_phase_c": 0.9879080511551757
+      },
+      "heldout": {
+        "mean_nll": 3.673063672220903,
+        "ppl": 39.37234523308202,
+        "n_tokens": 1094,
+        "delta_nll_vs_bf16": 0.008664045734858572,
+        "ppl_retention_vs_bf16": 0.9913733789483424,
+        "ppl_retention_vs_phase_c": 0.9979369014420615
+      },
+      "avg_keep_bits": 4.192561488168962,
+      "avg_keep_bits_including_padded": 4.1919753468660605,
+      "est_total_bpw": 7.812561488168962,
+      "est_total_bpw_including_padded": 7.811975346866061,
+      "bytes_saved_vs_bf16_mantissa": 173498080.0,
+      "bytes_saved_including_padded_rows": 173407024.0,
+      "avg_keep_detail": {
+        "avg_keep_bits": 4.192561488168962,
+        "total_words_in_estimate": 493789952,
+        "embed_words_counted": 135891840,
+        "embed_words_omitted_padded": 242816,
+        "body_words": 357898112,
+        "omit_padded_from_storage": true
+      },
+      "embed_row_keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 271,
+        "4": 149651,
+        "5": 0,
+        "6": 0,
+        "7": 2014
+      },
+      "avg_embed_row_keep": 4.037983098146588,
+      "wall_seconds": 28.0,
+      "tier_meta": {
+        "schedule": "conservative",
+        "total_calib_tokens": 1983,
+        "n_unique_seen_ids": 1162,
+        "top_cut_n": 2000,
+        "top_mass_frac_target": 0.02,
+        "top_n_cap": 2000,
+        "band2_end_n": 2000,
+        "band3_end_n": 2000,
+        "band_row_counts": {
+          "special": 14,
+          "top": 2000,
+          "band2": 0,
+          "band3": 0,
+          "seen_rest": 0,
+          "unseen": 149651,
+          "padded": 271
+        },
+        "keep_hist_rows": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 271,
+          "4": 149651,
+          "5": 0,
+          "6": 0,
+          "7": 2014
+        },
+        "keeps_by_band": {
+          "special": 7,
+          "top": 7,
+          "band2": 6,
+          "band3": 5,
+          "seen_rest": 5,
+          "unseen_reachable": 4,
+          "padded": 3
+        },
+        "storage_note": "Forward pass leaves padded rows at keep=k_pad (not zeroed). est BPW may omit padded rows from storage (count as 0 stored words)."
+      },
+      "schedule": "conservative"
+    }
+  ],
+  "tier_summaries": [
+    {
+      "meta": {
+        "schedule": "default",
+        "total_calib_tokens": 1983,
+        "n_unique_seen_ids": 1162,
+        "top_cut_n": 1000,
+        "top_mass_frac_target": 0.01,
+        "top_n_cap": 1000,
+        "band2_end_n": 1162,
+        "band3_end_n": 1162,
+        "band_row_counts": {
+          "special": 14,
+          "top": 1000,
+          "band2": 162,
+          "band3": 0,
+          "seen_rest": 0,
+          "unseen": 150489,
+          "padded": 271
+        },
+        "keep_hist_rows": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 271,
+          "4": 150489,
+          "5": 0,
+          "6": 162,
+          "7": 1014
+        },
+        "keeps_by_band": {
+          "special": 7,
+          "top": 7,
+          "band2": 6,
+          "band3": 5,
+          "seen_rest": 4,
+          "unseen_reachable": 4,
+          "padded": 3
+        },
+        "storage_note": "Forward pass leaves padded rows at keep=k_pad (not zeroed). est BPW may omit padded rows from storage (count as 0 stored words)."
+      },
+      "keep_hist_rows": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 271,
+        "4": 150489,
+        "5": 0,
+        "6": 162,
+        "7": 1014
+      },
+      "avg_row_keep": 4.020370419123841,
+      "avg_row_keep_reachable_only": 4.022193650479676
+    },
+    {
+      "meta": {
+        "schedule": "aggressive",
+        "total_calib_tokens": 1983,
+        "n_unique_seen_ids": 1162,
+        "top_cut_n": 500,
+        "top_mass_frac_target": 0.005,
+        "top_n_cap": 500,
+        "band2_end_n": 600,
+        "band3_end_n": 997,
+        "band_row_counts": {
+          "special": 14,
+          "top": 500,
+          "band2": 100,
+          "band3": 397,
+          "seen_rest": 165,
+          "unseen": 150489,
+          "padded": 271
+        },
+        "keep_hist_rows": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 150925,
+          "4": 0,
+          "5": 397,
+          "6": 100,
+          "7": 514
+        },
+        "keeps_by_band": {
+          "special": 7,
+          "top": 7,
+          "band2": 6,
+          "band3": 5,
+          "seen_rest": 3,
+          "unseen_reachable": 3,
+          "padded": 3
+        },
+        "storage_note": "Forward pass leaves padded rows at keep=k_pad (not zeroed). est BPW may omit padded rows from storage (count as 0 stored words)."
+      },
+      "keep_hist_rows": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 150925,
+        "4": 0,
+        "5": 397,
+        "6": 100,
+        "7": 514
+      },
+      "avg_row_keep": 3.0207324136478517,
+      "avg_row_keep_reachable_only": 3.0207694590050442
+    },
+    {
+      "meta": {
+        "schedule": "conservative",
+        "total_calib_tokens": 1983,
+        "n_unique_seen_ids": 1162,
+        "top_cut_n": 2000,
+        "top_mass_frac_target": 0.02,
+        "top_n_cap": 2000,
+        "band2_end_n": 2000,
+        "band3_end_n": 2000,
+        "band_row_counts": {
+          "special": 14,
+          "top": 2000,
+          "band2": 0,
+          "band3": 0,
+          "seen_rest": 0,
+          "unseen": 149651,
+          "padded": 271
+        },
+        "keep_hist_rows": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 271,
+          "4": 149651,
+          "5": 0,
+          "6": 0,
+          "7": 2014
+        },
+        "keeps_by_band": {
+          "special": 7,
+          "top": 7,
+          "band2": 6,
+          "band3": 5,
+          "seen_rest": 5,
+          "unseen_reachable": 4,
+          "padded": 3
+        },
+        "storage_note": "Forward pass leaves padded rows at keep=k_pad (not zeroed). est BPW may omit padded rows from storage (count as 0 stored words)."
+      },
+      "keep_hist_rows": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 271,
+        "4": 149651,
+        "5": 0,
+        "6": 0,
+        "7": 2014
+      },
+      "avg_row_keep": 4.037983098146588,
+      "avg_row_keep_reachable_only": 4.039837800415389
+    }
+  ],
+  "gate": {
+    "metric": "heldout_ppl_retention",
+    "threshold": 0.95,
+    "primary_map": "tier_aggressive",
+    "heldout_ppl_retention": 0.9895669097849829,
+    "calib_ppl_retention": 0.9883100171454535,
+    "est_total_bpw": 7.532112136295556,
+    "decision": "GO",
+    "go": true,
+    "claim_notes": [
+      "Proxy GO with est BPW 7.53 \u2264 8 \u2014 still not a physical container / product claim."
+    ],
+    "best_tier": {
+      "name": "tier_aggressive",
+      "heldout_ppl_retention": 0.9895669097849829,
+      "calib_ppl_retention": 0.9883100171454535,
+      "est_total_bpw": 7.532112136295556
+    }
+  },
+  "honesty": [
+    "Proxy PPL on in-repo calib/heldout only \u2014 not a multilingual/production bench.",
+    "Frequency tiers fit on calib-v2 \u2014 risk of calib overfitting for rare tokens.",
+    "Padded-row cleanup \u2260 meaningful BPW win (padded rows are nonzero; omitting them from storage estimate is bookkeeping).",
+    "est BPW is not a physical container (1 sign + 2.62 exp ref + avg mantissa keep).",
+    "Not claiming \u22648 BPW product unless heldout retention \u2265 0.95 AND numbers support it \u2014 if heldout \u2265 0.95 say proxy GO for that map; else NO-GO.",
+    "English-heavy calib \u2260 multilingual retention proof (Qwen is multilingual).",
+    "Body = Phase C frozen map (mid bands keep=4, emb/norm/bias/first/last protected@7) with only embed rows varied."
+  ],
+  "shortcuts": [
+    "Tier head uses top_n_cap rank floor (expanded only if mass < target); avoids 1-id head when one token exceeds 1% mass on tiny calib.",
+    "Calib-v2 sees only ~1.2k unique ids; vast majority of reachable rows are never-seen \u2192 tier maps \u2248 uniform embed keep for that unseen band."
+  ],
+  "wall_seconds": 239.25,
+  "env": {
+    "torch": "2.6.0+cpu",
+    "device": "cpu",
+    "dtype": "bfloat16",
+    "threads": 1
+  }
+}
