@@ -1,0 +1,242 @@
+{
+  "version": "calib-v2",
+  "id": "calib-v2",
+  "language": "en",
+  "n_texts": 58,
+  "texts": [
+    {
+      "id": "c00",
+      "text": "The quick brown fox jumps over the lazy dog near the river bank at dawn."
+    },
+    {
+      "id": "c01",
+      "text": "Machine learning models compress patterns in data into reusable parameters."
+    },
+    {
+      "id": "c02",
+      "text": "In quantum mechanics, measurement can change the state of a physical system."
+    },
+    {
+      "id": "c03",
+      "text": "A library is a collection of books, manuscripts, and other sources of information."
+    },
+    {
+      "id": "c04",
+      "text": "Photosynthesis converts light energy into chemical energy stored in glucose."
+    },
+    {
+      "id": "c05",
+      "text": "The committee agreed to postpone the vote until next Tuesday afternoon."
+    },
+    {
+      "id": "c06",
+      "text": "Software engineers write tests to catch regressions before code is deployed."
+    },
+    {
+      "id": "c07",
+      "text": "Climate scientists study long-term changes in temperature, rainfall, and ice cover."
+    },
+    {
+      "id": "c08",
+      "text": "Bread is typically made from flour, water, yeast, and a pinch of salt."
+    },
+    {
+      "id": "c09",
+      "text": "The telescope revealed faint galaxies that formed billions of years ago."
+    },
+    {
+      "id": "c10",
+      "text": "Economic forecasts depend on assumptions about interest rates and employment."
+    },
+    {
+      "id": "c11",
+      "text": "A sonnet is a fourteen-line poem with a structured rhyme scheme and meter."
+    },
+    {
+      "id": "c12",
+      "text": "Neurons communicate across synapses by releasing neurotransmitters that bind to receptors on neighboring cells. This electrochemical signaling underlies perception, memory formation, and motor control throughout the nervous system."
+    },
+    {
+      "id": "c13",
+      "text": "Plate tectonics explains how Earth's crustal plates slowly drift, collide, and separate over geologic time. Earthquakes and volcanic arcs often concentrate along plate boundaries where stress accumulates and is released."
+    },
+    {
+      "id": "c14",
+      "text": "DNA replication is semi-conservative: each new double helix retains one parental strand and one newly synthesized strand. Polymerases proofread bases, yet rare mutations still introduce heritable variation."
+    },
+    {
+      "id": "c15",
+      "text": "Black holes warp spacetime so strongly that not even light can escape beyond the event horizon. Astrophysicists infer their presence from accretion disks, gravitational waves, and the motion of nearby stars."
+    },
+    {
+      "id": "c16",
+      "text": "Vaccines train the adaptive immune system to recognize specific pathogens without causing the full disease. Memory B and T cells then respond faster upon later exposure, reducing severity or preventing infection."
+    },
+    {
+      "id": "c17",
+      "text": "A hash map stores key-value pairs so that average lookup, insert, and delete operations run in constant time. Collisions are handled with chaining or open addressing, and a good hash function spreads keys evenly."
+    },
+    {
+      "id": "c18",
+      "text": "Recursive algorithms solve a problem by calling themselves on smaller subproblems until they reach a base case. Without a well-defined base case or decreasing problem size, recursion can overflow the call stack."
+    },
+    {
+      "id": "c19",
+      "text": "Unit tests assert that a function returns expected outputs for controlled inputs, including edge cases. Continuous integration runs the suite on every commit so regressions are caught before merging to the main branch."
+    },
+    {
+      "id": "c20",
+      "text": "Version control systems record snapshots of a project so collaborators can branch, merge, and revert changes safely. Commit messages should explain why a change was made, not only what files were edited."
+    },
+    {
+      "id": "c21",
+      "text": "An API endpoint receives HTTP requests, validates parameters, and returns structured responses such as JSON. Rate limits and authentication protect services from abuse while keeping latency predictable for clients."
+    },
+    {
+      "id": "c22",
+      "text": "\"Did you finish the report?\" asked Maria. \"Almost,\" replied Jordan. \"I still need to check the appendix numbers against last quarter's spreadsheet before I send it.\""
+    },
+    {
+      "id": "c23",
+      "text": "\"Why is the train delayed again?\" \"Signal failure on the north line,\" said the conductor. \"We should be moving within fifteen minutes, and I apologize for the inconvenience.\""
+    },
+    {
+      "id": "c24",
+      "text": "\"Can you explain the algorithm one more time?\" \"Sure. We sort the array, then use two pointers moving inward until they meet or find the target sum.\""
+    },
+    {
+      "id": "c25",
+      "text": "\"I think we should launch next month,\" said the product manager. \"Only if the load tests pass,\" answered the engineer. \"Otherwise we risk an outage during peak traffic.\""
+    },
+    {
+      "id": "c26",
+      "text": "To reset a forgotten password, open the login page, click Forgot Password, enter your email address, and follow the link sent to your inbox within ten minutes. Choose a new password that you have not used on other sites."
+    },
+    {
+      "id": "c27",
+      "text": "When packing for a hiking trip, bring layered clothing, a map or offline GPS, enough water for the route, and a basic first-aid kit. Tell someone your planned trail and expected return time before you leave."
+    },
+    {
+      "id": "c28",
+      "text": "Preheat the oven to 180 degrees Celsius, grease the baking pan, and mix the dry ingredients in a large bowl. Add the wet ingredients gradually, pour the batter evenly, and bake for twenty-five minutes until a toothpick comes out clean."
+    },
+    {
+      "id": "c29",
+      "text": "Before submitting a pull request, rebase onto the latest main branch, run the full test suite, and request review from at least one teammate familiar with the affected module. Update the changelog if user-facing behavior changed."
+    },
+    {
+      "id": "c30",
+      "text": "City officials announced a new bus lane on Market Street intended to cut commute times during rush hour. Local shop owners expressed mixed views, citing construction disruption but hoping for more foot traffic afterward."
+    },
+    {
+      "id": "c31",
+      "text": "Researchers published a study linking regular sleep schedules to improved attention in adolescents. Experts cautioned that correlation is not causation and called for larger longitudinal trials across diverse school districts."
+    },
+    {
+      "id": "c32",
+      "text": "A coastal storm knocked out power to thousands of households overnight, delaying flights at the regional airport. Utility crews worked through the morning, prioritizing hospitals and water treatment facilities."
+    },
+    {
+      "id": "c33",
+      "text": "The technology firm reported stronger than expected quarterly revenue driven by cloud subscriptions. Shares rose in after-hours trading while analysts debated whether growth can continue amid rising infrastructure costs."
+    },
+    {
+      "id": "c34",
+      "text": "A store sells notebooks for three dollars each and pens for one dollar each. If Maya buys four notebooks and seven pens, and she pays with a twenty-dollar bill, how much change should she receive?"
+    },
+    {
+      "id": "c35",
+      "text": "A rectangular garden is twelve meters long and five meters wide. If a fence costs eight dollars per meter of perimeter, what is the total cost to enclose the garden completely on all four sides?"
+    },
+    {
+      "id": "c36",
+      "text": "Train A leaves the station traveling sixty kilometers per hour. Two hours later, Train B leaves on the same route at ninety kilometers per hour. How many hours after Train B departs will it catch Train A?"
+    },
+    {
+      "id": "c37",
+      "text": "A recipe needs two cups of flour for twelve cookies. How many cups of flour are required to make thirty cookies, assuming the ratio of ingredients stays constant?"
+    },
+    {
+      "id": "c38",
+      "text": "The water cycle moves moisture from oceans into the atmosphere through evaporation, then returns it as precipitation that feeds rivers and aquifers. Human activity can alter local cycles by changing land cover, withdrawing groundwater, and warming the climate."
+    },
+    {
+      "id": "c39",
+      "text": "During the Industrial Revolution, steam power and mechanized textile production transformed rural economies into urban manufacturing centers. Working conditions were often harsh, prompting labor movements that eventually won shorter hours and safer factories."
+    },
+    {
+      "id": "c40",
+      "text": "Optical illusions reveal that perception is an active construction rather than a passive recording of light. The brain uses prior expectations and contextual cues to resolve ambiguous images, sometimes confidently seeing patterns that are not physically present."
+    },
+    {
+      "id": "c41",
+      "text": "Public libraries offer free access to books, internet terminals, and community programs that support literacy and lifelong learning. In many towns they also serve as cooling centers, job-search hubs, and quiet study spaces for students without home offices."
+    },
+    {
+      "id": "c42",
+      "text": "Coral reefs host extraordinary biodiversity but are sensitive to rising sea temperatures that trigger bleaching. Conservation strategies include reducing local pollution, protecting herbivorous fish, and experimenting with heat-tolerant coral breeding programs."
+    },
+    {
+      "id": "c43",
+      "text": "Classical music notation encodes pitch, rhythm, dynamics, and articulation so performers can recreate a composer's intentions centuries later. Improvisation traditions, by contrast, leave more decisions to the musicians in the moment of performance."
+    },
+    {
+      "id": "c44",
+      "text": "Satellites in low Earth orbit complete a circuit of the planet in roughly ninety minutes, enabling frequent imaging of weather systems and surface changes. Debris from old rockets and defunct satellites increasingly threatens operational spacecraft."
+    },
+    {
+      "id": "c45",
+      "text": "Fermentation uses microbes to convert sugars into acids, gases, or alcohol under controlled conditions. Bread, yogurt, kimchi, and many cheeses rely on carefully managed microbial communities that also contribute distinctive flavors."
+    },
+    {
+      "id": "c46",
+      "text": "When debugging a flaky test, first check whether timing, shared mutable state, or external network calls introduce nondeterminism. Isolating the failure with smaller fixtures and fixed random seeds often reveals the true root cause faster than adding retries."
+    },
+    {
+      "id": "c47",
+      "text": "Geometry on a sphere differs from Euclidean plane geometry: the shortest path between two points is a great-circle arc, and the sum of angles in a triangle exceeds one hundred eighty degrees. Navigators and flight planners use these facts daily."
+    },
+    {
+      "id": "c48",
+      "text": "Supply chains coordinate suppliers, manufacturers, warehouses, and retailers so goods arrive when demand peaks. Disruptions at a single port or semiconductor fab can cascade worldwide, raising prices and delaying finished products for months."
+    },
+    {
+      "id": "c49",
+      "text": "Linguists distinguish phonemes, the contrastive sound units of a language, from allophones, the contextual variants that do not change word meaning. Children acquire these distinctions rapidly through exposure long before formal schooling begins."
+    },
+    {
+      "id": "c50",
+      "text": "Magnetic resonance imaging uses strong magnetic fields and radio pulses to map soft tissues without ionizing radiation. Scan times and resolution trade off against patient comfort, and metallic implants may restrict who can be imaged safely."
+    },
+    {
+      "id": "c51",
+      "text": "A well-written abstract summarizes the problem, method, key results, and implications in a few hundred words. Reviewers often decide whether to read the full paper based on the clarity and credibility of that short opening section."
+    },
+    {
+      "id": "c52",
+      "text": "Urban planners balance housing density, green space, transit access, and flood risk when approving new developments. Community feedback sessions help surface local concerns that maps and traffic models alone may overlook."
+    },
+    {
+      "id": "c53",
+      "text": "Enzymes lower activation energy for biochemical reactions without being consumed, enabling metabolism at body temperature. Inhibitors can block active sites or alter enzyme shape, which is the basis for many pharmaceutical drugs."
+    },
+    {
+      "id": "c54",
+      "text": "The invention of movable type accelerated the spread of literacy and standardized languages across Europe. Pamphlets and newspapers later created public spheres where political debate could reach far beyond a single town square."
+    },
+    {
+      "id": "c55",
+      "text": "In distributed systems, consensus protocols ensure that replicas agree on a shared state despite network partitions and node failures. Latency and availability trade-offs depend on how many replicas must acknowledge each write."
+    },
+    {
+      "id": "c56",
+      "text": "Bird migration routes follow seasonal food availability and favorable winds, sometimes spanning continents. Tracking tags and radar now reveal stopover sites that conservationists prioritize to keep migratory populations viable."
+    },
+    {
+      "id": "c57",
+      "text": "Statistical significance does not automatically imply practical importance; a tiny effect can be significant in a huge sample. Practitioners should report effect sizes and uncertainty intervals alongside p-values when communicating results."
+    }
+  ],
+  "note": "Enlarged fixed deterministic calibration corpus for H95 Phase B/C. Includes all calib-v1 texts as the first 12 for continuity. Used for greedy search / sensitivity ranking only \u2014 not held-out acceptance.",
+  "parent_version": "calib-v1"
+}
