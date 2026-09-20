@@ -499,6 +499,21 @@ Leftover 2-D tensors (embedding + layer-10 MLP, **298,418,176 B**):
 best `H(M|exp)` **6.944**, same **MISS**. Embeddings are not a hidden
 easy set.
 
+### PBR-M mantissa model zoo
+
+Pressure-test CTW/PPM bit contexts, histogram GBDT, tiny causal AR MLPs
+(64KB / 256KB stored-size budgets), IDF-lite integer coupling, and a
+per-tensor mixture against PBR-E (~10.6). Held-out last 20% of rows.
+Complete BPW counts every model byte. Stretch total ≤4 is allowed only
+with a measured number; this run does not assume it.
+
+```bash
+python scripts/run_mantissa_zoo.py --tag qwen
+```
+
+Reports: `artifacts/mantissa_multimodel_bakeoff.{json,md}`,
+`artifacts/mantissa_principle_candidate.md`.
+
 ### Job 3 — Huffman vs rANS on exponents
 
 Same Qwen 42-tensor set. One tile header + freq/code table + exponent
@@ -696,12 +711,13 @@ scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py,
                  run_blocker_diagnosis.py, run_blocker_ablation.py,
                  run_family_eval.py, run_phase_a_mantissa_audit.py,
                  run_pbre_full.py, run_exp_coder_ablation.py,
-                 run_checkpoint_delta.py
+                 run_checkpoint_delta.py, run_mantissa_zoo.py
 tests/           exactness, codecs, Stage 1B fixtures, qualifier math,
-                 hierarchical leftovers, mantissa audit, checkpoint delta
+                 hierarchical leftovers, mantissa audit, checkpoint delta,
+                 mantissa zoo
 configs/         poc_controlled.yaml, poc_real.yaml, poc_llama.yaml,
                  qualifier_default.yaml, poc_delta.yaml
-artifacts/       measured diagnosis / ablation / Phase A / delta reports
+artifacts/       measured diagnosis / ablation / Phase A / delta / zoo reports
 ```
 
 Later stages (full selected-model encode vs projection, fused runtime) are
