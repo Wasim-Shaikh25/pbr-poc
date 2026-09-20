@@ -102,3 +102,36 @@ PYTHONPATH=. python scripts/run_pbr_h95_phase_c.py \
   --max-length 256 \
   --units bands
 ```
+
+## H95E (vocabulary / frequency-aware embedding mantissa)
+
+Stacks **on top of Phase C** (mid bands keep=4, protected emb/norm/bias/first/last @7) and only varies **embedding rows**.
+
+- `pbr_h95/embed_tiers.py` — inventory, calib token-frequency counts, tier assignment, per-row embed quantize
+- `scripts/run_pbr_h95e.py` — E1 inventory + uniform embed ladder + E2 frequency tiers; calib+heldout PPL
+- Artifacts: `artifacts/pbr_h95/h95e_inventory.{json,md}`, `artifacts/pbr_h95/h95e_qwen.{json,md}`
+
+### E1 / E2 sketch
+
+1. **Inventory** — embed shape/share, tie status, configured vs reachable vocab, padded-row norms (not zero), class histogram.
+2. **Uniform ladder** — Phase C body fixed; all embed rows at keep ∈ {7,6,5,4,3}; report calib+heldout retention and est BPW.
+3. **Frequency tiers** — fit token counts on **calib-v2 only**; specials/top-mass → higher keep; unseen/padded lower; try default / aggressive / conservative schedules.
+
+### Honesty (H95E — must read)
+
+- Proxy PPL on in-repo calib/heldout only — **not** a multilingual/production bench.
+- Frequency tiers fit on calib-v2 — risk of calib overfitting for rare tokens.
+- Padded-row cleanup ≠ meaningful BPW win (padded rows are nonzero; omitting them from a storage estimate is bookkeeping).
+- `est_total_bpw` is not a physical container (1 sign + 2.62 exp ref + avg mantissa keep).
+- Not claiming ≤8 BPW product unless heldout retention ≥ 0.95 **and** numbers support it — if heldout ≥ 0.95 say **proxy GO** for that map; else **NO-GO**.
+- English-heavy calib ≠ multilingual retention proof (Qwen is multilingual).
+
+### Run
+
+```bash
+PYTHONPATH=. python scripts/run_pbr_h95e.py \
+  --model-dir outputs/models/Qwen__Qwen2.5-0.5B-Instruct \
+  --calib docs/pbr_h95/calibration_v2.json \
+  --heldout docs/pbr_h95/heldout_v1.json \
+  --max-length 256
+```
