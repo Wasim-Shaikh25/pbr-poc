@@ -1,0 +1,420 @@
+{
+  "phase": "H95-B",
+  "model_dir": "outputs/models/Qwen__Qwen2.5-0.5B-Instruct",
+  "repo": "Qwen/Qwen2.5-0.5B-Instruct",
+  "tie_word_embeddings": true,
+  "calibration": {
+    "version": "calib-v1",
+    "path": "docs/pbr_h95/calibration_v1.json",
+    "n_texts": 12,
+    "max_length": 128,
+    "metric": "mean_token_nll_teacher_forcing",
+    "ppl": "exp(mean_nll)",
+    "ppl_retention": "bf16_ppl / quant_ppl"
+  },
+  "baseline": {
+    "mean_nll": 2.9416694518058533,
+    "ppl": 18.94745178060283,
+    "n_tokens": 155,
+    "wall_seconds": 2.11
+  },
+  "family_tensor_counts": {
+    "embed": 2,
+    "first_block": 10,
+    "norm": 49,
+    "attn_mid": 154,
+    "mlp_mid": 66,
+    "last_block": 10
+  },
+  "candidates": [
+    {
+      "name": "policy_7_5",
+      "kind": "policy",
+      "mean_nll": 2.9368086661061934,
+      "ppl": 18.855575753679574,
+      "n_tokens": 155,
+      "delta_nll": -0.004860785699659864,
+      "ppl_retention": 1.0048726184829082,
+      "bytes_saved_vs_bf16_mantissa": 82001920.0,
+      "utility_bytes_per_delta_nll": 8.200192e+16,
+      "utility_bytes_per_abs_delta_nll": 16870095714.307693,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 154,
+        "6": 0,
+        "7": 137
+      },
+      "wall_seconds": 8.45
+    },
+    {
+      "name": "uniform_mid_k6",
+      "kind": "uniform_mid",
+      "mean_nll": 2.939575724447927,
+      "ppl": 18.907822483395552,
+      "n_tokens": 155,
+      "delta_nll": -0.002093727357926234,
+      "ppl_retention": 1.0020959207355622,
+      "bytes_saved_vs_bf16_mantissa": 41000960.0,
+      "utility_bytes_per_delta_nll": 4.100096e+16,
+      "utility_bytes_per_abs_delta_nll": 19582759830.109905,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 154,
+        "7": 137
+      },
+      "wall_seconds": 8.15
+    },
+    {
+      "name": "uniform_mid_k5",
+      "kind": "uniform_mid",
+      "mean_nll": 2.9368086661061934,
+      "ppl": 18.855575753679574,
+      "n_tokens": 155,
+      "delta_nll": -0.004860785699659864,
+      "ppl_retention": 1.0048726184829082,
+      "bytes_saved_vs_bf16_mantissa": 82001920.0,
+      "utility_bytes_per_delta_nll": 8.200192e+16,
+      "utility_bytes_per_abs_delta_nll": 16870095714.307693,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 154,
+        "6": 0,
+        "7": 137
+      },
+      "wall_seconds": 7.95
+    },
+    {
+      "name": "uniform_mid_k4",
+      "kind": "uniform_mid",
+      "mean_nll": 2.9394857345088834,
+      "ppl": 18.90612104616009,
+      "n_tokens": 155,
+      "delta_nll": -0.002183717296969867,
+      "ppl_retention": 1.0021861033440878,
+      "bytes_saved_vs_bf16_mantissa": 123002880.0,
+      "utility_bytes_per_delta_nll": 1.2300288e+17,
+      "utility_bytes_per_abs_delta_nll": 56327291161.121994,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 154,
+        "5": 0,
+        "6": 0,
+        "7": 137
+      },
+      "wall_seconds": 7.47
+    },
+    {
+      "name": "family_embed_k5",
+      "kind": "family_ablation",
+      "mean_nll": 2.942353279359879,
+      "ppl": 18.960413001323833,
+      "n_tokens": 155,
+      "delta_nll": 0.0006838275540257399,
+      "ppl_retention": 0.99931640620275,
+      "bytes_saved_vs_bf16_mantissa": 34033664.0,
+      "utility_bytes_per_delta_nll": 49769366267.33081,
+      "utility_bytes_per_abs_delta_nll": 49769366267.33081,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 2,
+        "6": 0,
+        "7": 289
+      },
+      "wall_seconds": 8.67,
+      "family": "embed"
+    },
+    {
+      "name": "family_lm_head_tied_k5",
+      "kind": "family_ablation",
+      "mean_nll": 2.942353279359879,
+      "ppl": 18.960413001323833,
+      "n_tokens": 155,
+      "delta_nll": 0.0006838275540257399,
+      "ppl_retention": 0.99931640620275,
+      "bytes_saved_vs_bf16_mantissa": 34033664.0,
+      "utility_bytes_per_delta_nll": 49769366267.33081,
+      "utility_bytes_per_abs_delta_nll": 49769366267.33081,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 2,
+        "6": 0,
+        "7": 289
+      },
+      "wall_seconds": 7.35,
+      "family": "lm_head_tied",
+      "note": "tie_word_embeddings=true: lm_head shares embed_tokens; ablation identical to family_embed_k5"
+    },
+    {
+      "name": "family_norm_k5",
+      "kind": "family_ablation",
+      "mean_nll": 2.942295099073841,
+      "ppl": 18.959309911161377,
+      "n_tokens": 155,
+      "delta_nll": 0.000625647267987528,
+      "ppl_retention": 0.9993745484084541,
+      "bytes_saved_vs_bf16_mantissa": 10976.0,
+      "utility_bytes_per_delta_nll": 17543431.517419815,
+      "utility_bytes_per_abs_delta_nll": 17543431.517419815,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 49,
+        "6": 0,
+        "7": 242
+      },
+      "wall_seconds": 2.91,
+      "family": "norm"
+    },
+    {
+      "name": "family_attn_mid_k5",
+      "kind": "family_ablation",
+      "mean_nll": 2.946612758021201,
+      "ppl": 19.041346721273303,
+      "n_tokens": 155,
+      "delta_nll": 0.004943306215347665,
+      "ppl_retention": 0.9950688918150116,
+      "bytes_saved_vs_bf16_mantissa": 10098880.0,
+      "utility_bytes_per_delta_nll": 2042940404.672006,
+      "utility_bytes_per_abs_delta_nll": 2042940404.672006,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 154,
+        "6": 0,
+        "7": 137
+      },
+      "wall_seconds": 2.79,
+      "family": "attn_mid"
+    },
+    {
+      "name": "family_mlp_mid_k5",
+      "kind": "family_ablation",
+      "mean_nll": 2.9399037638018206,
+      "ppl": 18.914026010711456,
+      "n_tokens": 155,
+      "delta_nll": -0.0017656880040326506,
+      "ppl_retention": 1.0017672477489692,
+      "bytes_saved_vs_bf16_mantissa": 71909376.0,
+      "utility_bytes_per_delta_nll": 7.190937599999999e+16,
+      "utility_bytes_per_abs_delta_nll": 40725980941.0079,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 66,
+        "6": 0,
+        "7": 225
+      },
+      "wall_seconds": 6.73,
+      "family": "mlp_mid"
+    },
+    {
+      "name": "family_first_block_k5",
+      "kind": "family_ablation",
+      "mean_nll": 2.941162896925403,
+      "ppl": 18.93785628695852,
+      "n_tokens": 155,
+      "delta_nll": -0.0005065548804501496,
+      "ppl_retention": 1.0005066832010399,
+      "bytes_saved_vs_bf16_mantissa": 3727648.0,
+      "utility_bytes_per_delta_nll": 3727648000000000.0,
+      "utility_bytes_per_abs_delta_nll": 7358823582.328194,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 10,
+        "6": 0,
+        "7": 281
+      },
+      "wall_seconds": 2.92,
+      "family": "first_block"
+    },
+    {
+      "name": "family_last_block_k5",
+      "kind": "family_ablation",
+      "mean_nll": 2.9393053731610697,
+      "ppl": 18.902711420177887,
+      "n_tokens": 155,
+      "delta_nll": -0.002364078644783607,
+      "ppl_retention": 1.0023668752820922,
+      "bytes_saved_vs_bf16_mantissa": 3727648.0,
+      "utility_bytes_per_delta_nll": 3727648000000000.0,
+      "utility_bytes_per_abs_delta_nll": 1576786799.468427,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 10,
+        "6": 0,
+        "7": 281
+      },
+      "wall_seconds": 2.89,
+      "family": "last_block"
+    },
+    {
+      "name": "policy_7_5_mlp_mid_k4",
+      "kind": "policy_variant",
+      "mean_nll": 2.9530093777564264,
+      "ppl": 19.163537362392443,
+      "n_tokens": 155,
+      "delta_nll": 0.011339925950573093,
+      "ppl_retention": 0.9887241286562433,
+      "bytes_saved_vs_bf16_mantissa": 117956608.0,
+      "utility_bytes_per_delta_nll": 10401885207.551884,
+      "utility_bytes_per_abs_delta_nll": 10401885207.551884,
+      "keep_hist": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 66,
+        "5": 88,
+        "6": 0,
+        "7": 137
+      },
+      "wall_seconds": 6.76
+    }
+  ],
+  "rankings": {
+    "families_by_delta_nll_desc": [
+      {
+        "family": "attn_mid",
+        "delta_nll": 0.004943306215347665,
+        "bytes_saved": 10098880.0
+      },
+      {
+        "family": "embed",
+        "delta_nll": 0.0006838275540257399,
+        "bytes_saved": 34033664.0
+      },
+      {
+        "family": "norm",
+        "delta_nll": 0.000625647267987528,
+        "bytes_saved": 10976.0
+      },
+      {
+        "family": "first_block",
+        "delta_nll": -0.0005065548804501496,
+        "bytes_saved": 3727648.0
+      },
+      {
+        "family": "mlp_mid",
+        "delta_nll": -0.0017656880040326506,
+        "bytes_saved": 71909376.0
+      },
+      {
+        "family": "last_block",
+        "delta_nll": -0.002364078644783607,
+        "bytes_saved": 3727648.0
+      }
+    ],
+    "families_by_utility_desc": [
+      {
+        "family": "mlp_mid",
+        "utility_bytes_per_delta_nll": 7.190937599999999e+16,
+        "delta_nll": -0.0017656880040326506,
+        "bytes_saved": 71909376.0
+      },
+      {
+        "family": "first_block",
+        "utility_bytes_per_delta_nll": 3727648000000000.0,
+        "delta_nll": -0.0005065548804501496,
+        "bytes_saved": 3727648.0
+      },
+      {
+        "family": "last_block",
+        "utility_bytes_per_delta_nll": 3727648000000000.0,
+        "delta_nll": -0.002364078644783607,
+        "bytes_saved": 3727648.0
+      },
+      {
+        "family": "embed",
+        "utility_bytes_per_delta_nll": 49769366267.33081,
+        "delta_nll": 0.0006838275540257399,
+        "bytes_saved": 34033664.0
+      },
+      {
+        "family": "attn_mid",
+        "utility_bytes_per_delta_nll": 2042940404.672006,
+        "delta_nll": 0.004943306215347665,
+        "bytes_saved": 10098880.0
+      },
+      {
+        "family": "norm",
+        "utility_bytes_per_delta_nll": 17543431.517419815,
+        "delta_nll": 0.000625647267987528,
+        "bytes_saved": 10976.0
+      }
+    ],
+    "families_by_utility_among_positive_delta_nll_desc": [
+      {
+        "family": "embed",
+        "utility_bytes_per_delta_nll": 49769366267.33081,
+        "delta_nll": 0.0006838275540257399,
+        "bytes_saved": 34033664.0
+      },
+      {
+        "family": "attn_mid",
+        "utility_bytes_per_delta_nll": 2042940404.672006,
+        "delta_nll": 0.004943306215347665,
+        "bytes_saved": 10098880.0
+      },
+      {
+        "family": "norm",
+        "utility_bytes_per_delta_nll": 17543431.517419815,
+        "delta_nll": 0.000625647267987528,
+        "bytes_saved": 10976.0
+      }
+    ],
+    "note": "utility = bytes_saved / max(delta_nll, 1e-9). delta_nll <= 0 yields huge utility (no measured calib loss); also see families_by_utility_among_positive_delta_nll_desc."
+  },
+  "policy_7_5_summary": {
+    "ppl_retention": 1.0048726184829082,
+    "delta_nll": -0.004860785699659864,
+    "bytes_saved_vs_bf16_mantissa": 82001920.0
+  },
+  "disclaimer": "CALIBRATION PROXY ONLY \u2014 not held-out evaluation. Scores use the fixed in-repo corpus calib-v1 under teacher-forcing mean token NLL / perplexity. Phase C owns the \u226595% held-out quality gate. Do NOT claim \u226595% GO from Phase B. ppl_retention = bf16_ppl / quant_ppl is reported for ranking, not acceptance.",
+  "wall_seconds": 76.85,
+  "env": {
+    "torch": "2.6.0+cpu",
+    "device": "cpu",
+    "dtype": "bfloat16"
+  }
+}
