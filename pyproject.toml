@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pbr-poc"
 version = "0.1.0"
-description = "PBR Stage 1A/1B/2 proof of concept (exact codecs + qualification scanner)"
+description = "PBR Stage 1A/1B/2/E proof of concept (exact codecs + exponent Huffman)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -24,6 +24,7 @@ stage1b = ["huggingface_hub>=0.23", "safetensors>=0.4"]
 pbr-poc1 = "pbr_encoder.cli:main"
 pbr-poc1b = "pbr_encoder.poc1b:main"
 pbr-qualify = "pbr_qualifier.cli:main"
+pbr-e = "pbr_encoder.pbre:main"
 pbr-generate-controlled = "pbr_encoder.controlled_data:main"
 
 [project.urls]

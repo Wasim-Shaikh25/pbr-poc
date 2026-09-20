@@ -67,6 +67,11 @@ class BitReader:
             out[i] = self.read(nbits)
         return out
 
+    def rewind(self, nbits: int) -> None:
+        if nbits < 0 or self._bitpos < nbits:
+            raise ValueError("BitReader rewind out of range")
+        self._bitpos -= nbits
+
 
 def bits_needed(n_symbols: int) -> int:
     if n_symbols <= 1:

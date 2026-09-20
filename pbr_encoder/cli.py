@@ -46,6 +46,7 @@ def format_table(rows: list[dict]) -> str:
         "exact",
         "winning_modes",
         "zlib_B",
+        "expHuff_bound_B",
     ]
     str_rows = []
     for row in rows:
@@ -59,6 +60,7 @@ def format_table(rows: list[dict]) -> str:
                 row["exact"],
                 row["winning_modes"],
                 str(row.get("zlib_bytes", "")),
+                str(row.get("exp_huffman_bound_bytes", "")),
             ]
         )
     widths = [len(h) for h in headers]
@@ -145,6 +147,9 @@ def run_one(
         zstd_info = bases.get("zstd") or {}
         best["zstd_bytes"] = zstd_info.get("encoded_bytes")
         best["zstd_note"] = zstd_info.get("note")
+        bound_info = bases.get("exp_huffman_bound") or {}
+        best["exp_huffman_bound_bytes"] = bound_info.get("encoded_bytes")
+        best["exp_huffman_bound_bpw"] = bound_info.get("bpw")
     best["attempts"] = [
         {k: v for k, v in a.items() if k not in {"blob", "container_extra"}}
         for a in attempts

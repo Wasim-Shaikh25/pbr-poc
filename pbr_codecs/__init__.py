@@ -1,6 +1,7 @@
 """Stage 1A codecs. Each candidate reports complete encoded byte cost."""
 
 from pbr_codecs.bf16_components import ComponentsCodec
+from pbr_codecs.bf16_exp_huffman import Bf16ExpHuffmanCodec
 from pbr_codecs.constant import ConstantCodec
 from pbr_codecs.duplicate_blocks import DuplicateRefCodec, RefPrevTileCodec
 from pbr_codecs.raw import RawCodec
@@ -17,9 +18,11 @@ STAGE1A_CODECS = [
     DuplicateRefCodec(),
     RefPrevTileCodec(),
     ComponentsCodec(),
+    Bf16ExpHuffmanCodec(),
 ]
 
 __all__ = [
+    "Bf16ExpHuffmanCodec",
     "ComponentsCodec",
     "ConstPredCodec",
     "ConstantCodec",

@@ -10,9 +10,12 @@ import numpy as np
 from pbr_core.bf16 import BF16_DTYPE_TAG, view_uint16
 from pbr_core.container import PBRContainer, TensorBlob, attach_geometry
 from pbr_core.hashing import sha256_words
+from pbr_codecs.bf16_exp_huffman import Bf16ExpHuffmanCodec
 from pbr_core.tiles import as_2d, choose_tile_hw, iter_tiles
 from pbr_core.types import EncodedBlock, EncodeContext
 from pbr_encoder.mode_search import select_best
+
+_EXP_HUFF = Bf16ExpHuffmanCodec()
 
 
 def encode_words(
@@ -55,6 +58,33 @@ def encode_tensor(
         encoded_tiles.append(chosen)
         context.record(tile.words)
 
+    tiled = _container(
+        matrix,
+        name=name,
+        block_size=block_size,
+        tile_rows=tile_rows,
+        tile_cols=tile_cols,
+        tiles=encoded_tiles,
+        extra=extra,
+    )
+    whole = _whole_tensor_exp_huffman(matrix, name=name, extra=extra)
+    if whole is None:
+        return tiled
+    if len(whole.dumps()) < len(tiled.dumps()):
+        return whole
+    return tiled
+
+
+def _container(
+    matrix: np.ndarray,
+    *,
+    name: str,
+    block_size: int,
+    tile_rows: int,
+    tile_cols: int,
+    tiles: list[EncodedBlock],
+    extra: dict | None,
+) -> PBRContainer:
     blob = TensorBlob(
         name=name,
         shape=tuple(int(x) for x in matrix.shape),
@@ -64,17 +94,48 @@ def encode_tensor(
         tile_cols=tile_cols,
         n_words=int(matrix.size),
         sha256=sha256_words(matrix),
-        tiles=encoded_tiles,
+        tiles=tiles,
     )
     meta = {
         "stage": "1A",
         "selection": "complete_encoded_bytes",
         "runtime_lambda": 0.0,
-        "mode_counts": dict(Counter(t.mode_name for t in encoded_tiles)),
+        "mode_counts": dict(Counter(t.mode_name for t in tiles)),
     }
     if extra:
         meta.update(extra)
     return PBRContainer(tensors=[blob], extra=meta)
+
+
+def _whole_tensor_exp_huffman(
+    matrix: np.ndarray,
+    *,
+    name: str,
+    extra: dict | None,
+) -> PBRContainer | None:
+    """Amortize one exponent codebook across the whole tensor (PBR-E)."""
+    if matrix.size == 0:
+        return None
+    rows, cols = int(matrix.shape[0]), int(matrix.shape[1])
+    # Tile prefix stores rows/cols as uint16; skip whole-tensor if too wide.
+    if rows > 0xFFFF or cols > 0xFFFF:
+        return None
+    encoded = _EXP_HUFF.encode(matrix)
+    if encoded is None:
+        return None
+    attach_geometry(encoded, rows, cols, 0, 0)
+    meta = {"whole_tensor_mode": encoded.mode_name}
+    if extra:
+        meta = {**extra, **meta}
+    return _container(
+        matrix,
+        name=name,
+        block_size=int(matrix.size),
+        tile_rows=rows,
+        tile_cols=cols,
+        tiles=[encoded],
+        extra=meta,
+    )
 
 
 def mode_usage(container: PBRContainer) -> dict[str, dict[str, int | float]]:

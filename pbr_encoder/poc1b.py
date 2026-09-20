@@ -59,6 +59,12 @@ def _aggregate(rows: list[dict], *, model_meta: dict) -> dict:
         "exact": "PASS" if exact else "FAIL",
         "winning_modes": ",".join(f"{n}:{c}" for n, c in modes.most_common(4)),
         "zlib_bytes": sum(int(v) for v in zlib_vals) if zlib_vals else None,
+        "exp_huffman_bound_bytes": sum(
+            int(r["exp_huffman_bound_bytes"])
+            for r in rows
+            if r.get("exp_huffman_bound_bytes") is not None
+        )
+        or None,
         "disclaimer": DISCLAIMER,
         "model": model_meta,
         "tensor_count": len(rows),

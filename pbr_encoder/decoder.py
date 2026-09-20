@@ -5,6 +5,7 @@ from __future__ import annotations
 import numpy as np
 
 from pbr_codecs.bf16_components import ComponentsCodec
+from pbr_codecs.bf16_exp_huffman import Bf16ExpHuffmanCodec
 from pbr_codecs.constant import ConstantCodec
 from pbr_codecs.duplicate_blocks import RefPrevTileCodec
 from pbr_codecs.raw import RawCodec
@@ -17,6 +18,7 @@ from pbr_core.types import (
     MODE_CONST_PRED,
     MODE_CONSTANT,
     MODE_DUP_REF,
+    MODE_EXP_HUFFMAN,
     MODE_PREV_ROW,
     MODE_PREV_VALUE,
     MODE_RAW,
@@ -35,6 +37,7 @@ _CODECS = {
     MODE_CONST_PRED: ConstPredCodec(),
     MODE_COMPONENTS: ComponentsCodec(),
     MODE_REF_PREV: RefPrevTileCodec(),
+    MODE_EXP_HUFFMAN: Bf16ExpHuffmanCodec(),
 }
 
 

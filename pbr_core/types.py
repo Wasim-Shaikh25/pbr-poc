@@ -26,6 +26,7 @@ MODE_CONST_PRED = 5
 MODE_DUP_REF = 6
 MODE_COMPONENTS = 7
 MODE_REF_PREV = 8
+MODE_EXP_HUFFMAN = 9
 
 MODE_NAMES = {
     MODE_RAW: "raw_bf16",
@@ -37,6 +38,7 @@ MODE_NAMES = {
     MODE_DUP_REF: "duplicate_ref",
     MODE_COMPONENTS: "bf16_components",
     MODE_REF_PREV: "ref_prev_tile",
+    MODE_EXP_HUFFMAN: "bf16_exp_huffman",
 }
 
 RES_NAMES = {

@@ -1,6 +1,6 @@
 """BF16 bit-pattern helpers that never convert through FP32.
 
-PBR Stage 1A archives the exact 16-bit word. Sign, exponent, mantissa,
+PBR archives the exact 16-bit word. Sign, exponent, mantissa,
 signed zero, subnormals, infinities, and NaN payloads must survive.
 """
 
@@ -59,6 +59,18 @@ def join_components(
     sign: np.ndarray, exponent: np.ndarray, mantissa: np.ndarray
 ) -> np.ndarray:
     return make_bf16_bits(sign, exponent, mantissa)
+
+
+def pack_sign_mantissa(sign: np.ndarray, mantissa: np.ndarray) -> np.ndarray:
+    """Pack sign (MSB) + 7-bit mantissa into one byte per weight."""
+    s = np.asarray(sign, dtype=np.uint8) & np.uint8(1)
+    m = np.asarray(mantissa, dtype=np.uint8) & np.uint8(MANT_MASK)
+    return (s << np.uint8(7)) | m
+
+
+def unpack_sign_mantissa(packed: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    p = np.asarray(packed, dtype=np.uint8)
+    return (p >> np.uint8(7)).astype(np.uint8), (p & np.uint8(MANT_MASK))
 
 
 def special_payload_words() -> np.ndarray:

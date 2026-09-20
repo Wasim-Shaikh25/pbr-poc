@@ -5,15 +5,17 @@ Position-Based Binary Reconstruction (PBR) encodes BF16 weights as a
 is `Decode(Encode(W)) == W` on the original uint16 words.
 
 This repository implements **Stage 1A** (controlled tensors), **Stage 1B**
-(real public-checkpoint tensors), and **Stage 2** (a qualification *scanner*
-that projects BPW from samples). It is **not** a production model compressor
+(real public-checkpoint tensors), **Stage 2** (a qualification *scanner*),
+and **PBR-E / Stage 2.5** (exponent-Huffman so typical models can hit the
+published ~11 BPW lossless band). It is **not** a production model compressor
 and **not evidence that an 8 GB checkpoint becomes 1–2 GB**.
 
 > **Research status:** concept and early proof of concept. Stage 1A uses
 > synthetic tensors. Stage 1B checks that the same codecs stay bit-exact on
 > real BF16/F16 weights and reports complete-container BPW. Stage 2 projects
-> whole-model BPW from sampled encodings. None of these is a production ratio
-> claim. Stage 2 projections are not measured full-model sizes.
+> whole-model BPW from sampled encodings. PBR-E adds exponent entropy coding
+> aimed at DF11-class rates on ordinary dense LLMs. None of these is a
+> production ratio claim. ≤4 BPW remains out of scope for dense LLMs.
 
 ## What Stage 1A proves (Gate 1)
 
@@ -230,6 +232,44 @@ check, not a new compression claim.
 Config: `configs/qualifier_default.yaml`. Reports:
 `outputs/reports/poc2/stage2_qwen05b.json` and `console_report.txt`.
 
+## PBR-E / adapted method (Stage 2.5)
+
+Stage 1B/2 on Qwen landed at **~12.7–13.6 BPW** with `bf16_components`.
+That underperformed the published lossless bar because exponents were stored
+as a raw 8-bit stream (or a tiny per-tile palette), not entropy-coded.
+
+Consensus from recent lossless work:
+
+- [ZipNN](https://arxiv.org/abs/2411.05239) — BF16 compressibility is mostly
+  in the exponent field.
+- [DFloat11 / DF11](https://arxiv.org/abs/2504.11651) (NeurIPS 2025) —
+  ~11 BPW bit-exact on typical LLMs (~30% size cut).
+- [NeuZip](https://arxiv.org/abs/2410.20650) — ANS/Huffman on exponents;
+  mantissa often left raw for the lossless setting.
+
+**PBR-E** keeps the exact XOR / uint16 contract and adds `bf16_exp_huffman`:
+
+1. Split each BF16 word: `sign (1) | exponent (8) | mantissa (7)`.
+2. Canonical-Huffman the exponent stream (optional previous-exponent XOR if
+   that codebook+stream is smaller).
+3. Pack `sign+mantissa` as 8 raw bits/weight.
+4. Count the codebook in complete container bytes.
+5. Compete with every existing PBR mode via `argmin(complete_encoded_bytes)`.
+6. Also try **one codebook for the whole tensor** so the table amortizes
+   (per-tile Huffman alone cannot reach ~11 BPW).
+
+Realistic target for most dense LLMs: **~11 BPW / ~30%**, bit-exact.
+**≤4 BPW is not the goal** on this class of models.
+
+```bash
+python scripts/run_pbre.py --model-dir /path/to/Qwen2.5-0.5B-Instruct
+```
+
+Uses the same pinned Qwen revision and the same ~160 MiB linear/attention
+tensor set as Stage 1B so BPW is comparable to 13.61. Reports land in
+`outputs/reports/pbre/`. The table includes zlib and an
+`expHuff_bound_B` column (DF11-style bound, labeled baseline, not PBR).
+
 ### Measured Stage 2 run (this repo)
 
 Same Qwen revision as Stage 1B
@@ -266,9 +306,9 @@ The suite fails loudly (`ExactnessError: EXACTNESS FAIL ...`) if any uint16 word
 differs. Cases include special BF16 bit patterns (signed zero, Inf, NaN
 payloads, subnormals) that an FP32 detour would be likely to destroy.
 
-Stage 1B / Stage 2 unit tests write tiny local Safetensors fixtures. They do
-**not** download the 988 MB checkpoint. Live download tests are skipped
-unless `PBR_LIVE_HF=1`.
+Stage 1B / Stage 2 / PBR-E unit tests write tiny local Safetensors fixtures.
+They do **not** download the 988 MB checkpoint. Live download tests are
+skipped unless `PBR_LIVE_HF=1`.
 
 ## How size is counted
 
@@ -312,10 +352,10 @@ shortest.
 
 ```
 pbr_core/        uint16 views, tiles, container, hashing, Safetensors I/O
-pbr_codecs/      raw, predictors, residuals, dictionaries, components
-pbr_encoder/     cost-based search, decoder, Stage 1A/1B CLIs, HF download
+pbr_codecs/      raw, predictors, residuals, dictionaries, exp-Huffman
+pbr_encoder/     cost-based search, decoder, Stage 1A/1B/PBR-E CLIs
 pbr_qualifier/   Stage 2 inventory, entropy, sample encode, BPW projection
-scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py
+scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py
 tests/           exactness, codecs, Stage 1B fixtures, qualifier math
 configs/         poc_controlled.yaml, poc_real.yaml, qualifier_default.yaml
 ```
