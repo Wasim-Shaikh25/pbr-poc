@@ -14,7 +14,8 @@ and **not evidence that an 8 GB checkpoint becomes 1–2 GB**.
 > synthetic tensors. Stage 1B checks that the same codecs stay bit-exact on
 > real BF16/F16 weights and reports complete-container BPW. Stage 2 projects
 > whole-model BPW from sampled encodings. PBR-E adds exponent entropy coding
-> aimed at DF11-class rates on ordinary dense LLMs. None of these is a
+> and measured **10.87 complete-container BPW** (DF11-class) on the same
+> Qwen 42-tensor set that Stage 1B encoded at 13.61. None of these is a
 > production ratio claim. ≤4 BPW remains out of scope for dense LLMs.
 
 ## What Stage 1A proves (Gate 1)
