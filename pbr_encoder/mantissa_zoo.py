@@ -580,35 +580,41 @@ def write_principle(summary: dict, path: Path) -> None:
         "- Bits-back / sign-fold: signs are already ~1 bit of entropy; no gauge to steal.\n"
         "- Do not scale these BPW numbers to an 8 GB checkpoint or claim ≤4 BPW.\n"
     )
-    path.write_text(
-        "\n".join(
-            [
-                "# Mantissa principle candidate" if verdict != "negative" else "# Mantissa principle candidate (negative)",
-                "",
-                DISCLAIMER,
-                "",
-                f"**Verdict:** {verdict}.",
-                "",
-                "## Proposed principle (one paragraph)",
-                "",
-                para,
-                "",
-                "## Why this is not just DF11",
-                "",
-                why,
-                "",
-                "## Complete BPW breakdown",
-                "",
-                breakdown,
-                "",
-                "## Failure modes",
-                "",
-                fail,
-                "",
-            ]
-        ),
-        encoding="utf-8",
+    mark = "## PBR-4 structured nibble + node formulas"
+    pbr4_tail = ""
+    if path.exists():
+        old = path.read_text(encoding="utf-8")
+        if mark in old:
+            pbr4_tail = old[old.index(mark) :].rstrip() + "\n"
+    zoo_text = "\n".join(
+        [
+            "# Mantissa principle candidate" if verdict != "negative" else "# Mantissa principle candidate (negative)",
+            "",
+            DISCLAIMER,
+            "",
+            f"**Verdict:** {verdict}.",
+            "",
+            "## Proposed principle (one paragraph)",
+            "",
+            para,
+            "",
+            "## Why this is not just DF11",
+            "",
+            why,
+            "",
+            "## Complete BPW breakdown",
+            "",
+            breakdown,
+            "",
+            "## Failure modes",
+            "",
+            fail,
+            "",
+        ]
     )
+    if pbr4_tail:
+        zoo_text = zoo_text.rstrip() + "\n\n" + pbr4_tail
+    path.write_text(zoo_text, encoding="utf-8")
 
 
 def main(argv: list[str] | None = None) -> int:

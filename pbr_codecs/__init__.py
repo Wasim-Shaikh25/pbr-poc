@@ -11,6 +11,7 @@ from pbr_codecs.exp_hier_residual import ExpHierResidualCodec
 from pbr_codecs.exp_spatial_huffman import ExpSpatialHuffmanCodec
 from pbr_codecs.grammar import ResidualGrammarCodec
 from pbr_codecs.position_value_dict import PositionValueDictCodec
+from pbr_codecs.pbr4 import Pbr4Codec
 from pbr_codecs.raw import RawCodec
 from pbr_codecs.transformed_ref import TransformedRefCodec
 from pbr_codecs.value_dictionary import ValueDictCodec
@@ -47,6 +48,7 @@ __all__ = [
     "DuplicateRefCodec",
     "ExpHierResidualCodec",
     "ExpSpatialHuffmanCodec",
+    "Pbr4Codec",
     "PositionValueDictCodec",
     "PrevRowCodec",
     "PrevValueCodec",
