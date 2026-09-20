@@ -1,0 +1,57 @@
+{
+  "version": "calib-v1",
+  "id": "pbr-h95-calibration-v1",
+  "language": "en",
+  "n_texts": 12,
+  "texts": [
+    {
+      "id": "c00",
+      "text": "The quick brown fox jumps over the lazy dog near the river bank at dawn."
+    },
+    {
+      "id": "c01",
+      "text": "Machine learning models compress patterns in data into reusable parameters."
+    },
+    {
+      "id": "c02",
+      "text": "In quantum mechanics, measurement can change the state of a physical system."
+    },
+    {
+      "id": "c03",
+      "text": "A library is a collection of books, manuscripts, and other sources of information."
+    },
+    {
+      "id": "c04",
+      "text": "Photosynthesis converts light energy into chemical energy stored in glucose."
+    },
+    {
+      "id": "c05",
+      "text": "The committee agreed to postpone the vote until next Tuesday afternoon."
+    },
+    {
+      "id": "c06",
+      "text": "Software engineers write tests to catch regressions before code is deployed."
+    },
+    {
+      "id": "c07",
+      "text": "Climate scientists study long-term changes in temperature, rainfall, and ice cover."
+    },
+    {
+      "id": "c08",
+      "text": "Bread is typically made from flour, water, yeast, and a pinch of salt."
+    },
+    {
+      "id": "c09",
+      "text": "The telescope revealed faint galaxies that formed billions of years ago."
+    },
+    {
+      "id": "c10",
+      "text": "Economic forecasts depend on assumptions about interest rates and employment."
+    },
+    {
+      "id": "c11",
+      "text": "A sonnet is a fourteen-line poem with a structured rhyme scheme and meter."
+    }
+  ],
+  "note": "Fixed deterministic calibration corpus for H95 Phase B sensitivity. Not a held-out eval set."
+}
