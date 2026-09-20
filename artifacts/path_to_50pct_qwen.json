@@ -1,0 +1,558 @@
+{
+  "disclaimer": "Path to 50% (\u22648.0 complete BPW, bit-exact) on Qwen linear/attention weights. Complete bytes include tables, streams, headers. Not a 1\u20132 GB / 8 GB claim. Do not report 50% unless measured complete BPW is \u22648.0.",
+  "em_disclaimer": "PBR-EM field codecs (exp rANS + mantissa/SM rANS). Complete bytes include tables and one tile header. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim.",
+  "n_tensors": 42,
+  "n_words": 83836928,
+  "original_bytes": 167673856,
+  "target_bpw": 8.0,
+  "pbre_ref_bpw": 10.6161,
+  "bounds": {
+    "H_uint16": 10.538755500488989,
+    "H_sign": 0.9999977765279459,
+    "H_exp": 2.6123648655118297,
+    "H_mant": 6.971874691611127,
+    "H_mant_given_exp": 6.932489999070694,
+    "H_sign_given_exp": 0.9999994349066915,
+    "H_sm_given_exp": 7.93246332052033,
+    "unigram_floor_bpw": 10.538755500488989,
+    "field_split_ideal_bpw": 10.584237333650902,
+    "expcond_ideal_bpw": 10.54485264111047,
+    "joint_sm_exp_ideal_bpw": 10.54482818603216,
+    "top255_coverage": 0.32113544284447065,
+    "escape255_ideal_bpw": 18.86183291448847,
+    "bits_missing_to_8": 2.538755500488989
+  },
+  "tile_duplicates": {
+    "tile": 16,
+    "n_tiles": 327488,
+    "n_dup": 0,
+    "dup_rate": 0.0,
+    "unique_tiles": 327488
+  },
+  "methods": {
+    "pbre_exp_rans": {
+      "name": "pbre_exp_rans",
+      "encoded_bytes": 111253029,
+      "bpw": 10.616136030175152,
+      "ratio_vs_raw": 0.663508501885947,
+      "exact": "PASS",
+      "beats_pbre": false,
+      "hits_8bpw": false
+    },
+    "em_uncond_m": {
+      "name": "em_uncond_m",
+      "encoded_bytes": 110977882,
+      "bpw": 10.58988058341069,
+      "ratio_vs_raw": 0.6618675364631681,
+      "exact": "PASS",
+      "beats_pbre": true,
+      "hits_8bpw": false
+    },
+    "em_expcond_m": {
+      "name": "em_expcond_m",
+      "encoded_bytes": 110808763,
+      "bpw": 10.573742682938,
+      "ratio_vs_raw": 0.660858917683625,
+      "exact": "PASS",
+      "beats_pbre": true,
+      "hits_8bpw": false
+    },
+    "em_sm_uncond": {
+      "name": "em_sm_uncond",
+      "encoded_bytes": 111001393,
+      "bpw": 10.59212408164574,
+      "ratio_vs_raw": 0.6620077551028587,
+      "exact": "PASS",
+      "beats_pbre": true,
+      "hits_8bpw": false
+    },
+    "em_sm_expcond": {
+      "name": "em_sm_expcond",
+      "encoded_bytes": 111029601,
+      "bpw": 10.594815783326412,
+      "ratio_vs_raw": 0.6621759864579008,
+      "exact": "PASS",
+      "beats_pbre": true,
+      "hits_8bpw": false
+    },
+    "shared_em_expcond_m": {
+      "name": "shared_em_expcond_m",
+      "encoded_bytes": 110978672,
+      "bpw": 10.589955967852257,
+      "ratio_vs_raw": 0.661872247990766,
+      "exact": "PASS",
+      "beats_pbre": true,
+      "hits_8bpw": false,
+      "sidecar_bytes": 12016
+    },
+    "shared_em_sm_expcond": {
+      "name": "shared_em_sm_expcond",
+      "encoded_bytes": 110997100,
+      "bpw": 10.591714429230995,
+      "ratio_vs_raw": 0.6619821518269372,
+      "exact": "PASS",
+      "beats_pbre": true,
+      "hits_8bpw": false,
+      "sidecar_bytes": 20764
+    },
+    "optional_nibble_16": {
+      "name": "optional_nibble_16",
+      "encoded_bytes": 173242202,
+      "bpw": 16.531350194510942,
+      "ratio_vs_raw": 1.033209387156934,
+      "exact": "PASS",
+      "beats_pbre": false,
+      "hits_8bpw": false,
+      "usage": {
+        "raw": 327488
+      },
+      "nibble_tiles": 0,
+      "n_tiles": 327488
+    },
+    "global_escape255": {
+      "name": "global_escape255",
+      "encoded_bytes": 197665992,
+      "bpw": 18.861949903507917,
+      "ratio_vs_raw": 1.1788718689692448,
+      "exact": "PASS",
+      "beats_pbre": false,
+      "hits_8bpw": false,
+      "coverage": 0.32113544284447065
+    },
+    "per_tensor_escape255": {
+      "name": "per_tensor_escape255",
+      "encoded_bytes": 196536252,
+      "bpw": 18.75414633513289,
+      "ratio_vs_raw": 1.1721341459458057,
+      "exact": "PASS",
+      "beats_pbre": false,
+      "hits_8bpw": false
+    },
+    "tensor_mixture_argmin": {
+      "name": "tensor_mixture_argmin",
+      "encoded_bytes": 110693129,
+      "bpw": 10.562708500006107,
+      "ratio_vs_raw": 0.6601692812503817,
+      "exact": "PASS",
+      "beats_pbre": true,
+      "hits_8bpw": false,
+      "choice_counts": {
+        "em_expcond_m": 17,
+        "pbre_exp_rans": 8,
+        "em_uncond_m": 17
+      }
+    },
+    "zlib_raw_uint16_baseline": {
+      "name": "zlib_raw_uint16_baseline",
+      "encoded_bytes": 133488038,
+      "bpw": 12.737874937402287,
+      "ratio_vs_raw": 0.7961171835876429,
+      "exact": "n/a",
+      "beats_pbre": false,
+      "hits_8bpw": false
+    }
+  },
+  "best": {
+    "name": "tensor_mixture_argmin",
+    "encoded_bytes": 110693129,
+    "bpw": 10.562708500006107,
+    "ratio_vs_raw": 0.6601692812503817,
+    "exact": "PASS",
+    "beats_pbre": true,
+    "hits_8bpw": false,
+    "choice_counts": {
+      "em_expcond_m": 17,
+      "pbre_exp_rans": 8,
+      "em_uncond_m": 17
+    }
+  },
+  "hits_8bpw": false,
+  "elapsed_s": 780.3369074990005,
+  "tensors": [
+    {
+      "name": "model.layers.0.mlp.down_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        896,
+        4864
+      ]
+    },
+    {
+      "name": "model.layers.0.mlp.gate_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        4864,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.0.mlp.up_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        4864,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.0.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "shape": [
+        128,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.0.self_attn.o_proj.weight",
+      "n_words": 802816,
+      "shape": [
+        896,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.0.self_attn.q_proj.weight",
+      "n_words": 802816,
+      "shape": [
+        896,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.0.self_attn.v_proj.weight",
+      "n_words": 114688,
+      "shape": [
+        128,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.12.mlp.down_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        896,
+        4864
+      ]
+    },
+    {
+      "name": "model.layers.12.mlp.gate_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        4864,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.12.mlp.up_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        4864,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.12.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "shape": [
+        128,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.12.self_attn.o_proj.weight",
+      "n_words": 802816,
+      "shape": [
+        896,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.12.self_attn.q_proj.weight",
+      "n_words": 802816,
+      "shape": [
+        896,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.12.self_attn.v_proj.weight",
+      "n_words": 114688,
+      "shape": [
+        128,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.23.mlp.down_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        896,
+        4864
+      ]
+    },
+    {
+      "name": "model.layers.23.mlp.gate_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        4864,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.23.mlp.up_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        4864,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.23.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "shape": [
+        128,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.23.self_attn.o_proj.weight",
+      "n_words": 802816,
+      "shape": [
+        896,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.23.self_attn.q_proj.weight",
+      "n_words": 802816,
+      "shape": [
+        896,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.23.self_attn.v_proj.weight",
+      "n_words": 114688,
+      "shape": [
+        128,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.1.mlp.down_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        896,
+        4864
+      ]
+    },
+    {
+      "name": "model.layers.1.mlp.gate_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        4864,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.1.mlp.up_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        4864,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.1.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "shape": [
+        128,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.1.self_attn.o_proj.weight",
+      "n_words": 802816,
+      "shape": [
+        896,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.1.self_attn.q_proj.weight",
+      "n_words": 802816,
+      "shape": [
+        896,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.1.self_attn.v_proj.weight",
+      "n_words": 114688,
+      "shape": [
+        128,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.2.mlp.down_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        896,
+        4864
+      ]
+    },
+    {
+      "name": "model.layers.2.mlp.gate_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        4864,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.2.mlp.up_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        4864,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.2.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "shape": [
+        128,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.2.self_attn.o_proj.weight",
+      "n_words": 802816,
+      "shape": [
+        896,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.2.self_attn.q_proj.weight",
+      "n_words": 802816,
+      "shape": [
+        896,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.2.self_attn.v_proj.weight",
+      "n_words": 114688,
+      "shape": [
+        128,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.3.mlp.down_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        896,
+        4864
+      ]
+    },
+    {
+      "name": "model.layers.3.mlp.gate_proj.weight",
+      "n_words": 4358144,
+      "shape": [
+        4864,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.3.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "shape": [
+        128,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.3.self_attn.v_proj.weight",
+      "n_words": 114688,
+      "shape": [
+        128,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.4.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "shape": [
+        128,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.4.self_attn.v_proj.weight",
+      "n_words": 114688,
+      "shape": [
+        128,
+        896
+      ]
+    },
+    {
+      "name": "model.layers.5.self_attn.k_proj.weight",
+      "n_words": 114688,
+      "shape": [
+        128,
+        896
+      ]
+    }
+  ],
+  "model": {
+    "repo_id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "license": "Apache-2.0",
+    "selected": [
+      "model.layers.0.mlp.down_proj.weight",
+      "model.layers.0.mlp.gate_proj.weight",
+      "model.layers.0.mlp.up_proj.weight",
+      "model.layers.0.self_attn.k_proj.weight",
+      "model.layers.0.self_attn.o_proj.weight",
+      "model.layers.0.self_attn.q_proj.weight",
+      "model.layers.0.self_attn.v_proj.weight",
+      "model.layers.12.mlp.down_proj.weight",
+      "model.layers.12.mlp.gate_proj.weight",
+      "model.layers.12.mlp.up_proj.weight",
+      "model.layers.12.self_attn.k_proj.weight",
+      "model.layers.12.self_attn.o_proj.weight",
+      "model.layers.12.self_attn.q_proj.weight",
+      "model.layers.12.self_attn.v_proj.weight",
+      "model.layers.23.mlp.down_proj.weight",
+      "model.layers.23.mlp.gate_proj.weight",
+      "model.layers.23.mlp.up_proj.weight",
+      "model.layers.23.self_attn.k_proj.weight",
+      "model.layers.23.self_attn.o_proj.weight",
+      "model.layers.23.self_attn.q_proj.weight",
+      "model.layers.23.self_attn.v_proj.weight",
+      "model.layers.1.mlp.down_proj.weight",
+      "model.layers.1.mlp.gate_proj.weight",
+      "model.layers.1.mlp.up_proj.weight",
+      "model.layers.1.self_attn.k_proj.weight",
+      "model.layers.1.self_attn.o_proj.weight",
+      "model.layers.1.self_attn.q_proj.weight",
+      "model.layers.1.self_attn.v_proj.weight",
+      "model.layers.2.mlp.down_proj.weight",
+      "model.layers.2.mlp.gate_proj.weight",
+      "model.layers.2.mlp.up_proj.weight",
+      "model.layers.2.self_attn.k_proj.weight",
+      "model.layers.2.self_attn.o_proj.weight",
+      "model.layers.2.self_attn.q_proj.weight",
+      "model.layers.2.self_attn.v_proj.weight",
+      "model.layers.3.mlp.down_proj.weight",
+      "model.layers.3.mlp.gate_proj.weight",
+      "model.layers.3.self_attn.k_proj.weight",
+      "model.layers.3.self_attn.v_proj.weight",
+      "model.layers.4.self_attn.k_proj.weight",
+      "model.layers.4.self_attn.v_proj.weight",
+      "model.layers.5.self_attn.k_proj.weight"
+    ]
+  }
+}

@@ -122,6 +122,8 @@ def test_path_to_50pct_markdown_no_fake_fifty() -> None:
         "n_words": 1000,
         "bounds": {
             "H_uint16": 10.5,
+            "H_sign": 1.0,
+            "H_exp": 2.61,
             "field_split_ideal_bpw": 10.6,
             "expcond_ideal_bpw": 10.55,
             "joint_sm_exp_ideal_bpw": 10.55,

@@ -426,6 +426,11 @@ def format_markdown(report: dict) -> str:
     b = report["bounds"]
     best = report["best"]
     hit = "YES" if report["hits_8bpw"] else "NO"
+    mix = report["methods"].get("tensor_mixture_argmin") or {}
+    nib = report["methods"].get("optional_nibble_16") or {}
+    mix_bpw = float(mix.get("bpw", best["bpw"]))
+    em = report["methods"].get("em_expcond_m") or best
+    pbre = report["methods"].get("pbre_exp_rans") or {"bpw": PBRE_REF}
     lines = [
         "# Path to 50% (≤8.0 complete BPW)",
         "",
@@ -457,6 +462,25 @@ def format_markdown(report: dict) -> str:
         f"| top-255 value coverage | {100 * b['top255_coverage']:.2f}% |",
         f"| escape-255 ideal BPW | {b['escape255_ideal_bpw']:.4f} |",
         f"| 16×16 exact tile dup rate | {report['tile_duplicates']['dup_rate']:.6f} |",
+        "",
+        "## Breakdown (sign / exp / mant / tables)",
+        "",
+        "PBR-E stores sign+mantissa packed raw (8 bits) and rANS-codes exponents. "
+        "`em_expcond_m` keeps exp rANS, packs sign as 1-bit, and rANS-codes the 7-bit "
+        "mantissa with 256 exp-conditional tables (the zoo lever, realized as a bitstream).",
+        "",
+        "| piece | ideal (NLL) | PBR-E rANS | best single (`em_expcond_m`) |",
+        "| --- | ---: | ---: | ---: |",
+        f"| sign | {b['H_sign']:.4f} | 1.000 packed in SM | 1.000 packed bits |",
+        f"| exponent | {b['H_exp']:.4f} | ~2.616 bitstream | ~2.616 bitstream |",
+        f"| mantissa | {b['H_mant_given_exp']:.4f} (H(M\\|exp)) | 7.000 raw | ~6.93 rANS + tables |",
+        f"| tables + tile headers | (in totals) | counted | counted |",
+        f"| **total** | **{b['expcond_ideal_bpw']:.4f}** | **{pbre.get('bpw', PBRE_REF):.4f}** | "
+        f"**{em.get('bpw', best['bpw']):.4f}** |",
+        "",
+        f"Mixture argmin (per-tensor min of PBR-E / EM variants / optional nibble) is "
+        f"**{mix_bpw:.4f} BPW**. Overhead vs the {b['expcond_ideal_bpw']:.4f} NLL bound is "
+        f"rANS + tables + headers, not a hidden 2.5-bit reservoir.",
         "",
         "## Measured complete BPW (bit-exact)",
         "",
