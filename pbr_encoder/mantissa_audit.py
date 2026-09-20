@@ -16,7 +16,7 @@ import numpy as np
 import yaml
 
 from pbr_core.bf16 import split_components
-from pbr_core.safetensors_io import layer_index, load_uint16, tensor_role
+from pbr_core.safetensors_io import is_embedding_weight, layer_index, load_uint16, tensor_role
 from pbr_core.tiles import as_2d
 from pbr_encoder.hf_weights import (
     PRIMARY_LICENSE,
@@ -713,6 +713,29 @@ def run_audit(
     return report
 
 
+def select_remaining_specs(specs_all, already, *, max_bytes: int) -> list:
+    """2-D 16-bit tensors not in the Stage 1B window (embeddings first)."""
+    names = {s.name for s in already}
+    rest = [
+        s
+        for s in specs_all
+        if s.dtype in {"BF16", "F16", "FP16"} and s.ndim == 2 and s.name not in names
+    ]
+    rest.sort(key=lambda s: (not is_embedding_weight(s.name), -s.nbytes, s.name))
+    chosen = []
+    total = 0
+    for spec in rest:
+        if len(chosen) >= 4:
+            break
+        if total >= max_bytes and chosen:
+            break
+        if total + spec.nbytes > max_bytes and chosen:
+            continue
+        chosen.append(spec)
+        total += spec.nbytes
+    return chosen
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Phase A held-out mantissa audit.")
     parser.add_argument("--model-dir", type=Path, default=Path("outputs/models/Qwen__Qwen2.5-0.5B-Instruct"))
@@ -720,6 +743,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output-json", type=Path, default=None)
     parser.add_argument("--output-md", type=Path, default=None)
     parser.add_argument("--tag", default="qwen")
+    parser.add_argument(
+        "--remaining",
+        action="store_true",
+        help="Audit leftover 2-D 16-bit tensors (embeddings first) not in the Stage 1B window.",
+    )
     args = parser.parse_args(argv)
     cfg = _load_config(args.config if args.config.exists() else None)
     tag = args.tag
@@ -732,6 +760,12 @@ def main(argv: list[str] | None = None) -> int:
         max_bytes=int(cfg.get("max_bytes", 167772160)),
         include_embeddings=bool(cfg.get("include_embeddings", False)),
     )
+    if args.remaining:
+        extra_budget = max(int(cfg.get("max_bytes", 167772160)), 400 * 1024 * 1024)
+        chosen = select_remaining_specs(specs_all, chosen, max_bytes=extra_budget)
+        tag = tag if tag.endswith("remaining") else f"{tag}_remaining"
+        out_json = args.output_json or Path(f"artifacts/phase_a_mantissa_audit_{tag}.json")
+        out_md = args.output_md or Path(f"artifacts/phase_a_mantissa_audit_{tag}.md")
     n16 = sum(1 for s in specs_all if s.dtype in {"BF16", "F16", "FP16"})
     meta = {
         "repo_id": cfg.get("repo", PRIMARY_REPO),
@@ -741,9 +775,12 @@ def main(argv: list[str] | None = None) -> int:
         "inventory_tensors": len(specs_all),
         "inventory_16bit": n16,
         "selected": [s.name for s in chosen],
+        "remaining": bool(args.remaining),
     }
     print(DISCLAIMER)
     print(f"selected {len(chosen)} tensors from {meta['repo_id']} @ {meta['revision']}")
+    for spec in chosen:
+        print(f"  - {spec.name}  {list(spec.shape)}  {spec.nbytes}")
     report = run_audit(specs=chosen, output_json=out_json, output_md=out_md, model_meta=meta)
     print()
     print(format_markdown(report))

@@ -34,6 +34,7 @@ MODE_BITPLANES = 13
 MODE_GRAMMAR = 14
 MODE_XFORM_REF = 15
 MODE_POS_VALUE = 16
+MODE_EXP_RANS = 17
 
 MODE_NAMES = {
     MODE_RAW: "raw_bf16",
@@ -53,6 +54,7 @@ MODE_NAMES = {
     MODE_GRAMMAR: "residual_grammar",
     MODE_XFORM_REF: "transformed_ref",
     MODE_POS_VALUE: "position_value_dict",
+    MODE_EXP_RANS: "bf16_exp_rans",
 }
 
 RES_NAMES = {

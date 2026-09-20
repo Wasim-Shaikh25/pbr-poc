@@ -2,6 +2,7 @@
 
 from pbr_codecs.bf16_components import ComponentsCodec
 from pbr_codecs.bf16_exp_huffman import Bf16ExpHuffmanCodec
+from pbr_codecs.bf16_exp_rans import Bf16ExpRansCodec
 from pbr_codecs.bit_planes import BitPlanesCodec
 from pbr_codecs.constant import ConstantCodec
 from pbr_codecs.cross_layer_tile_xor import CrossLayerTileXorCodec
@@ -37,6 +38,7 @@ STAGE1A_CODECS = [
 
 __all__ = [
     "Bf16ExpHuffmanCodec",
+    "Bf16ExpRansCodec",
     "BitPlanesCodec",
     "ComponentsCodec",
     "ConstPredCodec",

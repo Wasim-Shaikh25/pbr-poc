@@ -6,6 +6,7 @@ import numpy as np
 
 from pbr_codecs.bf16_components import ComponentsCodec
 from pbr_codecs.bf16_exp_huffman import Bf16ExpHuffmanCodec
+from pbr_codecs.bf16_exp_rans import Bf16ExpRansCodec
 from pbr_codecs.bit_planes import BitPlanesCodec
 from pbr_codecs.constant import ConstantCodec
 from pbr_codecs.cross_layer_tile_xor import CrossLayerTileXorCodec
@@ -31,6 +32,7 @@ from pbr_core.types import (
     MODE_DUP_REF,
     MODE_EXP_HIER,
     MODE_EXP_HUFFMAN,
+    MODE_EXP_RANS,
     MODE_EXP_SPATIAL,
     MODE_GRAMMAR,
     MODE_POS_VALUE,
@@ -54,6 +56,7 @@ _CODECS = {
     MODE_COMPONENTS: ComponentsCodec(),
     MODE_REF_PREV: RefPrevTileCodec(),
     MODE_EXP_HUFFMAN: Bf16ExpHuffmanCodec(),
+    MODE_EXP_RANS: Bf16ExpRansCodec(),
     MODE_EXP_SPATIAL: ExpSpatialHuffmanCodec(),
     MODE_EXP_HIER: ExpHierResidualCodec(),
     MODE_CROSS_LAYER: CrossLayerTileXorCodec(),
