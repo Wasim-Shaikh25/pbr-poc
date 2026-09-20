@@ -98,6 +98,8 @@ def _encode_one(
                 "row_indices": g["row_indices"],
                 "rows": enc["rows"],
                 "cols": enc["cols"],
+                "pad_rows": enc.get("pad_rows", enc["rows"]),
+                "pad_cols": enc.get("pad_cols", enc["cols"]),
                 "n_tiles": enc["n_tiles"],
                 "flags": enc["flags"],
                 "payload": enc["payload"],
@@ -174,7 +176,15 @@ def _decode_one(spec: dict[str, Any], data: memoryview) -> np.ndarray:
         payload = bytes(data[spec["xy_payload_off"] : spec["xy_payload_off"] + spec["xy_payload_len"]])
         rows = int(spec["xy_rows"])
         cols = int(spec["xy_cols"])
-        kept2 = decode_array_xy(flags, payload, rows=rows, cols=cols, nbits=k)
+        kept2 = decode_array_xy(
+            flags,
+            payload,
+            rows=rows,
+            cols=cols,
+            nbits=k,
+            pad_rows=int(spec.get("xy_pad_rows", rows)),
+            pad_cols=int(spec.get("xy_pad_cols", cols)),
+        )
         kept = kept2.ravel()[:n]
         words = join_uniform(sign, exp, kept, k, shape)
         exc = spec.get("exceptions") or {}
@@ -204,6 +214,8 @@ def _decode_one(spec: dict[str, Any], data: memoryview) -> np.ndarray:
                 rows=int(g["rows"]),
                 cols=int(g["cols"]),
                 nbits=int(g["k"]),
+                pad_rows=int(g.get("pad_rows", g["rows"])),
+                pad_cols=int(g.get("pad_cols", g["cols"])),
             )
             groups[int(g["policy_k"])] = {
                 "k": int(g["k"]),
@@ -257,6 +269,7 @@ def encode_container(
     encoded: list[dict[str, Any]] = []
     n_unique = len(unique)
     for i, (name, w) in enumerate(unique, 1):
+        print(f"  xy-encode start {i}/{n_unique} {name} shape={tuple(w.shape)}", flush=True)
         if embed_name and name == embed_name and embed_row_keeps is not None:
             enc = _encode_one(w, row_keeps=embed_row_keeps)
         else:
@@ -323,6 +336,8 @@ def encode_container(
             spec["xy_flags_rel"], spec["xy_flags_len"] = fo, fl
             spec["xy_payload_rel"], spec["xy_payload_len"] = po, pl
             spec["xy_rows"], spec["xy_cols"] = int(xy["rows"]), int(xy["cols"])
+            spec["xy_pad_rows"] = int(xy.get("pad_rows", xy["rows"]))
+            spec["xy_pad_cols"] = int(xy.get("pad_cols", xy["cols"]))
         else:
             rk_b = np.ascontiguousarray(enc["row_keeps"], dtype=np.int8).tobytes()
             ro, rl = add(rk_b)
@@ -340,6 +355,8 @@ def encode_container(
                         "row_indices": g["row_indices"].astype(int).tolist(),
                         "rows": g["rows"],
                         "cols": g["cols"],
+                        "pad_rows": g.get("pad_rows", g["rows"]),
+                        "pad_cols": g.get("pad_cols", g["cols"]),
                         "n_tiles": g["n_tiles"],
                         "flags_rel": fo,
                         "flags_len": fl,
@@ -399,6 +416,8 @@ def encode_container(
             if spec["mode"] == "uniform":
                 item["xy_rows"] = spec["xy_rows"]
                 item["xy_cols"] = spec["xy_cols"]
+                item["xy_pad_rows"] = spec.get("xy_pad_rows", spec["xy_rows"])
+                item["xy_pad_cols"] = spec.get("xy_pad_cols", spec["xy_cols"])
                 item["xy_flags_off"] = payload_start + spec["xy_flags_rel"]
                 item["xy_flags_len"] = spec["xy_flags_len"]
                 item["xy_payload_off"] = payload_start + spec["xy_payload_rel"]
@@ -415,6 +434,8 @@ def encode_container(
                         "row_indices": g["row_indices"],
                         "rows": g["rows"],
                         "cols": g["cols"],
+                        "pad_rows": g.get("pad_rows", g["rows"]),
+                        "pad_cols": g.get("pad_cols", g["cols"]),
                         "n_tiles": g["n_tiles"],
                         "flags_off": payload_start + g["flags_rel"],
                         "flags_len": g["flags_len"],

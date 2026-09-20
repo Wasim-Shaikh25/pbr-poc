@@ -591,6 +591,13 @@ def encode_array_xy(kept: np.ndarray, nbits: int, *, th: int = TILE, tw: int = T
         arr = arr.reshape(1, -1)
     if arr.ndim != 2:
         raise ValueError("kept codes must be rank-1 or rank-2")
+    orig_rows, orig_cols = int(arr.shape[0]), int(arr.shape[1])
+    pr = ((orig_rows + th - 1) // th) * th if orig_rows else 0
+    pc = ((orig_cols + tw - 1) // tw) * tw if orig_cols else 0
+    if (pr, pc) != (orig_rows, orig_cols) and pr > 0 and pc > 0:
+        padded = np.zeros((pr, pc), dtype=np.uint16)
+        padded[:orig_rows, :orig_cols] = arr
+        arr = padded
     rows, cols = int(arr.shape[0]), int(arr.shape[1])
     flags = bytearray()
     payload = bytearray()
@@ -666,8 +673,10 @@ def encode_array_xy(kept: np.ndarray, nbits: int, *, th: int = TILE, tw: int = T
             n_tiles += 1
 
     return {
-        "rows": rows,
-        "cols": cols,
+        "rows": orig_rows,
+        "cols": orig_cols,
+        "pad_rows": rows,
+        "pad_cols": cols,
         "nbits": nbits,
         "n_tiles": n_tiles,
         "flags": bytes(flags),
@@ -690,13 +699,15 @@ def decode_array_xy(
     nbits: int,
     th: int = TILE,
     tw: int = TILE,
+    pad_rows: int | None = None,
+    pad_cols: int | None = None,
 ) -> np.ndarray:
-    from pbr_q4.tiles import tile_boxes
-
-    out = np.zeros((rows, cols), dtype=np.uint8)
+    pr = int(pad_rows if pad_rows is not None else rows)
+    pc = int(pad_cols if pad_cols is not None else cols)
+    out = np.zeros((pr, pc), dtype=np.uint8)
     off = 0
     i = 0
-    for r0, c0, h, w in tile_boxes(rows, cols, th=th, tw=tw):
+    for r0, c0, h, w in tile_boxes(pr, pc, th=th, tw=tw):
         if i >= len(flags):
             raise ValueError("tile flag underrun")
         recon, used = decode_tile(flags[i], payload[off:], rows=h, cols=w, nbits=nbits)
@@ -709,4 +720,4 @@ def decode_array_xy(
         raise ValueError(f"unused tile flags: {len(flags) - i}")
     if off != len(payload):
         raise ValueError(f"trailing tile payload {len(payload) - off} bytes")
-    return out
+    return out[:rows, :cols]

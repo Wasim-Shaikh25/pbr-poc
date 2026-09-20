@@ -142,10 +142,41 @@ def test_encode_array_all_tiles_matrix_family():
     assert 0 not in enc["mode_hist"]
     from pbr_q4.codecs import decode_array_xy
 
-    rec = decode_array_xy(enc["flags"], enc["payload"], rows=32, cols=48, nbits=3)
+    rec = decode_array_xy(
+        enc["flags"],
+        enc["payload"],
+        rows=32,
+        cols=48,
+        nbits=3,
+        pad_rows=enc.get("pad_rows"),
+        pad_cols=enc.get("pad_cols"),
+    )
     assert np.array_equal(rec, arr.astype(np.uint8))
     # Packed size is a metric, not the wire.
     assert enc["packed_baseline_bytes"] == 6 * packed_baseline_len(256, 3)
+
+
+def test_unaligned_array_padded_xy():
+    rng = np.random.default_rng(11)
+    arr = rng.integers(0, 8, size=(17, 20), dtype=np.uint16)
+    enc = encode_array_xy(arr, 3)
+    assert enc["all_matrix_family"]
+    assert enc["rows"] == 17 and enc["cols"] == 20
+    assert enc["pad_rows"] == 32 and enc["pad_cols"] == 32
+    from pbr_q4.codecs import decode_array_xy
+
+    rec = decode_array_xy(
+        enc["flags"],
+        enc["payload"],
+        rows=17,
+        cols=20,
+        nbits=3,
+        pad_rows=enc["pad_rows"],
+        pad_cols=enc["pad_cols"],
+    )
+    assert np.array_equal(rec, arr.astype(np.uint8))
+    assert enc["n_tiles"] == 4
+    assert enc["packed_baseline_bytes"] == 4 * packed_baseline_len(256, 3)
 
 
 def test_container_roundtrip_s1_like(tmp_path):
