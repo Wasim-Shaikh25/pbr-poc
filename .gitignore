@@ -22,3 +22,5 @@ outputs/hf_cache/
 # H95Q physical containers (too large to commit)
 *.h95q
 artifacts/pbr_h95/containers/*.h95q
+*.h95x
+artifacts/pbr_q4/containers/*.h95x

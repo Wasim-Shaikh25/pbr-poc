@@ -276,3 +276,15 @@ PYTHONPATH=. .venv/bin/python scripts/run_pbr_h95q_container.py --version 2 \
   --candidates H95Q-Conservative H95Q-Balanced H95Q-S1
 ```
 
+## S1 + selective 256-node X/Y (post-codec)
+
+Follow-up to the all-tile X/Y experiment (PR #15, 7.453890 BPW). Re-encode
+the frozen S1 quantized mantissa codes; **packed-K is the product default**.
+X/Y is stored only when it is strictly smaller including map/flag bits.
+No 16×16 padding. Does not change Q(W). See `docs/pbr_q4/README.md`.
+
+```bash
+PYTHONPATH=. python scripts/run_pbr_q4_s1_xy.py \
+  --s1-container artifacts/pbr_h95/containers/H95Q-S1-v2.h95q
+```
+
