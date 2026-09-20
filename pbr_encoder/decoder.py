@@ -6,18 +6,24 @@ import numpy as np
 
 from pbr_codecs.bf16_components import ComponentsCodec
 from pbr_codecs.bf16_exp_huffman import Bf16ExpHuffmanCodec
+from pbr_codecs.bit_planes import BitPlanesCodec
 from pbr_codecs.constant import ConstantCodec
 from pbr_codecs.cross_layer_tile_xor import CrossLayerTileXorCodec
 from pbr_codecs.duplicate_blocks import RefPrevTileCodec
 from pbr_codecs.exp_hier_residual import ExpHierResidualCodec
 from pbr_codecs.exp_spatial_huffman import ExpSpatialHuffmanCodec
+from pbr_codecs.grammar import ResidualGrammarCodec
+from pbr_codecs.position_value_dict import PositionValueDictCodec
 from pbr_codecs.raw import RawCodec
+from pbr_codecs.residual import decode_residuals
+from pbr_codecs.transforms import apply_transform
 from pbr_codecs.value_dictionary import ValueDictCodec
 from pbr_codecs.xor_predictor import ConstPredCodec, PrevRowCodec, PrevValueCodec
 from pbr_core.container import PBRContainer, TensorBlob
 from pbr_core.safetensors_io import tensor_role
 from pbr_core.tiles import place_tile
 from pbr_core.types import (
+    MODE_BITPLANES,
     MODE_COMPONENTS,
     MODE_CONST_PRED,
     MODE_CONSTANT,
@@ -26,11 +32,14 @@ from pbr_core.types import (
     MODE_EXP_HIER,
     MODE_EXP_HUFFMAN,
     MODE_EXP_SPATIAL,
+    MODE_GRAMMAR,
+    MODE_POS_VALUE,
     MODE_PREV_ROW,
     MODE_PREV_VALUE,
     MODE_RAW,
     MODE_REF_PREV,
     MODE_VALUE_DICT,
+    MODE_XFORM_REF,
     EncodedBlock,
     EncodeContext,
 )
@@ -48,6 +57,9 @@ _CODECS = {
     MODE_EXP_SPATIAL: ExpSpatialHuffmanCodec(),
     MODE_EXP_HIER: ExpHierResidualCodec(),
     MODE_CROSS_LAYER: CrossLayerTileXorCodec(),
+    MODE_BITPLANES: BitPlanesCodec(),
+    MODE_GRAMMAR: ResidualGrammarCodec(),
+    MODE_POS_VALUE: PositionValueDictCodec(),
 }
 
 
@@ -66,6 +78,21 @@ def decode_tile(
         if src.shape != (encoded.rows, encoded.cols):
             raise ValueError("duplicate_ref shape mismatch")
         return src.copy()
+    if encoded.mode_id == MODE_XFORM_REF:
+        if len(encoded.payload) < 5:
+            raise ValueError("transformed_ref payload too short")
+        xf_id = encoded.payload[0]
+        ref = int.from_bytes(encoded.payload[1:5], "little")
+        if ref < 0 or ref >= len(decoded_tiles):
+            raise ValueError(f"transformed_ref index {ref} out of range")
+        src = apply_transform(decoded_tiles[ref], xf_id)
+        if src is None or src.shape != (encoded.rows, encoded.cols):
+            raise ValueError("transformed_ref geometry mismatch")
+        patch = encoded.payload[5:]
+        if not patch:
+            return src.copy()
+        residuals = decode_residuals(patch, encoded.rows, encoded.cols)
+        return residuals ^ src
     codec = _CODECS.get(encoded.mode_id)
     if codec is None:
         raise ValueError(f"Unknown mode_id {encoded.mode_id}")

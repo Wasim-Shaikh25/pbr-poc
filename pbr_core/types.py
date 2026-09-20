@@ -30,6 +30,10 @@ MODE_EXP_HUFFMAN = 9
 MODE_EXP_SPATIAL = 10
 MODE_EXP_HIER = 11
 MODE_CROSS_LAYER = 12
+MODE_BITPLANES = 13
+MODE_GRAMMAR = 14
+MODE_XFORM_REF = 15
+MODE_POS_VALUE = 16
 
 MODE_NAMES = {
     MODE_RAW: "raw_bf16",
@@ -45,6 +49,10 @@ MODE_NAMES = {
     MODE_EXP_SPATIAL: "exp_spatial_huffman",
     MODE_EXP_HIER: "exp_hier_residual",
     MODE_CROSS_LAYER: "cross_layer_tile_xor",
+    MODE_BITPLANES: "bit_planes",
+    MODE_GRAMMAR: "residual_grammar",
+    MODE_XFORM_REF: "transformed_ref",
+    MODE_POS_VALUE: "position_value_dict",
 }
 
 RES_NAMES = {
@@ -117,6 +125,8 @@ class EncodeContext:
     tile_index: int = 0
     ncols: int = 0
     seen_exact: dict[bytes, int] = field(default_factory=dict)
+    seen_tiles: list = field(default_factory=list)
+    seen_xf: dict[bytes, tuple[int, int]] = field(default_factory=dict)
     prev_tile: np.ndarray | None = None
     prev_index: int | None = None
     tile_row0: int = 0
@@ -126,8 +136,10 @@ class EncodeContext:
     def record(self, tile: np.ndarray) -> None:
         raw = np.ascontiguousarray(tile, dtype="<u2").tobytes()
         self.seen_exact.setdefault(raw, self.tile_index)
-        self.prev_tile = np.array(tile, dtype=np.uint16, copy=True)
+        stored = np.array(tile, dtype=np.uint16, copy=True)
+        self.prev_tile = stored
         self.prev_index = self.tile_index
+        self.seen_tiles.append(stored)
 
 
 class Codec(Protocol):

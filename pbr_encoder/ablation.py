@@ -131,6 +131,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--model-dir", type=Path, default=Path("outputs/models/Qwen__Qwen2.5-0.5B-Instruct"))
     parser.add_argument("--config", type=Path, default=Path("configs/poc_real.yaml"))
     parser.add_argument("--output-dir", type=Path, default=Path("artifacts"))
+    parser.add_argument("--tag", default="qwen", help="Filename tag, e.g. qwen or llama")
     parser.add_argument(
         "--profiles",
         nargs="+",
@@ -199,11 +200,11 @@ def main(argv: list[str] | None = None) -> int:
             for name, rows in all_rows.items()
         },
     }
-    (args.output_dir / "blocker_ablation_qwen.json").write_text(
+    (args.output_dir / f"blocker_ablation_{args.tag}.json").write_text(
         json.dumps(payload, indent=2) + "\n", encoding="utf-8"
     )
     md = format_ablation(totals)
-    (args.output_dir / "blocker_ablation_qwen.md").write_text(md, encoding="utf-8")
+    (args.output_dir / f"blocker_ablation_{args.tag}.md").write_text(md, encoding="utf-8")
     print()
     print(md)
     print(format_table(totals))

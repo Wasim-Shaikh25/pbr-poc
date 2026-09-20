@@ -4,12 +4,16 @@ from __future__ import annotations
 
 from pbr_codecs.bf16_components import ComponentsCodec
 from pbr_codecs.bf16_exp_huffman import Bf16ExpHuffmanCodec
+from pbr_codecs.bit_planes import BitPlanesCodec
 from pbr_codecs.constant import ConstantCodec
 from pbr_codecs.cross_layer_tile_xor import CrossLayerTileXorCodec
 from pbr_codecs.duplicate_blocks import DuplicateRefCodec, RefPrevTileCodec
 from pbr_codecs.exp_hier_residual import ExpHierResidualCodec
 from pbr_codecs.exp_spatial_huffman import ExpSpatialHuffmanCodec
+from pbr_codecs.grammar import ResidualGrammarCodec
+from pbr_codecs.position_value_dict import PositionValueDictCodec
 from pbr_codecs.raw import RawCodec
+from pbr_codecs.transformed_ref import TransformedRefCodec
 from pbr_codecs.value_dictionary import ValueDictCodec
 from pbr_codecs.xor_predictor import ConstPredCodec, PrevRowCodec, PrevValueCodec
 
@@ -37,6 +41,14 @@ NEW_MODE_CODECS = [
     CrossLayerTileXorCodec(),
 ]
 
+HIER_CODECS = [
+    *NEW_MODE_CODECS,
+    BitPlanesCodec(),
+    ResidualGrammarCodec(),
+    TransformedRefCodec(),
+    PositionValueDictCodec(),
+]
+
 WHOLE_PBRE = [Bf16ExpHuffmanCodec()]
 WHOLE_NEW = [
     Bf16ExpHuffmanCodec(),
@@ -44,6 +56,7 @@ WHOLE_NEW = [
     ExpHierResidualCodec(),
     CrossLayerTileXorCodec(),
 ]
+WHOLE_HIER = [*WHOLE_NEW, BitPlanesCodec()]
 
 PROFILES = {
     "pbre": {
@@ -66,5 +79,12 @@ PROFILES = {
         "enable_whole": False,
         "use_refs": False,
         "label": "Forced spatial-on-uint16 only (documents the blocker)",
+    },
+    "hierarchical": {
+        "codecs": HIER_CODECS,
+        "whole_codecs": WHOLE_HIER,
+        "enable_whole": True,
+        "use_refs": True,
+        "label": "Hierarchical leftovers + PBR-E (bit-planes / grammar / xform / pos-dict)",
     },
 }
