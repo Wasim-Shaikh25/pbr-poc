@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pbr-matrix-mantissa"
+version = "0.1.0"
+description = "Matrix mantissa codec V1–V3 pre-Qwen qualification (exact 7-bit, not a Qwen claim)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = ["numpy>=1.24"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+
+[project.scripts]
+pbr-edge-test = "pbr_matrix_mantissa.edge_test:main"
+
+[tool.setuptools.packages.find]
+include = ["pbr_matrix_mantissa*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]
