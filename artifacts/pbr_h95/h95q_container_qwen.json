@@ -1,0 +1,190 @@
+{
+  "phase": "H95Q-container",
+  "model_dir": "outputs/models/Qwen__Qwen2.5-0.5B-Instruct",
+  "container_version": 1,
+  "magic": "H95Q",
+  "exp_packing": "raw_u8",
+  "honesty": [
+    "actual_bpw = physical file_bytes * 8 / n_weights (includes header/metadata).",
+    "Exponents stored as raw u8 for exactness \u2014 NOT the ~2.62 BPW entropy reference used in estimated packed BPW.",
+    "Therefore actual_bpw is expected >> est_bpw (~+5.38 on the exp term alone) even before metadata.",
+    "Prior estimated packed BPW + heldout retention copied from H95Q-stack artifacts (proxy only).",
+    "Exactness gate: decode(encode(Q(W))) == Q(W) uint16 bit-identical + matching SHA-256.",
+    "Not production quality / multilingual / runtime RAM == BPW. Large .h95q blobs are gitignored."
+  ],
+  "wall_seconds": 117.26,
+  "candidates": [
+    {
+      "name": "H95Q-Conservative",
+      "stack_name": "T1_B1_embed_conservative",
+      "precision_map": {
+        "body": "B1",
+        "embed_schedule": "conservative",
+        "mlp_k3_bands": [],
+        "tier_schedule": "conservative",
+        "keep_hist_rows": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 271,
+          "4": 149651,
+          "5": 0,
+          "6": 0,
+          "7": 2014
+        }
+      },
+      "est_bpw": 7.8937,
+      "est_bpw_live_recomputed": 7.8937,
+      "actual_bpw": 13.293241,
+      "stream_bpw": 13.276151,
+      "file_bytes": 820912080,
+      "overhead_bytes": 1055360,
+      "header_bytes": 1055360,
+      "payload_stream_bytes": 819856720,
+      "n_weights": 494032768,
+      "n_tensors": 290,
+      "exact_match": true,
+      "sha_ok": true,
+      "sha256_quantized_reference": "9c0247096cdcaeee1e0cedc4d734396962aa0e43fc2959b602d8ba749479bc1a",
+      "sha256_file": "00e1757b4db6971bd0831f3549140f809a0e506e4335b5e863bc659de1f18d0f",
+      "container_path": "artifacts/pbr_h95/containers/H95Q-Conservative.h95q",
+      "exp_packing": "raw_u8",
+      "prior_heldout_retention": 0.9923,
+      "prior_proxy_gate": "proxy_GO",
+      "actual_bpw_le_8": false,
+      "idempotence": {
+        "checked": 18,
+        "all_idempotent": true,
+        "failures": []
+      },
+      "subprocess_decode": {
+        "returncode": 0,
+        "sha_ok": true
+      },
+      "wall_build_s": 13.14,
+      "wall_encode_s": 11.99,
+      "wall_decode_verify_s": 7.82,
+      "delta_actual_minus_est_bpw": 5.3995,
+      "note_bpw_gap": "Gap vs est is dominated by raw_u8 exponents (8 BPW) vs EXP_BPW_REF=2.62 used in estimates; metadata/header overhead is secondary."
+    },
+    {
+      "name": "H95Q-Balanced",
+      "stack_name": "T1_B1_embed_aggressive",
+      "precision_map": {
+        "body": "B1",
+        "embed_schedule": "aggressive",
+        "mlp_k3_bands": [],
+        "note": "NO mid-MLP K3",
+        "tier_schedule": "aggressive",
+        "keep_hist_rows": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 150925,
+          "4": 0,
+          "5": 397,
+          "6": 100,
+          "7": 514
+        }
+      },
+      "est_bpw": 7.6134,
+      "est_bpw_live_recomputed": 7.6134,
+      "actual_bpw": 13.012932,
+      "stream_bpw": 12.99584,
+      "file_bytes": 803601824,
+      "overhead_bytes": 1055488,
+      "header_bytes": 1055488,
+      "payload_stream_bytes": 802546336,
+      "n_weights": 494032768,
+      "n_tensors": 290,
+      "exact_match": true,
+      "sha_ok": true,
+      "sha256_quantized_reference": "3610ea3ccac36ac646bea028222e3900ca75448989f869b6165e297a50461ef8",
+      "sha256_file": "2b91e9f1870780a387d957e009db047175c2f2973df4bb8a9aa89cc2244bf7b7",
+      "container_path": "artifacts/pbr_h95/containers/H95Q-Balanced.h95q",
+      "exp_packing": "raw_u8",
+      "prior_heldout_retention": 0.9897,
+      "prior_proxy_gate": "proxy_GO",
+      "actual_bpw_le_8": false,
+      "idempotence": {
+        "checked": 18,
+        "all_idempotent": true,
+        "failures": []
+      },
+      "subprocess_decode": {
+        "returncode": 0,
+        "sha_ok": true
+      },
+      "wall_build_s": 9.88,
+      "wall_encode_s": 11.03,
+      "wall_decode_verify_s": 7.37,
+      "delta_actual_minus_est_bpw": 5.3995,
+      "note_bpw_gap": "Gap vs est is dominated by raw_u8 exponents (8 BPW) vs EXP_BPW_REF=2.62 used in estimates; metadata/header overhead is secondary."
+    },
+    {
+      "name": "H95Q-S1",
+      "stack_name": "S1_B1_aggr_embed_band815_k3",
+      "precision_map": {
+        "body": "B1",
+        "embed_schedule": "aggressive",
+        "mlp_k3_bands": [
+          "mlp_band_8_15"
+        ],
+        "k3_variant": {
+          "variant": "band_8_15",
+          "band": "mlp_band_8_15"
+        },
+        "tier_schedule": "aggressive",
+        "keep_hist_rows": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 150925,
+          "4": 0,
+          "5": 397,
+          "6": 100,
+          "7": 514
+        }
+      },
+      "est_bpw": 7.4017,
+      "est_bpw_live_recomputed": 7.4017,
+      "actual_bpw": 12.801215,
+      "stream_bpw": 12.784122,
+      "file_bytes": 790527456,
+      "overhead_bytes": 1055552,
+      "header_bytes": 1055552,
+      "payload_stream_bytes": 789471904,
+      "n_weights": 494032768,
+      "n_tensors": 290,
+      "exact_match": true,
+      "sha_ok": true,
+      "sha256_quantized_reference": "eda64747928dd533596a3f790229ebc65143decc5666729fa6bbe953f2afd3de",
+      "sha256_file": "7589e7aa73e7ce45a7d7f2adefdd4fdfadaff39a0b209c2e00418d49b90bde03",
+      "container_path": "artifacts/pbr_h95/containers/H95Q-S1.h95q",
+      "exp_packing": "raw_u8",
+      "prior_heldout_retention": 0.99,
+      "prior_proxy_gate": "proxy_GO",
+      "actual_bpw_le_8": false,
+      "idempotence": {
+        "checked": 18,
+        "all_idempotent": true,
+        "failures": []
+      },
+      "subprocess_decode": {
+        "returncode": 0,
+        "sha_ok": true
+      },
+      "wall_build_s": 10.82,
+      "wall_encode_s": 12.82,
+      "wall_decode_verify_s": 8.34,
+      "delta_actual_minus_est_bpw": 5.3995,
+      "note_bpw_gap": "Gap vs est is dominated by raw_u8 exponents (8 BPW) vs EXP_BPW_REF=2.62 used in estimates; metadata/header overhead is secondary."
+    }
+  ],
+  "summary": {
+    "all_exact_match": true,
+    "all_sha_ok": true,
+    "s1_actual_bpw_le_8": false,
+    "s1_actual_bpw": 12.801215
+  }
+}

@@ -196,3 +196,49 @@ Follow-ups on `feat/pbr-h95q-stack` stacking toward packed ≤8 with heldout ≥
 ```bash
 PYTHONPATH=. .venv/bin/python scripts/run_pbr_h95q_stack.py   --model-dir outputs/models/Qwen__Qwen2.5-0.5B-Instruct   --calib docs/pbr_h95/calibration_v2.json   --heldout docs/pbr_h95/heldout_v1.json   --max-length 256
 ```
+
+## H95Q physical container (freeze)
+
+Independent-decode proof for three freeze candidates on Qwen2.5-0.5B-Instruct:
+
+| Candidate | Policy | Prior *estimated* packed BPW |
+| --- | --- | ---: |
+| **H95Q-Conservative** | B1 + conservative embed tiers | ~7.89 |
+| **H95Q-Balanced** | B1 + aggressive embed (**no** mid-MLP K3) | ~7.61 |
+| **H95Q-S1** (primary) | B1 + aggressive embed + mlp band 8–15 @K3 | ~7.40 |
+
+### Format (`H95Q` v1)
+
+- Global header: magic, version, model id/hash, dtype=bf16, n_tensors, total_weights, endianness, checksum=SHA-256
+- Per-tensor: name, shape, layout, base_keep / mode, optional embed row-tier table, optional MLP K3 band mask
+- Packed streams: sign bitplane (1 bit/w), **raw u8 exponents** (exactness), K-bit mantissa streams (K∈{3..7})
+- Precision map + SHA-256 of quantized reference state; absolute offsets for seeking
+
+**Exponent choice:** raw 8-bit/weight (not the ~2.62 BPW entropy reference used in estimated packed BPW). Physical `actual_bpw` is therefore expected to exceed estimated packed BPW by ~5.38 BPW on the exp term alone, before metadata.
+
+### Code
+
+- `pbr_h95/bitpack.py` — K-bit pack/unpack (MSB-first)
+- `pbr_h95/container_h95q.py` — encode/decode API + `python -m pbr_h95.container_h95q` decode-only CLI
+- `scripts/run_pbr_h95q_container.py` — build three candidates, encode, decode-verify, report
+- Artifacts: `artifacts/pbr_h95/h95q_container_qwen.{json,md}`; containers under `artifacts/pbr_h95/containers/*.h95q` (**gitignored** if large)
+
+### Exactness gates
+
+- Q idempotent on samples
+- `decode(encode(Q(W))) == Q(W)` uint16 bit-identical for every tensor
+- SHA-256(quantized reference) == SHA-256(decoded)
+- Fail hard on mismatch
+
+### Honesty
+
+- `actual_bpw = file_bytes * 8 / n_weights` from the physical file
+- Compare to prior estimated packed BPW; call out metadata overhead
+- Still **not** claiming production quality / multilingual / runtime RAM == BPW
+- If S1 `actual_bpw > 8` due to raw-u8 exponents (+ metadata), say so clearly — container still proves exact independent decode
+
+```bash
+PYTHONPATH=. .venv/bin/python scripts/run_pbr_h95q_container.py \
+  --model-dir outputs/models/Qwen__Qwen2.5-0.5B-Instruct \
+  --calib docs/pbr_h95/calibration_v2.json
+```
