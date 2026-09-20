@@ -532,6 +532,25 @@ sign-fold was skipped: signs are already ~1 bit of entropy.
 Reports: `artifacts/mantissa_multimodel_bakeoff.{json,md}`,
 `artifacts/mantissa_principle_candidate.md` (negative zoo; negative PBR-4).
 
+### Adaptive 7-bit mantissa codec (user guide PoC)
+
+Per 256-mantissa block: RAW (7 bits), canonical Huffman+ESCAPE (freeze-trained),
+CONTEXT 1-bit hit / 7-bit miss with exact feedback. Encode all three, decode,
+pick min **complete** bytes. Tensor policies ALL_RAW / ALL_HUFFMAN / ALL_CONTEXT /
+MIXED; Huffman table charged only if used. Full picture = sign raw + exp rANS +
+adaptive mantissa.
+
+```bash
+python scripts/run_adaptive_mantissa.py --model-dir outputs/models/Qwen__Qwen2.5-0.5B-Instruct
+```
+
+Reports: `artifacts/adaptive_mantissa_qwen.{md,json}`. Synthetic sanity: random
+~7 BPW RAW, skewed Huffman, structured CONTEXT. If real Qwen mantissas stay ~7
+BPW (mostly RAW), that matches Phase A — not ≤4 / ≤8 total BPW.
+
+The original guide PDF was not on this VM; `predict()` is in
+`pbr_adaptive_mantissa/predict.py` and `docs/PBR_Adaptive_Mantissa_Codec_Guide.md`.
+
 ### PBR-4 structured nibble + node formulas (experimental, negative)
 
 User structural idea: do not jump to 1-bit; give each weight **4 bits** of
@@ -831,6 +850,7 @@ pbr_core/        uint16 views, tiles, container, hashing, Safetensors I/O
 pbr_codecs/      raw, predictors, residuals, dictionaries, exp-Huffman,
                  bit-planes, grammar, transformed refs, position-value dict,
                  PBR-4 structured nibble (standalone container)
+pbr_adaptive_mantissa/  RAW / Huffman+ESCAPE / CONTEXT 7-bit mantissa codec
 pbr_encoder/     cost-based search, decoder, Stage 1A/1B/PBR-E/Phase A CLIs
 pbr_qualifier/   Stage 2 inventory, entropy, sample encode, BPW projection
 scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py,
@@ -838,17 +858,17 @@ scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py,
                  run_blocker_ablation.py, run_family_eval.py,
                  run_phase_a_mantissa_audit.py, run_exp_coder_ablation.py,
                  run_checkpoint_delta.py, run_mantissa_zoo.py, run_pbr4.py,
-                 run_path_to_50pct.py, disk_tunnel_infer.py,
+                 run_path_to_50pct.py, run_adaptive_mantissa.py, disk_tunnel_infer.py,
                  tunnel_fast_pbre.py, tunnel_faster_pbre.py, tunnel_hybrid_lossy.py
 tests/           exactness, codecs, Stage 1B fixtures, qualifier math,
                  hierarchical leftovers, mantissa audit, checkpoint delta,
                  mantissa zoo, PBR-4, path-to-50pct, disk tunnel,
-                 fast / faster PBR-E / hybrid lossy tunnel
+                 fast / faster PBR-E / hybrid lossy tunnel, adaptive mantissa
 configs/         poc_controlled.yaml, poc_real.yaml, poc_llama.yaml,
                  qualifier_default.yaml, poc_delta.yaml
 artifacts/       measured diagnosis / ablation / Phase A / delta / zoo /
                  PBR-4 / path-to-50pct / disk-RAM tunnel / fast PBR-E /
-                 faster PBR-E / hybrid-lossy reports
+                 faster PBR-E / hybrid-lossy / adaptive-mantissa reports
 ```
 
 Later stages (full selected-model encode vs projection, fused runtime) are
