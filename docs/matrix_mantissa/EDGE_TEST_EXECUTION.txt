@@ -1,0 +1,15 @@
+[PASS] Residual arithmetic exhaustive: 16,384 predictor/actual pairs
+[PASS] BF16 split/reassembly exhaustive: 65,536 BF16 bit patterns
+[PASS] 7-bit packing boundaries: 26 lengths including empty and partial-byte tails
+[PASS] Special BF16 values: 13 signed-zero/subnormal/normal/Inf/NaN cases
+[PASS] All matrix candidates round-trip: 174 version/shape/predictor/traversal combinations
+[PASS] Overflow and exponent edges: 1176 wraparound/exponent boundary combinations
+[PASS] Synthetic selection and accounting: {"checker": ["matrix:(16, 16):col_serp:paeth", 23, 229], "constant": ["symbol_zlib", 17, 229], "horizontal": ["matrix:(16, 16):col:exp_left", 25, 229], "plane": ["matrix:(16, 16):col:paeth", 25, 229], "repeated_rows": ["matrix:(16, 16):col:exp_left", 25, 229], "uniform_random": ["raw", 229, 229], "vertical": ["matrix:(16, 16):col:paeth", 25, 229]}
+[PASS] Determinism: 5cab1374c1365378c869e119679890e45a4ce4187eae97091cf78607cd9b1d6f
+[PASS] Tie-policy observation: current tie rule lexical; candidates=['matrix:(16, 16):row:previous']
+[PASS] Malformed framing observation: local framing checked; standalone corruption decoder remains REQUIRED
+
+Summary: 10/10 checks passed
+Report: pbr_edge_results.json
+
+STDERR:
