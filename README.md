@@ -1,15 +1,28 @@
-# pbr-poc
+# pbr-poc — Matrix Mantissa V1–V3 (pre-Qwen package)
 
-## Matrix mantissa V1–V3 (user package)
+User-supplied matrix mantissa codec + edge qualification suite.
 
-This branch is reserved for the **user-supplied** Matrix Mantissa files
-(`pbr_poc.py`, `pbr_edge_test.py`, reference results, guide).
+## Quick start
 
-**Those attachments were not present on this Cloud Agent VM**, so they were
-not copied and the codec was **not reinvented** here.
+```bash
+pip install numpy
+python3 pbr_edge_test.py
+```
 
-See `docs/USER_ATTACHMENTS_MISSING.md`.
+Exits non-zero on any failure. Writes `pbr_edge_results.json` in the cwd (also mirrored under `artifacts/`).
 
-**Do not claim Qwen compression. No ≤4 BPW claim. Do not merge until the
-user package is materialized and `python pbr_edge_test.py` is green.**
-Gate D is still required.
+## Layout
+
+| path | role |
+| --- | --- |
+| `pbr_poc.py` | V1–V3 matrix mantissa candidates |
+| `pbr_edge_test.py` | Pre-Qwen edge suite |
+| `artifacts/pbr_edge_results.json` | Last PASS report |
+| `docs/GATE_STATUS.md` | Gate A–D summary |
+| `docs/EDGE_TEST_EXECUTION.txt` | Prior execution log |
+| `docs/README_QUICKSTART.md` | User quick start |
+| `docs/PBR_Matrix_Mantissa_PreQwen_Guide.docx` | Qualification guide (if present) |
+
+## Gates
+
+See `docs/GATE_STATUS.md`. **Gate D (standalone corruption decoder) remains required** before any Qwen claim.
