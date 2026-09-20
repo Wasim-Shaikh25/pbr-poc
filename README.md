@@ -545,8 +545,13 @@ python scripts/run_adaptive_mantissa.py --model-dir outputs/models/Qwen__Qwen2.5
 ```
 
 Reports: `artifacts/adaptive_mantissa_qwen.{md,json}`. Synthetic sanity: random
-~7 BPW RAW, skewed Huffman, structured CONTEXT. If real Qwen mantissas stay ~7
-BPW (mostly RAW), that matches Phase A — not ≤4 / ≤8 total BPW.
+~7 BPW RAW, skewed Huffman, structured CONTEXT.
+
+Measured on **all 290** Qwen2.5-0.5B-Instruct 16-bit tensors (494,032,768 words):
+mantissa **7.000 BPW** (ALL_RAW on every tensor; Huffman table never charged),
+complete bundle **10.619 BPW** (sign raw + exp rANS + adaptive mantissa) vs raw 16
+and vs PBR-E ~10.62. **Honesty: real Qwen mantissas stay ~7 BPW.** Not ≤4 or ≤8
+total BPW. Tiny biases look worse than 16 BPW only because headers dominate 128-word tensors.
 
 The original guide PDF was not on this VM; `predict()` is in
 `pbr_adaptive_mantissa/predict.py` and `docs/PBR_Adaptive_Mantissa_Codec_Guide.md`.
