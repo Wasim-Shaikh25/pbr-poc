@@ -1,0 +1,14 @@
+{
+  "disclaimer": "User Matrix Mantissa attachments were not on this Cloud Agent VM. This is not a Qwen result and not a ≤4 BPW claim.",
+  "attachments_present": false,
+  "attachment_base": "/home/box/agent-data/agents/48a5af41-48b7-41f8-bc13-38db03ae9fd5/attachments/",
+  "pbr_edge_test_ran": false,
+  "gates": {
+    "A": {"status": "not_run", "reason": "user pbr_edge_test.py / pbr_poc.py missing"},
+    "B": {"status": "not_run", "reason": "user pbr_edge_test.py / pbr_poc.py missing"},
+    "C": {"status": "not_run", "reason": "user pbr_edge_test.py / pbr_poc.py missing"},
+    "D": {"status": "required", "reason": "standalone decoder corruption tests still required once the package lands"}
+  },
+  "qwen_claimed": false,
+  "bpw_4_claimed": false
+}
