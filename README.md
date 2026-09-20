@@ -270,6 +270,37 @@ tensor set as Stage 1B so BPW is comparable to 13.61. Reports land in
 `outputs/reports/pbre/`. The table includes zlib and an
 `expHuff_bound_B` column (DF11-style bound, labeled baseline, not PBR).
 
+### Measured PBR-E run (this repo)
+
+Same checkpoint and **the same 42-tensor / 159.9 MiB** Stage 1B selection
+(layers 0, 1, 2, 3, 4, 5, 12, 23 linear/attention weights; no embeddings).
+Revision `7ae557604adf67be50417f59c2c2f167def9a775`. **Every tensor PASS**
+(uint16 / SHA-256). Winning mode on **42 / 42** tensors (100% of tiles):
+`bf16_exp_huffman` with one amortized codebook per tensor.
+
+| tensor | orig B | enc B | BPW | ratio | exact | zlib B (baseline) |
+| --- | ---: | ---: | ---: | ---: | --- | ---: |
+| layers.0.mlp.down_proj.weight | 8716288 | 5892011 | 10.82 | 0.676 | PASS | 6933245 |
+| layers.12.self_attn.q_proj.weight | 1605632 | 1103238 | 10.99 | 0.687 | PASS | 1278723 |
+| layers.23.mlp.up_proj.weight | 8716288 | 5926926 | 10.88 | 0.680 | PASS | 6936780 |
+| **TOTAL (42 tensors)** | **167673856** | **113900400** | **10.87** | **0.679** | **PASS** | **133488038** |
+
+| labeled baseline (not PBR) | bytes | BPW |
+| --- | ---: | ---: |
+| raw BF16 | 167673856 | 16.00 |
+| zlib (level 9) | 133488038 | 12.74 |
+| exponent-Huffman bound (DF11-style) | 111216676 | 10.61 |
+| **PBR-E complete container** | **113900400** | **10.87** |
+| Stage 1B PBR (`bf16_components`) | 142577035 | 13.61 |
+| Stage 2 sample projection (pre-PBR-E) | 783604658 projected | 12.69 |
+
+PBR-E **beats Stage 1B (13.61 → 10.87 BPW)** and **beats zlib** on this
+typical Qwen sample. The complete-container rate sits **0.26 BPW above**
+the information-theoretic exponent-Huffman bound (codebook + 8-bit
+sign/mantissa + entropy-coded exponents). That is the DF11-class band
+(~11 BPW / ~32% size cut). **≤4 BPW is still out of scope** for dense
+LLMs; this run does not claim 1–2 GB / 8 GB.
+
 ### Measured Stage 2 run (this repo)
 
 Same Qwen revision as Stage 1B
@@ -293,8 +324,11 @@ linear subset (sample projection is slightly optimistic). Tiny 1-D norms and
 biases show 35–47 BPW because complete container headers dominate a few
 hundred words; they barely move the weighted total.
 
-**This model is not high-potential under the current Direct codecs.** A
-future hierarchical scanner could revise that; this run does not.
+**This model is not high-potential under the pre-PBR-E Direct codecs**
+(the ≤4 BPW gate). PBR-E later measured **10.87 BPW** on the Stage 1B
+subset — DF11-class, still far from ≤4. A future hierarchical scanner
+could revise the Stage 2 projection; this Stage 2 run did not include
+exponent Huffman.
 
 ## Tests
 
@@ -369,9 +403,11 @@ A low BPW on `constant_block` or `previous_row` only shows that the codec
 recognizes the pattern it was given. The `random_uint16` row is the honesty
 check: PBR must not invent compression on unstructured bits.
 
-Stage 1B BPW on real Qwen tensors is a measurement of **this encoder on those
-tensors**, including headers. Stage 2 BPW is a **sample projection** for the
-whole 16-bit parameter set. Neither number is a measured 8 GB-model result.
+Stage 1B BPW (13.61, `bf16_components`) and PBR-E BPW (10.87,
+`bf16_exp_huffman`) on real Qwen tensors are measurements of **this encoder
+on those tensors**, including headers. Stage 2 BPW is a **sample
+projection** for the whole 16-bit parameter set (pre-PBR-E codecs). None
+of these is a measured 8 GB-model result.
 
 zlib / zstd columns, when present, are **general-purpose baselines**, not PBR
 modes.
