@@ -91,6 +91,26 @@ def packed_baseline_len(n_nodes: int, nbits: int) -> int:
     return packed_bytes_for_k(n_nodes, nbits)
 
 
+def pack_kbit_batch(tiles: np.ndarray, nbits: int) -> np.ndarray:
+    """Pack a ``(T, H, W)`` stack; returns ``(T, nbytes)`` uint8."""
+    t = np.ascontiguousarray(tiles, dtype=np.uint16)
+    if t.ndim != 3:
+        raise ValueError("pack_kbit_batch expects (T,H,W)")
+    T = int(t.shape[0])
+    n = int(t.shape[1] * t.shape[2])
+    if nbits <= 0 or T == 0:
+        return np.zeros((T, 0), dtype=np.uint8)
+    mask = (1 << nbits) - 1
+    vals = t.reshape(T, n) & np.uint16(mask)
+    shifts = np.arange(nbits - 1, -1, -1, dtype=np.uint16)
+    bits = ((vals[:, :, None] >> shifts[None, None, :]) & np.uint16(1)).astype(np.uint8)
+    bits = bits.reshape(T, n * nbits)
+    pad = (-(n * nbits)) % 8
+    if pad:
+        bits = np.pad(bits, ((0, 0), (0, pad)))
+    return np.packbits(bits, axis=1, bitorder="big")
+
+
 def _encode_matrix(res: np.ndarray, nbits: int) -> bytes:
     return pack_kbit(res.ravel(), nbits)
 
@@ -584,24 +604,51 @@ def encode_array_xy(kept: np.ndarray, nbits: int, *, th: int = TILE, tw: int = T
 
     aligned = rows % th == 0 and cols % tw == 0 and rows > 0 and cols > 0
     if aligned:
-        tiles = as_full_tiles(arr, th=th, tw=tw)
-        travs, preds, res = pick_best_geometry_batched(tiles, nbits)
-        for i in range(int(tiles.shape[0])):
-            enc = encode_tile_given_geometry(
-                res[i], pred=int(preds[i]), trav=int(travs[i]), nbits=nbits, verify=False
-            )
-            if enc.mode not in MATRIX_FAMILY_MODES:
-                raise RuntimeError("tile escaped matrix family")
-            flags.append(enc.flag_byte())
-            payload.extend(enc.payload)
-            hist[enc.mode_name] = hist.get(enc.mode_name, 0) + 1
-            pn = PRED_NAMES[enc.pred]
-            tn = TRAV_NAMES[enc.trav]
-            pred_hist[pn] = pred_hist.get(pn, 0) + 1
-            trav_hist[tn] = trav_hist.get(tn, 0) + 1
-            packed_base += enc.packed_baseline_bytes
-            xy_payload += len(enc.payload)
-            n_tiles += 1
+        tiles_all = as_full_tiles(arr, th=th, tw=tw)
+        packed_one = packed_baseline_len(th * tw, nbits)
+        chunk = 4096
+        Ttot = int(tiles_all.shape[0])
+        for start in range(0, Ttot, chunk):
+            tiles = tiles_all[start : start + chunk]
+            travs, preds, res = pick_best_geometry_batched(tiles, nbits)
+            zrate = np.mean(res == 0, axis=(1, 2))
+            compete = zrate >= 0.20
+            if nbits > 0:
+                uni = np.zeros(int(tiles.shape[0]), dtype=bool)
+                for b in range(nbits):
+                    plane = (res >> np.uint8(b)) & np.uint8(1)
+                    flatp = plane.reshape(int(tiles.shape[0]), -1)
+                    uni |= flatp.all(axis=1) | (~flatp.any(axis=1))
+                compete = compete | uni
+            matrix_payloads = pack_kbit_batch(res, nbits)
+            for i in range(int(tiles.shape[0])):
+                if compete[i]:
+                    enc = encode_tile_given_geometry(
+                        res[i], pred=int(preds[i]), trav=int(travs[i]), nbits=nbits, verify=False
+                    )
+                else:
+                    enc = TileEncoding(
+                        mode=MODE_MATRIX,
+                        pred=int(preds[i]),
+                        trav=int(travs[i]),
+                        nbits=nbits,
+                        rows=th,
+                        cols=tw,
+                        payload=matrix_payloads[i].tobytes(),
+                        packed_baseline_bytes=packed_one,
+                    )
+                if enc.mode not in MATRIX_FAMILY_MODES:
+                    raise RuntimeError("tile escaped matrix family")
+                flags.append(enc.flag_byte())
+                payload.extend(enc.payload)
+                hist[enc.mode_name] = hist.get(enc.mode_name, 0) + 1
+                pn = PRED_NAMES[enc.pred]
+                tn = TRAV_NAMES[enc.trav]
+                pred_hist[pn] = pred_hist.get(pn, 0) + 1
+                trav_hist[tn] = trav_hist.get(tn, 0) + 1
+                packed_base += enc.packed_baseline_bytes
+                xy_payload += len(enc.payload)
+                n_tiles += 1
     else:
         for r0, c0, h, w in tile_boxes(rows, cols, th=th, tw=tw):
             enc = encode_tile(arr[r0 : r0 + h, c0 : c0 + w], nbits)

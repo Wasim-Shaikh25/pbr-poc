@@ -255,7 +255,8 @@ def encode_container(
         unique.append((name, w))
 
     encoded: list[dict[str, Any]] = []
-    for name, w in unique:
+    n_unique = len(unique)
+    for i, (name, w) in enumerate(unique, 1):
         if embed_name and name == embed_name and embed_row_keeps is not None:
             enc = _encode_one(w, row_keeps=embed_row_keeps)
         else:
@@ -266,6 +267,12 @@ def encode_container(
         if not enc.get("all_matrix_family", False):
             raise RuntimeError(f"{name}: tile escaped matrix family")
         encoded.append(enc)
+        if i == 1 or i == n_unique or i % 20 == 0:
+            print(
+                f"  xy-encode {i}/{n_unique} {name} tiles={enc.get('n_tiles', 0)} "
+                f"modes={enc.get('xy_mode_hist')}",
+                flush=True,
+            )
 
     ref_sha = sha256_state_u16({n: t for n, t in unique})
     if expect_ref_sha and ref_sha != expect_ref_sha:

@@ -12,9 +12,11 @@ from pbr_h95.quantize import quantize_bf16_mantissas
 from pbr_q4.codecs import (
     encode_array_xy,
     encode_tile,
+    pack_kbit_batch,
     parse_flag_byte,
     packed_baseline_len,
 )
+from pbr_h95.bitpack import pack_kbit
 from pbr_q4.const import (
     FROZEN_S1_SHA,
     MATRIX_FAMILY_MODES,
@@ -108,6 +110,15 @@ def test_constant_tile_prefers_run_or_plane():
     # Constant residuals are all-zero after PREVIOUS=0 → RUN or PLANE should beat MATRIX.
     assert enc.mode in (3, 5, 1)  # PLANE / RUN / MATRIX (all family)
     assert len(enc.payload) <= packed_baseline_len(256, 4)
+
+
+@pytest.mark.parametrize("nbits", [3, 4, 5, 7])
+def test_pack_kbit_batch_matches_scalar(nbits):
+    rng = np.random.default_rng(nbits + 9)
+    tiles = rng.integers(0, 1 << nbits, size=(4, 16, 16), dtype=np.uint16)
+    batched = pack_kbit_batch(tiles, nbits)
+    for i in range(4):
+        assert batched[i].tobytes() == pack_kbit(tiles[i], nbits)
 
 
 def test_batched_row_col_matches_sequential():
