@@ -1,7 +1,7 @@
 # Llama-family sample (not Meta-gated). Method validation only.
 stage: llama
 repo: unsloth/Llama-3.2-1B-Instruct
-revision: main
+revision: 5a8abab4a5d6f164389b1079fb721cfab8d7126c
 license: llama3.2 / see model card
 attribution: >
   Llama-3.2-1B-Instruct weights via the unsloth mirror (BF16 safetensors).

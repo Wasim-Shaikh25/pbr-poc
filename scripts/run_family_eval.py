@@ -14,28 +14,32 @@ from pbr_encoder.ablation import main as ablation_main
 from pbr_encoder.blocker_diagnosis import main as diagnosis_main
 
 
+def _get(args: list[str], flag: str, default: str | None = None) -> str | None:
+    if flag in args:
+        return args[args.index(flag) + 1]
+    return default
+
+
 def main(argv: list[str] | None = None) -> int:
     args = list(argv) if argv is not None else sys.argv[1:]
-    # Split our flags from the shared ones.
-    tag = "family"
-    if "--tag" in args:
-        tag = args[args.index("--tag") + 1]
-    diag_args = [a for a in args if a not in {"--profiles"}]
-    # diagnosis uses --output-json/--output-md; map --tag.
-    if "--output-json" not in diag_args:
-        diag_args.extend(["--output-json", f"artifacts/blocker_diagnosis_{tag}.json"])
-    if "--output-md" not in diag_args:
-        diag_args.extend(["--output-md", f"artifacts/blocker_diagnosis_{tag}.md"])
+    tag = _get(args, "--tag", "family") or "family"
+    model_dir = _get(args, "--model-dir")
+    config = _get(args, "--config")
+    diag = ["--output-json", f"artifacts/blocker_diagnosis_{tag}.json", "--output-md", f"artifacts/blocker_diagnosis_{tag}.md"]
+    if model_dir:
+        diag.extend(["--model-dir", model_dir])
+    if config:
+        diag.extend(["--config", config])
     print("=== blocker diagnosis ===", flush=True)
-    rc = diagnosis_main(diag_args)
+    rc = diagnosis_main(diag)
     if rc != 0:
         return rc
     print("=== PBR-E + hierarchical ablation ===", flush=True)
-    ablate = list(args)
-    if "--profiles" not in ablate:
-        ablate.extend(["--profiles", "pbre", "hierarchical"])
-    if "--tag" not in ablate:
-        ablate.extend(["--tag", tag])
+    ablate: list[str] = ["--tag", tag, "--profiles", "pbre", "hierarchical"]
+    if model_dir:
+        ablate.extend(["--model-dir", model_dir])
+    if config:
+        ablate.extend(["--config", config])
     return ablation_main(ablate)
 
 
