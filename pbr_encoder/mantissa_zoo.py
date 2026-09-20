@@ -481,8 +481,9 @@ def format_markdown(report: dict) -> str:
         f"Mixture used models: {', '.join(s.get('mixture_used') or []) or 'none'}.",
         "",
         f"Exact slice ({sl.get('n_words', 0)} words): **{sl.get('all_exact', 'n/a')}**. "
-        f"Encode+decode {sl.get('encode_decode_s', 0):.2f}s, ~{sl.get('mb_s', 0):.2f} MB/s "
-        f"(payload in + payload out / time; not a production codec).",
+        f"Encode+decode {sl.get('encode_decode_s', 0):.2f}s "
+        f"({sl.get('n_words', 0) / max(sl.get('encode_decode_s') or 1e-9, 1e-9):.0f} words/s; "
+        f"Python bit-rANS, not a production speed claim).",
         "",
     ]
     if sl.get("all_exact") == "PASS":
@@ -501,7 +502,14 @@ def format_markdown(report: dict) -> str:
     if not s["beats_pbre"]:
         lines.append(
             "**Useful bar MISS vs PBR-E:** no combo beat sign+exp rANS + raw 7-bit mantissa "
-            "on complete total BPW. Mantissa remains ~7 incompressible bits."
+            "on complete total BPW."
+        )
+        lines.append("")
+    else:
+        lines.append(
+            "A sub-0.1 BPW total trim versus raw-mantissa PBR-E is **entropy-coding M** "
+            "(uncond or H(M|exp) tables), DF11-class, not a new mantissa principle. "
+            "CTW / AR / IDF did not beat that table."
         )
         lines.append("")
     lines.append("This is not a 1–2 GB / 8 GB result.")
@@ -514,39 +522,44 @@ def write_principle(summary: dict, path: Path) -> None:
     gate = summary["beats_gate"]
     useful = summary["beats_pbre"]
     stretch = summary["stretch_le4"]
-    if stretch or useful or gate:
+    if stretch:
         verdict = "candidate"
+    elif gate:
+        verdict = "candidate-weak"
+    else:
+        verdict = "negative"
+    if stretch or (gate and useful):
         para = (
             f"The zoo's best complete method is `{best['name']}` at "
             f"{best['complete_bpw']:.4f} mantissa BPW / {best['total_complete_bpw']:.4f} total. "
-            "Any win is from a stored causal predictor plus rANS, not from a new field split."
+            "Treat this as a candidate only if the mantissa complete BPW is below the Phase A "
+            "gate after model bytes; a sub-0.1 BPW trim from rANS-coding M is DF11, not a new axis."
         )
         why = (
-            "PBR-E stores sign+mantissa raw (8 bits) and rANS-codes exponents. A mantissa "
-            "model that beat raw 7 would be extra structure DF11 does not use. If the win "
-            "is only uncond rANS of M (H(M)≈6.97 vs raw 7), that is still DF11-class entropy "
-            "coding of a third field, not a new principle."
+            "PBR-E stores sign+mantissa raw (8 bits) and rANS-codes exponents. A predictor that "
+            "drove H(M|ctx) well below 6.5 would be structure DF11 does not use. Uncond or "
+            "exp-conditional rANS of M is the same entropy-coding move already used on exponents."
         )
     else:
-        verdict = "negative"
         para = (
             "A combined CTW/PPM bit-context mixer, histogram GBDT on causal (exp, sign, "
             "prev, prev-row) features, tiny one-hidden-layer AR MLPs (actual stored size "
-            "well under the 64KB/256KB budgets), and a small integer additive coupling "
-            "stack (IDF-lite) were trained on the first 80% of rows of the Qwen Stage 1B "
-            "42-tensor set and scored on the held-out 20%. A per-tensor argmin mixture "
-            "paid only for the union of selected models. None of these reduced held-out "
-            "mantissa complete BPW below the Phase A gate of 6.5, and none beat PBR-E's "
-            "total (~sign 1 + exp ~2.6 + mant 7) once every model byte was counted. "
-            "H(M) on this sample is already 6.97/7: the mantissa is empirically almost "
-            "a uniform 7-bit field. Spatial and learned predictors overfit or match the "
-            "unigram; invertible couplings do not concentrate symbols."
+            f"{summary['model_bytes'].get('ar64', 0)} B and {summary['model_bytes'].get('ar256', 0)} B, "
+            "under the 64KB/256KB budgets), and a small integer additive coupling stack "
+            "(IDF-lite) were trained on the first 80% of rows of the Qwen Stage 1B 42-tensor "
+            "set and scored on the held-out 20%. A per-tensor argmin mixture paid only for "
+            "the union of selected models. None of these reduced held-out mantissa complete "
+            "BPW below the Phase A gate of 6.5. CTW, PPM, AR, and IDF all sat on the unigram "
+            f"(H(M)={summary['weighted_H_mantissa']:.2f}/7). The only total-BPW trim versus "
+            "raw-mantissa PBR-E (~0.06 BPW) is entropy-coding M, especially 256 exp-conditional "
+            "tables — the same DF11-class move already used on exponents, not a new principle. "
+            "Learned models did not beat H(M|exp)."
         )
         why = (
-            "This is not a DF11 replacement and not a counterexample to PBR-E. DF11/PBR-E "
-            "already entropy-codes the low-entropy exponent. The missing ~7 mantissa bits "
-            "are not a coding-format problem; they are residual entropy of dense trained "
-            "weights. Extra neural/tree/CTW tables did not buy a new compressible axis."
+            "This is not a DF11 replacement. DF11/PBR-E already entropy-codes the low-entropy "
+            "exponent. Coding the mantissa with a 128-way (or 256×128) table is still DF11. "
+            "The missing ~7 mantissa bits are residual entropy of dense trained weights, not a "
+            "coding-format problem. Extra neural/tree/CTW tables did not buy a new compressible axis."
         )
     breakdown = (
         f"- sign (raw): {summary['sign_bpw_raw']:.4f} BPW\n"

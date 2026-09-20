@@ -1,0 +1,467 @@
+{
+  "disclaimer": "Mantissa multimodel bakeoff (CTW/PPM, histogram GBDT, tiny AR, IDF-lite, mixture). Held-out last 20% of rows. Complete BPW includes every model/table/index byte. Lossless BF16 only. Not a 1\u20132 GB / 8 GB claim. Success is not \u22644 BPW unless the measured total complete BPW is \u22644.",
+  "model": {
+    "repo_id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "license": "Apache-2.0"
+  },
+  "summary": {
+    "n_tensors": 42,
+    "n_words": 83836928,
+    "n_hold": 16767104,
+    "original_bytes": 167673856,
+    "weighted_H_sign": 0.9999977765279459,
+    "weighted_H_exp": 2.6123648655118297,
+    "weighted_H_mantissa": 6.971874691611127,
+    "sign_bpw_raw": 1.0,
+    "exp_complete_bpw": 2.6469155358371066,
+    "header_bpw": 6.813226744186046e-05,
+    "pbre_total_bpw": 10.646983668104548,
+    "pbre_ref_fullset": 10.616,
+    "best_method": "mixture_argmin",
+    "best_mantissa_complete_bpw": 6.937993052158235,
+    "best_total_complete_bpw": 10.584976720262784,
+    "beats_gate": false,
+    "beats_pbre": true,
+    "stretch_le4": false,
+    "fit_s": 12.708508548999816,
+    "elapsed_s": 258.10589188000085,
+    "reservoir": 250000,
+    "mixture_used": [
+      "exp_cond",
+      "gbdt"
+    ],
+    "methods": [
+      {
+        "name": "mixture_argmin",
+        "kind": "mixture",
+        "n_hold": 16767104,
+        "nll_bits": 116222654.4605179,
+        "model_bytes": 67124,
+        "ideal_bpw": 6.931587855631951,
+        "holdout_charged_bpw": 6.963614376133046,
+        "complete_bpw": 6.937993052158235,
+        "beats_gate": false,
+        "total_complete_bpw": 10.584976720262784,
+        "vs_pbre": -0.062006947841764415,
+        "beats_pbre": true,
+        "stretch_le4": false
+      },
+      {
+        "name": "phase_a_H(M|exp)",
+        "kind": "table",
+        "n_hold": 16767104,
+        "nll_bits": 116242062.13169108,
+        "model_bytes": 65536,
+        "ideal_bpw": 6.9327453406200075,
+        "holdout_charged_bpw": 6.964014187046915,
+        "complete_bpw": 6.938999004876407,
+        "beats_gate": false,
+        "total_complete_bpw": 10.585982672980956,
+        "vs_pbre": -0.06100099512359236,
+        "beats_pbre": true,
+        "stretch_le4": false
+      },
+      {
+        "name": "gbdt_hist_16x2",
+        "kind": "gbdt",
+        "n_hold": 16767104,
+        "nll_bits": 116707987.2517965,
+        "model_bytes": 1588,
+        "ideal_bpw": 6.96053339036941,
+        "holdout_charged_bpw": 6.961291064443597,
+        "complete_bpw": 6.960684922639294,
+        "beats_gate": false,
+        "total_complete_bpw": 10.607668590743843,
+        "vs_pbre": -0.03931507736070472,
+        "beats_pbre": true,
+        "stretch_le4": false
+      },
+      {
+        "name": "uncond_rANS",
+        "kind": "table",
+        "n_hold": 16767104,
+        "nll_bits": 116900374.35595869,
+        "model_bytes": 388,
+        "ideal_bpw": 6.97200747105515,
+        "holdout_charged_bpw": 6.9721925954511095,
+        "complete_bpw": 6.972044495312527,
+        "beats_gate": false,
+        "total_complete_bpw": 10.619028163417076,
+        "vs_pbre": -0.027955504687472654,
+        "beats_pbre": true,
+        "stretch_le4": false
+      },
+      {
+        "name": "bit_markov_d4",
+        "kind": "ctw",
+        "n_hold": 16767104,
+        "nll_bits": 116910817.51251903,
+        "model_bytes": 454,
+        "ideal_bpw": 6.972630307089347,
+        "holdout_charged_bpw": 6.97284692171761,
+        "complete_bpw": 6.972673629287413,
+        "beats_gate": false,
+        "total_complete_bpw": 10.619657297391962,
+        "vs_pbre": -0.027326370712586368,
+        "beats_pbre": true,
+        "stretch_le4": false
+      },
+      {
+        "name": "bit_markov_d8 / CTW-ctx",
+        "kind": "ctw",
+        "n_hold": 16767104,
+        "nll_bits": 116911075.94079538,
+        "model_bytes": 7174,
+        "ideal_bpw": 6.972645719904604,
+        "holdout_charged_bpw": 6.976068612730939,
+        "complete_bpw": 6.973330286972711,
+        "beats_gate": false,
+        "total_complete_bpw": 10.62031395507726,
+        "vs_pbre": -0.02666971302728882,
+        "beats_pbre": true,
+        "stretch_le4": false
+      },
+      {
+        "name": "ctw_bitmix_d0+4+8",
+        "kind": "ctw",
+        "n_hold": 16767104,
+        "nll_bits": 116910829.07385278,
+        "model_bytes": 7662,
+        "ideal_bpw": 6.97263099661413,
+        "holdout_charged_bpw": 6.976286726309611,
+        "complete_bpw": 6.97336213027399,
+        "beats_gate": false,
+        "total_complete_bpw": 10.620345798378539,
+        "vs_pbre": -0.026637869726009455,
+        "beats_pbre": true,
+        "stretch_le4": false
+      },
+      {
+        "name": "ppm_hash_o2",
+        "kind": "ppm",
+        "n_hold": 16767104,
+        "nll_bits": 116912056.64519913,
+        "model_bytes": 131076,
+        "ideal_bpw": 6.972704209695314,
+        "holdout_charged_bpw": 7.0352438110480575,
+        "complete_bpw": 6.98521191990149,
+        "beats_gate": false,
+        "total_complete_bpw": 10.632195588006038,
+        "vs_pbre": -0.014788080098510292,
+        "beats_pbre": true,
+        "stretch_le4": false
+      },
+      {
+        "name": "idf_lite_coupling",
+        "kind": "idf",
+        "n_hold": 16767104,
+        "nll_bits": 117163398.3078225,
+        "model_bytes": 774,
+        "ideal_bpw": 6.987694375118237,
+        "holdout_charged_bpw": 6.9880636696606935,
+        "complete_bpw": 6.987768232786304,
+        "beats_gate": false,
+        "total_complete_bpw": 10.634751900890853,
+        "vs_pbre": -0.012231767213695122,
+        "beats_pbre": true,
+        "stretch_le4": false
+      },
+      {
+        "name": "tiny_ar_h32 (~64KB budget)",
+        "kind": "ar",
+        "n_hold": 16767104,
+        "nll_bits": 117248652.58933318,
+        "model_bytes": 8776,
+        "ideal_bpw": 6.992778990893906,
+        "holdout_charged_bpw": 6.996966237540674,
+        "complete_bpw": 6.9936164261587095,
+        "beats_gate": false,
+        "total_complete_bpw": 10.640600094263258,
+        "vs_pbre": -0.006383573841290513,
+        "beats_pbre": true,
+        "stretch_le4": false
+      },
+      {
+        "name": "tiny_ar_h96 (~256KB budget)",
+        "kind": "ar",
+        "n_hold": 16767104,
+        "nll_bits": 117258671.54764687,
+        "model_bytes": 25800,
+        "ideal_bpw": 6.993376527493768,
+        "holdout_charged_bpw": 7.00568634557565,
+        "complete_bpw": 6.995838449762675,
+        "beats_gate": false,
+        "total_complete_bpw": 10.642822117867224,
+        "vs_pbre": -0.004161550237324008,
+        "beats_pbre": true,
+        "stretch_le4": false
+      },
+      {
+        "name": "raw_M",
+        "kind": "raw",
+        "n_hold": 16767104,
+        "nll_bits": 117369728.0,
+        "model_bytes": 0,
+        "ideal_bpw": 7.0,
+        "holdout_charged_bpw": 7.0,
+        "complete_bpw": 7.0,
+        "beats_gate": false,
+        "total_complete_bpw": 10.646983668104548,
+        "vs_pbre": 0.0,
+        "beats_pbre": false,
+        "stretch_le4": false
+      }
+    ],
+    "slice": {
+      "uncond_rANS": {
+        "bytes": 4628,
+        "exact": "PASS",
+        "sha256": "8af75c9fcb91069d43542d87a55d9843e3c549c72965420d50a99b77721caf99"
+      },
+      "bit_markov_d8": {
+        "bytes": 4293,
+        "exact": "PASS"
+      },
+      "idf_lite": {
+        "bytes": 4638,
+        "exact": "PASS"
+      },
+      "gbdt": {
+        "bytes": 4240,
+        "exact": "PASS"
+      },
+      "tiny_ar": {
+        "bytes": 4256,
+        "exact": "PASS"
+      },
+      "all_exact": "PASS",
+      "n_words": 4864,
+      "encode_decode_s": 4.40528759100016,
+      "mb_s": 0.004416510749433905
+    },
+    "per_tensor_mixture": [
+      {
+        "name": "model.layers.0.mlp.down_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 870656
+      },
+      {
+        "name": "model.layers.0.mlp.gate_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.0.mlp.up_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.0.self_attn.k_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.0.self_attn.o_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.0.self_attn.q_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.0.self_attn.v_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.12.mlp.down_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 870656
+      },
+      {
+        "name": "model.layers.12.mlp.gate_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.12.mlp.up_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.12.self_attn.k_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.12.self_attn.o_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.12.self_attn.q_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.12.self_attn.v_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.23.mlp.down_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 870656
+      },
+      {
+        "name": "model.layers.23.mlp.gate_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.23.mlp.up_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.23.self_attn.k_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.23.self_attn.o_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.23.self_attn.q_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.23.self_attn.v_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.1.mlp.down_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 870656
+      },
+      {
+        "name": "model.layers.1.mlp.gate_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.1.mlp.up_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.1.self_attn.k_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.1.self_attn.o_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.1.self_attn.q_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.1.self_attn.v_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.2.mlp.down_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 870656
+      },
+      {
+        "name": "model.layers.2.mlp.gate_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.2.mlp.up_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.2.self_attn.k_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.2.self_attn.o_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.2.self_attn.q_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 160384
+      },
+      {
+        "name": "model.layers.2.self_attn.v_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.3.mlp.down_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 870656
+      },
+      {
+        "name": "model.layers.3.mlp.gate_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 871808
+      },
+      {
+        "name": "model.layers.3.self_attn.k_proj.weight",
+        "choice": "gbdt",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.3.self_attn.v_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.4.self_attn.k_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.4.self_attn.v_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      },
+      {
+        "name": "model.layers.5.self_attn.k_proj.weight",
+        "choice": "exp_cond",
+        "n_hold": 23296
+      }
+    ],
+    "model_bytes": {
+      "uncond": 388,
+      "exp_cond": 65536,
+      "markov_d8": 7174,
+      "ctw_mix": 7662,
+      "ppm": 131076,
+      "gbdt": 1588,
+      "ar64": 8776,
+      "ar256": 25800,
+      "idf": 386
+    }
+  }
+}

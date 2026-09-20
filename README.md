@@ -502,17 +502,39 @@ easy set.
 ### PBR-M mantissa model zoo
 
 Pressure-test CTW/PPM bit contexts, histogram GBDT, tiny causal AR MLPs
-(64KB / 256KB stored-size budgets), IDF-lite integer coupling, and a
-per-tensor mixture against PBR-E (~10.6). Held-out last 20% of rows.
-Complete BPW counts every model byte. Stretch total ≤4 is allowed only
-with a measured number; this run does not assume it.
+(actual stored size 8.8 KB / 26 KB, under 64KB/256KB budgets), IDF-lite
+integer coupling, and a per-tensor mixture against PBR-E. Same Qwen
+Stage 1B 42-tensor set. Held-out last 20% of rows. Complete BPW counts
+every model byte. Numpy only (sklearn/torch were not in the env).
 
 ```bash
 python scripts/run_mantissa_zoo.py --tag qwen
 ```
 
+#### Measured bakeoff (this repo)
+
+83,836,928 words, holdout 16,767,104. Slice exactness **PASS** (uncond
+rANS, bit-Markov, GBDT, AR, IDF). Wall 258 s. Python bit-rANS slice
+~1.1k words/s (not a production speed claim).
+
+| method | complete mant BPW | total BPW | vs PBR-E split | gate 6.5 |
+| --- | ---: | ---: | ---: | --- |
+| mixture (exp-cond + GBDT) | **6.938** | **10.585** | −0.062 | no |
+| H(M\|exp) tables | 6.939 | 10.586 | −0.061 | no |
+| GBDT 16×depth-2 | 6.961 | 10.608 | −0.039 | no |
+| uncond rANS M | 6.972 | 10.619 | −0.028 | no |
+| CTW / bit-Markov / PPM | ≥6.973 | ≥10.620 | ≥ −0.027 | no |
+| IDF-lite | 6.988 | 10.635 | −0.012 | no |
+| tiny AR h32 / h96 | ≥6.994 | ≥10.641 | ≥ −0.006 | no |
+| raw M (PBR-E mantissa) | 7.000 | 10.647 | 0 | no |
+
+**Phase A gate MISS. Stretch ≤4 BPW total: no.** The 0.06 BPW total trim
+is entropy-coding the mantissa (DF11-class, same move as exponent rANS),
+not a new principle. CTW, AR, and IDF did not beat H(M|exp). Bits-back /
+sign-fold was skipped: signs are already ~1 bit of entropy.
+
 Reports: `artifacts/mantissa_multimodel_bakeoff.{json,md}`,
-`artifacts/mantissa_principle_candidate.md`.
+`artifacts/mantissa_principle_candidate.md` (negative).
 
 ### Job 3 — Huffman vs rANS on exponents
 
@@ -657,7 +679,7 @@ differs. Cases include special BF16 bit patterns (signed zero, Inf, NaN
 payloads, subnormals) that an FP32 detour would be likely to destroy.
 
 Stage 1B / Stage 2 / PBR-E / blocker-mitigation / hierarchical / Phase A /
-checkpoint-delta unit tests write tiny local Safetensors fixtures.
+checkpoint-delta / mantissa-zoo unit tests write tiny local Safetensors fixtures.
 They do **not** download the 988 MB checkpoint. Live download tests are
 skipped unless `PBR_LIVE_HF=1`.
 
