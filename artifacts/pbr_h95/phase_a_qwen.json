@@ -1,0 +1,6053 @@
+{
+  "model_dir": "outputs/models/Qwen__Qwen2.5-0.5B-Instruct",
+  "repo": "Qwen/Qwen2.5-0.5B-Instruct",
+  "phase": "H95-A",
+  "policy": {
+    "protected_keep": 7,
+    "large_attn_mlp_keep": 5,
+    "uniform_bits": null
+  },
+  "keep_hist_words": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 328007680,
+    "6": 0,
+    "7": 166025088
+  },
+  "aggregate_policy": {
+    "n_words": 494032768,
+    "avg_mantissa_bits": 5.6721,
+    "est_total_bpw": 9.2921,
+    "sign_bpw": 1.0,
+    "exp_bpw_ref": 2.62,
+    "all_quantize_idempotent": true
+  },
+  "uniform_ladder": {
+    "7": {
+      "keep_bits": 7,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "sign_bpw": 1.0,
+      "exp_bpw_ref": 2.62,
+      "mantissa_bpw_raw": 7.0,
+      "est_total_bpw": 10.62,
+      "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+    },
+    "6": {
+      "keep_bits": 6,
+      "frac_changed": 0.5000035321543692,
+      "mse_f32_diagnostic": 2.216024681255557e-08,
+      "sign_bpw": 1.0,
+      "exp_bpw_ref": 2.62,
+      "mantissa_bpw_raw": 6.0,
+      "est_total_bpw": 9.62,
+      "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+    },
+    "5": {
+      "keep_bits": 5,
+      "frac_changed": 0.7499576546307147,
+      "mse_f32_diagnostic": 8.827859326850297e-08,
+      "sign_bpw": 1.0,
+      "exp_bpw_ref": 2.62,
+      "mantissa_bpw_raw": 5.0,
+      "est_total_bpw": 8.62,
+      "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+    },
+    "4": {
+      "keep_bits": 4,
+      "frac_changed": 0.8750009128949114,
+      "mse_f32_diagnostic": 2.8180444714033116e-07,
+      "sign_bpw": 1.0,
+      "exp_bpw_ref": 2.62,
+      "mantissa_bpw_raw": 4.0,
+      "est_total_bpw": 7.62,
+      "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+    },
+    "3": {
+      "keep_bits": 3,
+      "frac_changed": 0.9374645023546292,
+      "mse_f32_diagnostic": 9.751949330305577e-07,
+      "sign_bpw": 1.0,
+      "exp_bpw_ref": 2.62,
+      "mantissa_bpw_raw": 3.0,
+      "est_total_bpw": 6.62,
+      "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+    }
+  },
+  "tensors": [
+    {
+      "n_words": 136134656,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.embed_tokens.weight",
+      "shape": [
+        151936,
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.0.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.0.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.0.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.0.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.0.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.0.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.0.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.0.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.0.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.0.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.0.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.0.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.1.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269317,
+      "frac_changed": 0.7501626839315084,
+      "mse_f32_diagnostic": 1.4345369336865588e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.1.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269369,
+      "frac_changed": 0.7501746156161889,
+      "mse_f32_diagnostic": 2.6834314326151798e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.1.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268685,
+      "frac_changed": 0.750017668071546,
+      "mse_f32_diagnostic": 1.4411789983626022e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.1.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.1.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.1.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85817,
+      "frac_changed": 0.7482648577008929,
+      "mse_f32_diagnostic": 8.142728802340571e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.1.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601975,
+      "frac_changed": 0.7498293506855868,
+      "mse_f32_diagnostic": 1.0973505659706007e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.1.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.1.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602447,
+      "frac_changed": 0.7504172811702806,
+      "mse_f32_diagnostic": 4.0764284392480477e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.1.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.1.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86234,
+      "frac_changed": 0.7519008091517857,
+      "mse_f32_diagnostic": 6.566709398470039e-09,
+      "max_abs_f32_diagnostic": 0.0009765625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.1.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.10.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3266870,
+      "frac_changed": 0.7496012063851034,
+      "mse_f32_diagnostic": 1.527440218751508e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.10.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268472,
+      "frac_changed": 0.7499687940554511,
+      "mse_f32_diagnostic": 2.2390359788460046e-08,
+      "max_abs_f32_diagnostic": 0.0078125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.10.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267432,
+      "frac_changed": 0.7497301603618421,
+      "mse_f32_diagnostic": 1.7036295929528933e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.10.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.10.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.10.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86279,
+      "frac_changed": 0.7522931780133929,
+      "mse_f32_diagnostic": 2.9469589435393573e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.10.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602215,
+      "frac_changed": 0.7501282983896683,
+      "mse_f32_diagnostic": 1.6361170196432795e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.10.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.10.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602329,
+      "frac_changed": 0.7502702985491071,
+      "mse_f32_diagnostic": 2.283193012431184e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.10.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.10.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86189,
+      "frac_changed": 0.7515084402901786,
+      "mse_f32_diagnostic": 2.024497014474491e-08,
+      "max_abs_f32_diagnostic": 0.0009765625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.10.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.11.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267550,
+      "frac_changed": 0.7497572361078477,
+      "mse_f32_diagnostic": 1.5929890295751647e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.11.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3266959,
+      "frac_changed": 0.7496216279223449,
+      "mse_f32_diagnostic": 1.8705749837977237e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.11.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267088,
+      "frac_changed": 0.7496512276785714,
+      "mse_f32_diagnostic": 1.7014439634976952e-08,
+      "max_abs_f32_diagnostic": 0.0078125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.11.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.11.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.11.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85958,
+      "frac_changed": 0.7494942801339286,
+      "mse_f32_diagnostic": 2.725574965722899e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.11.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602192,
+      "frac_changed": 0.7500996492346939,
+      "mse_f32_diagnostic": 1.4955285010387342e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.11.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.11.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601721,
+      "frac_changed": 0.7495129643654337,
+      "mse_f32_diagnostic": 2.1196211008600585e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.11.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.11.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85874,
+      "frac_changed": 0.7487618582589286,
+      "mse_f32_diagnostic": 1.416483907945576e-08,
+      "max_abs_f32_diagnostic": 0.0009765625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.11.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.12.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3266877,
+      "frac_changed": 0.7496028125734258,
+      "mse_f32_diagnostic": 1.6461569884995697e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.12.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267901,
+      "frac_changed": 0.7498377749794408,
+      "mse_f32_diagnostic": 1.987214304222107e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.12.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269516,
+      "frac_changed": 0.7502083455709586,
+      "mse_f32_diagnostic": 1.8155148495679896e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.12.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.12.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.12.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85882,
+      "frac_changed": 0.7488316127232143,
+      "mse_f32_diagnostic": 2.7489004850167476e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.12.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602311,
+      "frac_changed": 0.7502478774713011,
+      "mse_f32_diagnostic": 1.5830583066644976e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.12.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.12.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601990,
+      "frac_changed": 0.7498480349170918,
+      "mse_f32_diagnostic": 2.2906345265027994e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.12.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.12.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86081,
+      "frac_changed": 0.7505667550223214,
+      "mse_f32_diagnostic": 1.7326481582813358e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.12.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.13.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3270016,
+      "frac_changed": 0.7503230733082706,
+      "mse_f32_diagnostic": 1.7032585120091426e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.13.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269079,
+      "frac_changed": 0.7501080735285479,
+      "mse_f32_diagnostic": 1.8561491899049543e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.13.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269267,
+      "frac_changed": 0.7501512111577773,
+      "mse_f32_diagnostic": 1.879507216528964e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.13.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.13.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.13.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86004,
+      "frac_changed": 0.7498953683035714,
+      "mse_f32_diagnostic": 2.8633277082690256e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.13.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602250,
+      "frac_changed": 0.7501718949298469,
+      "mse_f32_diagnostic": 1.502865210056825e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.13.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.13.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601608,
+      "frac_changed": 0.7493722098214286,
+      "mse_f32_diagnostic": 2.378655850066025e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.13.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.13.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85844,
+      "frac_changed": 0.7485002790178571,
+      "mse_f32_diagnostic": 1.6733833874127413e-08,
+      "max_abs_f32_diagnostic": 0.0009765625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.13.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.14.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267787,
+      "frac_changed": 0.7498116170553336,
+      "mse_f32_diagnostic": 1.681526029528868e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.14.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269449,
+      "frac_changed": 0.7501929720541588,
+      "mse_f32_diagnostic": 2.0039118808767853e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.14.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269025,
+      "frac_changed": 0.7500956829329183,
+      "mse_f32_diagnostic": 1.867840282443467e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.14.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.14.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.14.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85974,
+      "frac_changed": 0.7496337890625,
+      "mse_f32_diagnostic": 2.425129075334098e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.14.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602217,
+      "frac_changed": 0.7501307896205357,
+      "mse_f32_diagnostic": 1.668742832805492e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.14.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.14.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602001,
+      "frac_changed": 0.7498617366868623,
+      "mse_f32_diagnostic": 2.1991162668655306e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.14.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.14.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85820,
+      "frac_changed": 0.748291015625,
+      "mse_f32_diagnostic": 2.0956163027108232e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.14.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.15.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268206,
+      "frac_changed": 0.7499077588992011,
+      "mse_f32_diagnostic": 1.7791554896007256e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.15.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268104,
+      "frac_changed": 0.7498843544407895,
+      "mse_f32_diagnostic": 1.989876707853e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.15.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269085,
+      "frac_changed": 0.7501094502613956,
+      "mse_f32_diagnostic": 1.9711363208330113e-08,
+      "max_abs_f32_diagnostic": 0.0078125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.15.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.15.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.15.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85982,
+      "frac_changed": 0.7497035435267857,
+      "mse_f32_diagnostic": 2.9493516962020294e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.15.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602542,
+      "frac_changed": 0.7505356146364796,
+      "mse_f32_diagnostic": 1.620533573998273e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.15.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.15.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602309,
+      "frac_changed": 0.7502453862404337,
+      "mse_f32_diagnostic": 2.137118038092467e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.15.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.15.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85916,
+      "frac_changed": 0.7491280691964286,
+      "mse_f32_diagnostic": 1.9803199080570266e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.15.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.16.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268597,
+      "frac_changed": 0.7499974759897792,
+      "mse_f32_diagnostic": 1.6395494739640526e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.16.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269602,
+      "frac_changed": 0.7502280787417763,
+      "mse_f32_diagnostic": 2.2470539207120055e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.16.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268357,
+      "frac_changed": 0.7499424066758693,
+      "mse_f32_diagnostic": 1.812531102984849e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.16.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.16.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.16.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86220,
+      "frac_changed": 0.7517787388392857,
+      "mse_f32_diagnostic": 2.5450471952126463e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.16.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602428,
+      "frac_changed": 0.7503936144770408,
+      "mse_f32_diagnostic": 1.8694951364750523e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.16.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.16.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601697,
+      "frac_changed": 0.7494830695950255,
+      "mse_f32_diagnostic": 3.074046617257409e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.16.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.16.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85947,
+      "frac_changed": 0.7493983677455357,
+      "mse_f32_diagnostic": 1.6497423871442152e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.16.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.17.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268081,
+      "frac_changed": 0.7498790769648731,
+      "mse_f32_diagnostic": 1.5868051761458446e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.17.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267694,
+      "frac_changed": 0.7497902776961937,
+      "mse_f32_diagnostic": 2.4405061083143664e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.17.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268988,
+      "frac_changed": 0.7500871930803571,
+      "mse_f32_diagnostic": 1.7171377209024286e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.17.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.17.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.17.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86024,
+      "frac_changed": 0.7500697544642857,
+      "mse_f32_diagnostic": 2.4006807208820646e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.17.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602862,
+      "frac_changed": 0.7509342115752551,
+      "mse_f32_diagnostic": 1.7966428345062013e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.17.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.17.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602567,
+      "frac_changed": 0.7505667550223214,
+      "mse_f32_diagnostic": 2.372468443923026e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.17.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.17.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86199,
+      "frac_changed": 0.7515956333705357,
+      "mse_f32_diagnostic": 2.1467160493671145e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.17.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.18.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268551,
+      "frac_changed": 0.7499869210379464,
+      "mse_f32_diagnostic": 1.7250599171347858e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.18.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268720,
+      "frac_changed": 0.7500256990131579,
+      "mse_f32_diagnostic": 2.2124799770040227e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.18.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267634,
+      "frac_changed": 0.7497765103677162,
+      "mse_f32_diagnostic": 1.8575907034801276e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.18.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.18.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.18.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86023,
+      "frac_changed": 0.75006103515625,
+      "mse_f32_diagnostic": 2.587378844509658e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.18.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601856,
+      "frac_changed": 0.7496811224489796,
+      "mse_f32_diagnostic": 1.886953171492678e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.18.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.18.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601694,
+      "frac_changed": 0.7494793327487245,
+      "mse_f32_diagnostic": 2.2008586952892983e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.18.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.18.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85896,
+      "frac_changed": 0.7489536830357143,
+      "mse_f32_diagnostic": 2.955819056182918e-08,
+      "max_abs_f32_diagnostic": 0.0009765625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.18.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.19.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268681,
+      "frac_changed": 0.7500167502496475,
+      "mse_f32_diagnostic": 1.8153581748947545e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.19.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268560,
+      "frac_changed": 0.7499889861372181,
+      "mse_f32_diagnostic": 2.207538329912495e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.19.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269488,
+      "frac_changed": 0.7502019208176691,
+      "mse_f32_diagnostic": 1.9589956323784463e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.19.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.19.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.19.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85839,
+      "frac_changed": 0.7484566824776786,
+      "mse_f32_diagnostic": 2.3726565601123184e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.19.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601769,
+      "frac_changed": 0.74957275390625,
+      "mse_f32_diagnostic": 1.6231863853022332e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.19.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.19.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601885,
+      "frac_changed": 0.7497172452965561,
+      "mse_f32_diagnostic": 2.3252795244843583e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.19.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.19.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85946,
+      "frac_changed": 0.7493896484375,
+      "mse_f32_diagnostic": 2.525521303198275e-08,
+      "max_abs_f32_diagnostic": 0.0009765625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.19.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.2.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268470,
+      "frac_changed": 0.7499683351445019,
+      "mse_f32_diagnostic": 1.4302660389375887e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.2.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268786,
+      "frac_changed": 0.750040843074483,
+      "mse_f32_diagnostic": 2.784307362446725e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.2.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269202,
+      "frac_changed": 0.7501362965519267,
+      "mse_f32_diagnostic": 1.4916734514258678e-08,
+      "max_abs_f32_diagnostic": 0.0078125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.2.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.2.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.2.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86103,
+      "frac_changed": 0.7507585797991071,
+      "mse_f32_diagnostic": 6.758771320392043e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.2.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601987,
+      "frac_changed": 0.7498442980707908,
+      "mse_f32_diagnostic": 1.1349621686917999e-08,
+      "max_abs_f32_diagnostic": 0.0078125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.2.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.2.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602080,
+      "frac_changed": 0.7499601403061225,
+      "mse_f32_diagnostic": 3.246762503295031e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.2.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.2.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85939,
+      "frac_changed": 0.74932861328125,
+      "mse_f32_diagnostic": 6.210399750017359e-09,
+      "max_abs_f32_diagnostic": 0.0009765625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.2.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.20.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268500,
+      "frac_changed": 0.7499752188087406,
+      "mse_f32_diagnostic": 1.876639998954488e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.20.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267302,
+      "frac_changed": 0.749700331150141,
+      "mse_f32_diagnostic": 2.1409395145610688e-08,
+      "max_abs_f32_diagnostic": 0.0078125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.20.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268996,
+      "frac_changed": 0.7500890287241542,
+      "mse_f32_diagnostic": 2.0567775038671243e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.20.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.20.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.20.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85811,
+      "frac_changed": 0.7482125418526786,
+      "mse_f32_diagnostic": 2.1560152774213748e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.20.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602764,
+      "frac_changed": 0.7508121412627551,
+      "mse_f32_diagnostic": 2.2009437827819056e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.20.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.20.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602159,
+      "frac_changed": 0.7500585439253826,
+      "mse_f32_diagnostic": 2.3010832350678356e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.20.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.20.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85712,
+      "frac_changed": 0.7473493303571429,
+      "mse_f32_diagnostic": 2.942128851657344e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.20.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.21.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268261,
+      "frac_changed": 0.7499203789503055,
+      "mse_f32_diagnostic": 1.9369439385741316e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.21.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268186,
+      "frac_changed": 0.7499031697897086,
+      "mse_f32_diagnostic": 2.1179571874085923e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.21.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268048,
+      "frac_changed": 0.7498715049342105,
+      "mse_f32_diagnostic": 2.1498401281405677e-08,
+      "max_abs_f32_diagnostic": 0.0078125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.21.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.21.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.21.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86118,
+      "frac_changed": 0.7508893694196429,
+      "mse_f32_diagnostic": 1.7829496101740006e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.21.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601809,
+      "frac_changed": 0.7496225785235969,
+      "mse_f32_diagnostic": 2.38936284091551e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.21.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.21.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601637,
+      "frac_changed": 0.7494083326690051,
+      "mse_f32_diagnostic": 2.2441339453393994e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.21.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.21.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86278,
+      "frac_changed": 0.7522844587053571,
+      "mse_f32_diagnostic": 4.3505018254563765e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.21.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.22.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267579,
+      "frac_changed": 0.7497638903166118,
+      "mse_f32_diagnostic": 1.9802708806082592e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.22.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267981,
+      "frac_changed": 0.7498561314174107,
+      "mse_f32_diagnostic": 1.9874738299563433e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.22.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269267,
+      "frac_changed": 0.7501512111577773,
+      "mse_f32_diagnostic": 2.150085443020089e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.22.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.22.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.22.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85982,
+      "frac_changed": 0.7497035435267857,
+      "mse_f32_diagnostic": 1.6744850839245373e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.22.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602183,
+      "frac_changed": 0.7500884386957908,
+      "mse_f32_diagnostic": 2.2962240109336562e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.22.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.22.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602965,
+      "frac_changed": 0.7510625099649235,
+      "mse_f32_diagnostic": 2.216278893740764e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.22.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.22.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86075,
+      "frac_changed": 0.7505144391741071,
+      "mse_f32_diagnostic": 3.7079892933888914e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.22.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.23.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.23.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.23.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.23.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.23.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.23.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.23.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.23.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.23.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.23.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.23.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.23.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.3.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267846,
+      "frac_changed": 0.7498251549283365,
+      "mse_f32_diagnostic": 1.495816448482401e-08,
+      "max_abs_f32_diagnostic": 0.0078125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.3.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268173,
+      "frac_changed": 0.7499001868685385,
+      "mse_f32_diagnostic": 2.5237955725287975e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.3.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269099,
+      "frac_changed": 0.7501126626380404,
+      "mse_f32_diagnostic": 1.5105918294011644e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.3.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.3.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.3.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85812,
+      "frac_changed": 0.7482212611607143,
+      "mse_f32_diagnostic": 4.422029320494403e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.3.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601503,
+      "frac_changed": 0.7492414202008929,
+      "mse_f32_diagnostic": 1.2959977979676296e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.3.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.3.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601516,
+      "frac_changed": 0.7492576132015306,
+      "mse_f32_diagnostic": 2.623589878680832e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.3.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.3.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85970,
+      "frac_changed": 0.7495989118303571,
+      "mse_f32_diagnostic": 1.2668029292228766e-08,
+      "max_abs_f32_diagnostic": 0.0009765625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.3.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.4.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267214,
+      "frac_changed": 0.749680139068374,
+      "mse_f32_diagnostic": 1.537516425287322e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.4.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269460,
+      "frac_changed": 0.7501954960643797,
+      "mse_f32_diagnostic": 2.515142405457027e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.4.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268828,
+      "frac_changed": 0.7500504802044173,
+      "mse_f32_diagnostic": 1.5926314489433935e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.4.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.4.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.4.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86007,
+      "frac_changed": 0.7499215262276786,
+      "mse_f32_diagnostic": 3.616990440491463e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.4.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602477,
+      "frac_changed": 0.7504546496332908,
+      "mse_f32_diagnostic": 1.558263917900149e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.4.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.4.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601862,
+      "frac_changed": 0.7496885961415817,
+      "mse_f32_diagnostic": 2.632721418649453e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.4.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.4.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85947,
+      "frac_changed": 0.7493983677455357,
+      "mse_f32_diagnostic": 1.604021271361944e-08,
+      "max_abs_f32_diagnostic": 0.0009765625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.4.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.5.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269228,
+      "frac_changed": 0.750142262394267,
+      "mse_f32_diagnostic": 1.3803473031259728e-08,
+      "max_abs_f32_diagnostic": 0.0078125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.5.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268122,
+      "frac_changed": 0.7498884846393327,
+      "mse_f32_diagnostic": 2.937214915732511e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.5.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269111,
+      "frac_changed": 0.7501154161037359,
+      "mse_f32_diagnostic": 1.4614003340795989e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.5.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.5.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.5.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85965,
+      "frac_changed": 0.7495553152901786,
+      "mse_f32_diagnostic": 3.2511412229041525e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.5.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602211,
+      "frac_changed": 0.7501233159279337,
+      "mse_f32_diagnostic": 1.6044374717694154e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.5.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.5.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602293,
+      "frac_changed": 0.7502254563934949,
+      "mse_f32_diagnostic": 2.4321623826040195e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.5.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.5.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86096,
+      "frac_changed": 0.7506975446428571,
+      "mse_f32_diagnostic": 1.699853946490748e-08,
+      "max_abs_f32_diagnostic": 0.0009765625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.5.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.6.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268276,
+      "frac_changed": 0.7499238207824248,
+      "mse_f32_diagnostic": 1.595455323410988e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.6.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268898,
+      "frac_changed": 0.750066542087641,
+      "mse_f32_diagnostic": 2.3907261947897496e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.6.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267782,
+      "frac_changed": 0.7498104697779605,
+      "mse_f32_diagnostic": 1.6837232053035223e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.6.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.6.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.6.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85904,
+      "frac_changed": 0.7490234375,
+      "mse_f32_diagnostic": 3.9883023106312976e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.6.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601979,
+      "frac_changed": 0.7498343331473214,
+      "mse_f32_diagnostic": 1.5070700243313695e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.6.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.6.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601788,
+      "frac_changed": 0.7495964205994898,
+      "mse_f32_diagnostic": 2.6052273227605838e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.6.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.6.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86032,
+      "frac_changed": 0.7501395089285714,
+      "mse_f32_diagnostic": 1.2735585919187997e-08,
+      "max_abs_f32_diagnostic": 0.0009765625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.6.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.7.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269235,
+      "frac_changed": 0.7501438685825893,
+      "mse_f32_diagnostic": 1.636782087643951e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.7.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267782,
+      "frac_changed": 0.7498104697779605,
+      "mse_f32_diagnostic": 2.2333699334353696e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.7.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267151,
+      "frac_changed": 0.7496656833734727,
+      "mse_f32_diagnostic": 1.7490812354026275e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.7.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.7.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.7.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86334,
+      "frac_changed": 0.7527727399553571,
+      "mse_f32_diagnostic": 3.8732469676006076e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.7.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601941,
+      "frac_changed": 0.7497869997608418,
+      "mse_f32_diagnostic": 1.576476194031784e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.7.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.7.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601759,
+      "frac_changed": 0.7495602977519132,
+      "mse_f32_diagnostic": 2.577971791595246e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.7.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.7.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85945,
+      "frac_changed": 0.7493809291294643,
+      "mse_f32_diagnostic": 1.6770439259516934e-08,
+      "max_abs_f32_diagnostic": 0.0009765625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.7.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.8.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268467,
+      "frac_changed": 0.749967646778078,
+      "mse_f32_diagnostic": 1.622900036579722e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.8.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3269840,
+      "frac_changed": 0.7502826891447368,
+      "mse_f32_diagnostic": 2.3366048651496385e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.8.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267869,
+      "frac_changed": 0.7498304324042528,
+      "mse_f32_diagnostic": 1.757376288935575e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.8.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.8.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.8.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85986,
+      "frac_changed": 0.7497384207589286,
+      "mse_f32_diagnostic": 5.136905656399904e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.8.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 601832,
+      "frac_changed": 0.7496512276785714,
+      "mse_f32_diagnostic": 1.4684270688292145e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.8.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.8.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602108,
+      "frac_changed": 0.7499950175382653,
+      "mse_f32_diagnostic": 3.251715341434647e-08,
+      "max_abs_f32_diagnostic": 0.0078125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.8.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.8.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85926,
+      "frac_changed": 0.7492152622767857,
+      "mse_f32_diagnostic": 1.3040732049773851e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.8.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.9.input_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3268079,
+      "frac_changed": 0.7498786180539239,
+      "mse_f32_diagnostic": 1.602311705539705e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.9.mlp.down_proj.weight",
+      "shape": [
+        896,
+        4864
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3267972,
+      "frac_changed": 0.7498540663181391,
+      "mse_f32_diagnostic": 2.0823494040200785e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.9.mlp.gate_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 4358144,
+      "n_changed": 3266999,
+      "frac_changed": 0.7496308061413299,
+      "mse_f32_diagnostic": 1.7380788364107502e-08,
+      "max_abs_f32_diagnostic": 0.00390625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.9.mlp.up_proj.weight",
+      "shape": [
+        4864,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.9.post_attention_layernorm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.9.self_attn.k_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 85955,
+      "frac_changed": 0.7494681222098214,
+      "mse_f32_diagnostic": 2.907575868960066e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.9.self_attn.k_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602241,
+      "frac_changed": 0.7501606843909439,
+      "mse_f32_diagnostic": 1.3969729373286555e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.9.self_attn.o_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.9.self_attn.q_proj.bias",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 802816,
+      "n_changed": 602459,
+      "frac_changed": 0.7504322285554847,
+      "mse_f32_diagnostic": 2.5220275645665424e-08,
+      "max_abs_f32_diagnostic": 0.001953125,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.9.self_attn.q_proj.weight",
+      "shape": [
+        896,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 128,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.9.self_attn.v_proj.bias",
+      "shape": [
+        128
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 114688,
+      "n_changed": 86223,
+      "frac_changed": 0.7518048967633929,
+      "mse_f32_diagnostic": 1.5549755261190512e-08,
+      "max_abs_f32_diagnostic": 0.0009765625,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.layers.9.self_attn.v_proj.weight",
+      "shape": [
+        128,
+        896
+      ],
+      "keep_bits": 5,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 5.0,
+        "est_total_bpw": 8.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    },
+    {
+      "n_words": 896,
+      "n_changed": 0,
+      "frac_changed": 0.0,
+      "mse_f32_diagnostic": 0.0,
+      "max_abs_f32_diagnostic": 0.0,
+      "exact_roundtrip_to_quantized": true,
+      "name": "model.norm.weight",
+      "shape": [
+        896
+      ],
+      "keep_bits": 7,
+      "est": {
+        "sign_bpw": 1.0,
+        "exp_bpw_ref": 2.62,
+        "mantissa_bpw_raw": 7.0,
+        "est_total_bpw": 10.62,
+        "note": "RAW mantissa pack; no entropy coding; exp rate is reference 2.62"
+      }
+    }
+  ],
+  "disclaimer": "Phase A only: deterministic quantization + estimated storage BPW. est_total_bpw uses RAW mantissa packing and a 2.62 exp reference \u2014 not a physical container encode. Does NOT measure model-quality retention; >=95% requires held-out eval (Phase B/C). Not a <=4 BPW claim.",
+  "wall_seconds": 96.33
+}
