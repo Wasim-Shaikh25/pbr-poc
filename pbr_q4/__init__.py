@@ -1,11 +1,9 @@
-"""PBR-Q4 / H95Q-S1 + selective 256-node X/Y post-codec.
+"""PBR-Q4: S1 selective X/Y post-codec, plus groupwise codesign.
 
-Re-encodes the *already quantized* H95Q-S1 reference (mantissa K-codes).
-Does not introduce a new BF16→Q4 policy.
-
-Product default: packed-K (S1 stream packing). Matrix-family X/Y is used
-only when it is strictly smaller including mode/flag/map bits. Arrays are
-not padded to 16×16; ragged last tiles store their true shape.
+``pbr_q4`` still hosts the H95Q-S1 + selective 256-node X/Y post-codec
+(not a new BF16→Q4 policy). The new groupwise quantized reference and
+quantize↔X/Y co-design live in ``pbr_q4.codesign`` and are **not**
+S1-compatible.
 """
 
 from pbr_q4.container import (
