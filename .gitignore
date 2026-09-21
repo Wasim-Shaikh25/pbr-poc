@@ -24,6 +24,10 @@ outputs/hf_cache/
 artifacts/pbr_h95/containers/*.h95q
 *.h95x
 artifacts/pbr_q4/containers/*.h95x
+*.e2mx
+*.e3mx
+artifacts/pbr_q4/containers/*.e2mx
+artifacts/pbr_q4/containers/*.e3mx
 *.hybx
 *.pq4x
 artifacts/pbr_q4/containers/*.hybx

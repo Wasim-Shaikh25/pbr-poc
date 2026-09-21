@@ -17,6 +17,11 @@ is not the product path.
 
 H95Q S1 / container v2 code is unchanged.
 
+A **separate** line (`pbr_q4/e2_mixed/`, docs `E2_MIXED.md`) builds a new
+mixed groupwise quantized reference with structured channel protect, then
+ablates E3 selective tiles on those codes. That path is **not** S1-compatible
+and does not merge PRs #15/#17/#18.
+
 ## Hard rules
 
 - Start from S1’s exact quantized words. Decode must match the frozen SHA.
