@@ -1,0 +1,25 @@
+method                                bpw  output dB
+3x256 nodes rot                     3.232      14.87
+3x256 nodes rot +feedback           3.232      20.00
+2x256 nodes rot                     2.161      10.03
+2x256 nodes rot +feedback           2.161      14.87
+1x256 nodes rot                     1.089       4.96
+1x256 nodes rot +feedback           1.089       8.98
+INT3 rot+GPTQ (ref)                 3.250      18.91
+INT2 rot+GPTQ (ref)                 2.250      10.53
+INT4 RTN (ref)                      4.250      17.85
+
+ONE file, truncated tiers (codes from single 3-stage feedback encode):
+  tier 3 stages  bpw 3.232  output dB 20.00
+  tier 2 stages  bpw 2.161  output dB 11.10
+  tier 1 stages  bpw 1.089  output dB 5.34
+
+Tier-aware feedback (alpha = weight on tier-2 error):
+  alpha 1.0: T3 3.23bpw 11.88dB  T2 2.16bpw 14.87dB  T1 1.09bpw  6.01dB
+  alpha 0.7: T3 3.23bpw 14.49dB  T2 2.16bpw 14.29dB  T1 1.09bpw  5.77dB
+  alpha 0.5: T3 3.23bpw 16.44dB  T2 2.16bpw 13.44dB  T1 1.09bpw  5.78dB
+
+Successive refinement (one file, every tier feedback-optimized):
+  tier 1: 1.089 bpw  output 8.98 dB
+  tier 2: 2.179 bpw  output 13.11 dB
+  tier 3: 3.268 bpw  output 16.35 dB

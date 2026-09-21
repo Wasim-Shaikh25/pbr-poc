@@ -1,11 +1,10 @@
 # PBR-Ladder — script guide run (environment check only)
 
-Source: user-supplied `PBR_Ladder_Script_Guide.docx`, plus 4 of the 9 scripts
-it describes (`push_below4.py`, `push_below3.py`, `capture_activations.py`,
-`eval_ppl.py`). The other 5 scripts named in the guide
-(`formula_probe.py`, `node_combo_q4.py`, `node_structures.py`,
-`push_nested.py`, `ladder_exact.py`) were **not supplied** and are not in
-this repo yet.
+Source: user-supplied `PBR_Ladder_Script_Guide.docx`, plus 6 of the 9 scripts
+it describes (`push_below4.py`, `push_below3.py`, `push_nested.py`,
+`ladder_exact.py`, `capture_activations.py`, `eval_ppl.py`). The other 3
+scripts named in the guide (`formula_probe.py`, `node_combo_q4.py`,
+`node_structures.py`) were **not supplied** and are not in this repo yet.
 
 ## What ran
 
@@ -17,6 +16,8 @@ cd pbr_ladder
 pip install numpy
 python3 push_below4.py
 python3 push_below3.py
+python3 push_nested.py
+python3 ladder_exact.py
 ```
 
 **Result: PASS.** Output matches the guide's Appendix A exactly (seed 0,
@@ -30,9 +31,13 @@ channels):
 | INT3 rot+GPTQ | 3.250 | 18.91 | 18.91 |
 | INT2 rot+GPTQ | 2.250 | 10.53 | 10.53 |
 | 256+256+64 (push_below3) | 2.929 | 18.61 | 18.61 |
+| Successive refinement tier 1/2/3 (push_nested) | 1.09 / 2.18 / 3.27 | 8.98 / 13.11 / 16.35 | 8.98 / 13.11 / 16.35 |
+| Exact-only / ladder tier 3 + exact (ladder_exact) | 10.65 / 12.50 | bit-exact | bit-exact |
 
 Full logs: `artifacts/pbr_ladder/push_below4_synthetic.txt`,
-`artifacts/pbr_ladder/push_below3_synthetic.txt`.
+`artifacts/pbr_ladder/push_below3_synthetic.txt`,
+`artifacts/pbr_ladder/push_nested_synthetic.txt`,
+`artifacts/pbr_ladder/ladder_exact_synthetic.txt`.
 
 This confirms the scripts run correctly and are seeded/deterministic. **It
 is not a Qwen result** — same caveat the guide itself states in its status
@@ -57,11 +62,25 @@ Consequently none of the following from the guide could be executed:
 - §3.1–3.7 tensor tests on real Qwen weights (`formula_probe.py`,
   `node_combo_q4.py`, `node_structures.py`, `push_below4.py`,
   `push_nested.py`, `push_below3.py`, `ladder_exact.py` against
-  `qwen05b/model.safetensors`) — and 5 of those 7 scripts weren't
-  supplied to begin with.
+  `qwen05b/model.safetensors`) — 3 of those 7 scripts weren't supplied to
+  begin with; the other 4 (`push_below4.py`, `push_nested.py`,
+  `push_below3.py`, `ladder_exact.py`) are present but need a real
+  `.safetensors` file, which was not provided (no network access to
+  fetch one either).
 - §4 `capture_activations.py` — real calibration activations.
 - §5.1–§5.4 the whole real-model procedure, perplexity gates, and
   retention targets.
+
+Note: `push_below4.py`, `push_nested.py`, `push_below3.py`, `ladder_exact.py`
+only need a **local `.safetensors` file** to run on real weights — they do
+not call any network API themselves. If a real Qwen `.safetensors` (plus
+matching layer/module name) is dropped into this sandbox as a file, all
+four can run immediately with `pip install numpy safetensors`, no torch/
+transformers/HF network access needed. Real calibration activations
+(`acts_L12_gate.npy` from `capture_activations.py`) would still need
+either a torch+transformers local run or a pre-captured `.npy` file;
+without it, real-tensor runs fall back to the synthetic activations built
+into `push_below4.py`, which is a materially weaker test (see guide §4).
 
 ## Go/no-go gates (guide §7.2) — status
 
