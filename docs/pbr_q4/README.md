@@ -71,3 +71,17 @@ Artifacts: `artifacts/pbr_q4/s1_xy_selective_qwen.{json,md}`. Large `.h95x` blob
 - Not a production mobile runtime.
 - Do not invent BPW numbers — read them from the physical file after encode.
 - Do not invent quality numbers — same Q(W) ⇒ prior heldout proxy **0.990**.
+
+## Hybrid H95 + groupwise INT (follow-up)
+
+PR #17's pure groupwise INT `restore_q6` hit heldout **0.967** but physical **6.191 BPW** (FAIL vs ≤5.0). Q4/Q5 maps hit the size estimate and collapsed quality. This line keeps **H95 mantissa-keep / per-weight exponents** on sensitive tensors (late MLP, attention, norms) and **groupwise Q4/Q5 INT** on robust mid-MLP / parts of embed, then the same selective 256-node X/Y path.
+
+New Q-ref (`HYBX`). Not S1. Not PR #17 SHA-compatible.
+
+**Measured dual-gate FAIL:** physical **7.765222 BPW** (file 479,534,240 B) / heldout **0.980986**. INT Q4/Q5 mixes reached ~4.68–6.50 packed-est BPW at heldout 0.72–0.87. Encoded winner is the H95-heavy quality backoff. X/Y 0.06% of tiles.
+
+```bash
+PYTHONPATH=. python scripts/run_pbr_q4_hybrid.py
+```
+
+Artifacts: `artifacts/pbr_q4/hybrid_xy_qwen.{json,md}`. Large `.hybx` blobs are gitignored. See `docs/pbr_q4/HYBRID.md`.

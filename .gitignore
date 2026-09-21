@@ -28,3 +28,7 @@ artifacts/pbr_q4/containers/*.h95x
 *.e3mx
 artifacts/pbr_q4/containers/*.e2mx
 artifacts/pbr_q4/containers/*.e3mx
+*.hybx
+*.pq4x
+artifacts/pbr_q4/containers/*.hybx
+artifacts/pbr_q4/containers/*.pq4x
