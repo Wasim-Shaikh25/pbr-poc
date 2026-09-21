@@ -1,0 +1,1103 @@
+{
+  "phase": "PBR-Q4-hybrid-h95-int-xy",
+  "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+  "model_dir": "/workspace/outputs/models/Qwen__Qwen2.5-0.5B-Instruct",
+  "s1_compatible": false,
+  "pr17_compatible": false,
+  "s1_v2_actual_bpw": 7.42082,
+  "s1_v2_file_bytes": 458266017,
+  "s1_n_weights": 494032768,
+  "pr17_actual_bpw": 6.191189,
+  "pr17_file_bytes": 382331252,
+  "pr17_heldout": 0.967469,
+  "honesty": [
+    "New hybrid quantized reference \u2014 NOT bit-exact with H95Q-S1 and not PR #17 restore_q6.",
+    "actual_bpw = physical file_bytes * 8 / n_weights (header, H95 streams, INT scales, maps, flags, outliers).",
+    "Packed codes are the product default. X/Y is stored only if complete physical cost is strictly smaller.",
+    "H95 tensors keep per-weight exponents (adaptive exact). INT tensors share a scale+zp per group.",
+    "Quality is ppl_retention = bf16_ppl / quant_ppl on in-repo calib-v2 / heldout-v1 (proxy, not MMLU).",
+    "Hard quality floor: heldout \u22650.95. Development aim \u22650.97. Misses are FAIL, not rounded away.",
+    "Practical rate target \u22645.0 BPW; stretch \u22644.5. Misses are reported as FAIL.",
+    "S1 v2 7.420820 BPW and PR #17 6.191189 BPW are comparison baselines only.",
+    "Not a production mobile runtime."
+  ],
+  "targets": {
+    "practical_bpw": 5.0,
+    "stretch_bpw": 4.5,
+    "heldout_min": 0.95,
+    "heldout_aim": 0.97
+  },
+  "dual_gate": "FAIL",
+  "finding": "INT Q4/Q5 on embed/mid-MLP hits ~4.68-6.50 packed-est BPW but heldout 0.72-0.87. First quality-pass is all-H95 h_quality at physical 7.765222 BPW / heldout 0.980986. Dual-gate FAIL on ≤5.0.",
+  "gates": {
+    "practical_rate": "FAIL",
+    "stretch_rate": "FAIL",
+    "quality_min": "PASS",
+    "quality_aim": "PASS",
+    "exact_decode": "PASS"
+  },
+  "winner": {
+    "policy": "h_quality",
+    "description": "H95-heavy quality point: mid MLP K4 / late K5 / embed K3 / attn K5. Packed rate near S1 (~7+ BPW); used as Pareto upper quality.",
+    "packed_est_bpw": 7.76274,
+    "packed_estimate": {
+      "n_weights": 494032768,
+      "packed_est_bits": 3835048115,
+      "packed_est_bpw": 7.76274,
+      "family": {
+        "embed": {
+          "n_words": 136134656,
+          "est_bpw": 6.62,
+          "n_outliers": 0,
+          "kind": "h95"
+        },
+        "norm_bias": {
+          "n_words": 71552,
+          "est_bpw": 10.6202,
+          "n_outliers": 0,
+          "kind": "h95"
+        },
+        "mlp_first": {
+          "n_words": 13074432,
+          "est_bpw": 9.62,
+          "n_outliers": 0,
+          "kind": "h95"
+        },
+        "attn_first": {
+          "n_words": 1835008,
+          "est_bpw": 9.62,
+          "n_outliers": 0,
+          "kind": "h95"
+        },
+        "mlp_mid": {
+          "n_words": 196116480,
+          "est_bpw": 7.62,
+          "n_outliers": 0,
+          "kind": "h95"
+        },
+        "attn_mid": {
+          "n_words": 40370176,
+          "est_bpw": 8.62,
+          "n_outliers": 0,
+          "kind": "h95"
+        },
+        "mlp_late": {
+          "n_words": 91521024,
+          "est_bpw": 8.62,
+          "n_outliers": 0,
+          "kind": "h95"
+        },
+        "mlp_last": {
+          "n_words": 13074432,
+          "est_bpw": 10.62,
+          "n_outliers": 0,
+          "kind": "h95"
+        },
+        "attn_last": {
+          "n_words": 1835008,
+          "est_bpw": 10.62,
+          "n_outliers": 0,
+          "kind": "h95"
+        }
+      },
+      "kind_hist_words": {
+        "h95": 494032768
+      },
+      "n_outliers": 0,
+      "note": "H95: 1 sign + 2.62 exp-ref + packed K; INT: codes + f16 scales + u8 zp + outliers; no header / X/Y"
+    },
+    "encoded": true,
+    "calib_ppl": 23.807998,
+    "heldout_ppl": 39.788667,
+    "calib_retention": 0.98996,
+    "heldout_retention": 0.980986,
+    "calib_nll": 3.170021588214032,
+    "heldout_nll": 3.683582131561893,
+    "actual_bpw": 7.765222,
+    "file_bytes": 479534240,
+    "path": "artifacts/pbr_q4/containers/PBR-HYBX-h_quality.hybx",
+    "header_bytes": 244992,
+    "payload_stream_bytes": 479289248,
+    "overhead_bytes": 244992,
+    "n_weights": 494032768,
+    "n_tensors": 290,
+    "n_tiles": 1934008,
+    "n_xy_tiles": 1177,
+    "n_packed_tiles": 1932831,
+    "xy_tile_frac": 0.0006085807297591323,
+    "n_xy_sel_tensors": 1,
+    "n_outliers": 0,
+    "sha256_quantized_reference": "900f4535f7acf6958706607fea8fc96e39de682a645de4b1fba943ea44db6ca3",
+    "sha256_file": "23e31c3d5914b24b8db62f4c8450cec93a85b016464f6bfbec24e6b43dc2df62",
+    "xy_flag_bytes": 1177,
+    "xy_map_bytes": 33,
+    "xy_payload_bytes": 62346,
+    "mant_blob_bytes": 255781748,
+    "mant_blob_bpw": 4.14194,
+    "packed_whole_bytes": 255831184,
+    "packed_whole_bpw": 4.14274,
+    "saved_vs_packed_code_bytes": 49436,
+    "xy_mode_histogram": {
+      "XY_RANS": 1135,
+      "XY_RUN": 42
+    },
+    "xy_pred_histogram": {
+      "PREVIOUS": 1158,
+      "PAETH": 19
+    },
+    "xy_trav_histogram": {
+      "COL": 1154,
+      "COL_SERP": 4,
+      "ROW": 19
+    },
+    "family_words": {
+      "embed": {
+        "n_words": 136134656,
+        "n_outliers": 0,
+        "kind": "h95"
+      },
+      "norm_bias": {
+        "n_words": 71552,
+        "n_outliers": 0,
+        "kind": "h95"
+      },
+      "mlp_first": {
+        "n_words": 13074432,
+        "n_outliers": 0,
+        "kind": "h95"
+      },
+      "attn_first": {
+        "n_words": 1835008,
+        "n_outliers": 0,
+        "kind": "h95"
+      },
+      "mlp_mid": {
+        "n_words": 196116480,
+        "n_outliers": 0,
+        "kind": "h95"
+      },
+      "attn_mid": {
+        "n_words": 40370176,
+        "n_outliers": 0,
+        "kind": "h95"
+      },
+      "mlp_late": {
+        "n_words": 91521024,
+        "n_outliers": 0,
+        "kind": "h95"
+      },
+      "mlp_last": {
+        "n_words": 13074432,
+        "n_outliers": 0,
+        "kind": "h95"
+      },
+      "attn_last": {
+        "n_words": 1835008,
+        "n_outliers": 0,
+        "kind": "h95"
+      }
+    },
+    "byte_mix": {
+      "h95_payload_bytes": 479289248,
+      "int_payload_bytes": 0,
+      "raw_payload_bytes": 0,
+      "h95_words": 494032768,
+      "int_words": 0,
+      "raw_words": 0,
+      "h95_word_frac": 1.0,
+      "int_word_frac": 0.0,
+      "h95_payload_frac": 0.9994891042608345,
+      "int_payload_frac": 0.0,
+      "kind_words": {
+        "h95": 494032768
+      }
+    },
+    "product_default_packed": true,
+    "s1_compatible": false,
+    "pr17_compatible": false,
+    "container_version": 1,
+    "exact_decode": true,
+    "subprocess_sha_ok": true
+  },
+  "pareto": [
+    {
+      "policy": "h_stretch",
+      "description": "Stretch \u22644.5: last-MLP + attn + norms stay H95 (per-weight exp); mid/late/first MLP and embed are groupwise Q4 INT.",
+      "packed_est_bpw": 4.682824,
+      "packed_estimate": {
+        "n_weights": 494032768,
+        "packed_est_bits": 2313468463,
+        "packed_est_bpw": 4.682824,
+        "family": {
+          "embed": {
+            "n_words": 136134656,
+            "est_bpw": 4.2595,
+            "n_outliers": 204202,
+            "kind": "groupwise"
+          },
+          "norm_bias": {
+            "n_words": 71552,
+            "est_bpw": 10.6202,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_first": {
+            "n_words": 13074432,
+            "est_bpw": 4.2595,
+            "n_outliers": 19614,
+            "kind": "groupwise"
+          },
+          "attn_first": {
+            "n_words": 1835008,
+            "est_bpw": 8.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_mid": {
+            "n_words": 196116480,
+            "est_bpw": 4.2595,
+            "n_outliers": 294210,
+            "kind": "groupwise"
+          },
+          "attn_mid": {
+            "n_words": 40370176,
+            "est_bpw": 7.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_late": {
+            "n_words": 91521024,
+            "est_bpw": 4.2595,
+            "n_outliers": 137298,
+            "kind": "groupwise"
+          },
+          "mlp_last": {
+            "n_words": 13074432,
+            "est_bpw": 8.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "attn_last": {
+            "n_words": 1835008,
+            "est_bpw": 8.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          }
+        },
+        "kind_hist_words": {
+          "groupwise": 436846592,
+          "h95": 57186176
+        },
+        "n_outliers": 655324,
+        "note": "H95: 1 sign + 2.62 exp-ref + packed K; INT: codes + f16 scales + u8 zp + outliers; no header / X/Y"
+      },
+      "encoded": false,
+      "calib_ppl": 31.393398,
+      "heldout_ppl": 54.406091,
+      "calib_retention": 0.750762,
+      "heldout_retention": 0.717422,
+      "calib_nll": 3.4465976289030795,
+      "heldout_nll": 3.996476119353523
+    },
+    {
+      "policy": "h_mix",
+      "description": "Rate-aware mix: last-MLP + attn + norms H95; late MLP groupwise Q5; mid/first MLP + embed Q4. Target \u22645.0 if H95-late overshoots.",
+      "packed_est_bpw": 5.001128,
+      "packed_estimate": {
+        "n_weights": 494032768,
+        "packed_est_bits": 2470721135,
+        "packed_est_bpw": 5.001128,
+        "family": {
+          "embed": {
+            "n_words": 136134656,
+            "est_bpw": 4.2451,
+            "n_outliers": 163362,
+            "kind": "groupwise"
+          },
+          "norm_bias": {
+            "n_words": 71552,
+            "est_bpw": 10.6202,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_first": {
+            "n_words": 13074432,
+            "est_bpw": 4.2451,
+            "n_outliers": 15690,
+            "kind": "groupwise"
+          },
+          "attn_first": {
+            "n_words": 1835008,
+            "est_bpw": 9.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_mid": {
+            "n_words": 196116480,
+            "est_bpw": 4.2451,
+            "n_outliers": 235350,
+            "kind": "groupwise"
+          },
+          "attn_mid": {
+            "n_words": 40370176,
+            "est_bpw": 8.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_late": {
+            "n_words": 91521024,
+            "est_bpw": 5.2451,
+            "n_outliers": 109830,
+            "kind": "groupwise"
+          },
+          "mlp_last": {
+            "n_words": 13074432,
+            "est_bpw": 10.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "attn_last": {
+            "n_words": 1835008,
+            "est_bpw": 10.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          }
+        },
+        "kind_hist_words": {
+          "groupwise": 436846592,
+          "h95": 57186176
+        },
+        "n_outliers": 524232,
+        "note": "H95: 1 sign + 2.62 exp-ref + packed K; INT: codes + f16 scales + u8 zp + outliers; no header / X/Y"
+      },
+      "encoded": false,
+      "calib_ppl": 31.468092,
+      "heldout_ppl": 53.400811,
+      "calib_retention": 0.74898,
+      "heldout_retention": 0.730927,
+      "calib_nll": 3.4489740792807044,
+      "heldout_nll": 3.977825938892539
+    },
+    {
+      "policy": "h_practical",
+      "description": "User-suggested split: late MLP / attn / last / norms = H95 mantissa-keep; mid MLP Q4 INT, first MLP Q5 INT, embed Q4 INT. Aim \u22645.0 + \u22650.95.",
+      "packed_est_bpw": 5.460842,
+      "packed_estimate": {
+        "n_weights": 494032768,
+        "packed_est_bits": 2697834932,
+        "packed_est_bpw": 5.460842,
+        "family": {
+          "embed": {
+            "n_words": 136134656,
+            "est_bpw": 4.2355,
+            "n_outliers": 136135,
+            "kind": "groupwise"
+          },
+          "norm_bias": {
+            "n_words": 71552,
+            "est_bpw": 10.6202,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_first": {
+            "n_words": 13074432,
+            "est_bpw": 5.2355,
+            "n_outliers": 13077,
+            "kind": "groupwise"
+          },
+          "attn_first": {
+            "n_words": 1835008,
+            "est_bpw": 9.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_mid": {
+            "n_words": 196116480,
+            "est_bpw": 4.2355,
+            "n_outliers": 196155,
+            "kind": "groupwise"
+          },
+          "attn_mid": {
+            "n_words": 40370176,
+            "est_bpw": 8.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_late": {
+            "n_words": 91521024,
+            "est_bpw": 7.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_last": {
+            "n_words": 13074432,
+            "est_bpw": 10.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "attn_last": {
+            "n_words": 1835008,
+            "est_bpw": 10.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          }
+        },
+        "kind_hist_words": {
+          "groupwise": 345325568,
+          "h95": 148707200
+        },
+        "n_outliers": 345367,
+        "note": "H95: 1 sign + 2.62 exp-ref + packed K; INT: codes + f16 scales + u8 zp + outliers; no header / X/Y"
+      },
+      "encoded": false,
+      "calib_ppl": 31.239499,
+      "heldout_ppl": 51.836811,
+      "calib_retention": 0.75446,
+      "heldout_retention": 0.752981,
+      "calib_nll": 3.44168329610453,
+      "heldout_nll": 3.948100527636094
+    },
+    {
+      "policy": "h_restore",
+      "description": "Quality restore: mid MLP / embed Q5 INT; late/first MLP H95 K5; attn H95 K6; last/norms H95 K7. Rate expected >5.0.",
+      "packed_est_bpw": 6.504057,
+      "packed_estimate": {
+        "n_weights": 494032768,
+        "packed_est_bits": 3213217175,
+        "packed_est_bpw": 6.504057,
+        "family": {
+          "embed": {
+            "n_words": 136134656,
+            "est_bpw": 5.2567,
+            "n_outliers": 196188,
+            "kind": "groupwise"
+          },
+          "norm_bias": {
+            "n_words": 71552,
+            "est_bpw": 10.6202,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_first": {
+            "n_words": 13074432,
+            "est_bpw": 8.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "attn_first": {
+            "n_words": 1835008,
+            "est_bpw": 9.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_mid": {
+            "n_words": 196116480,
+            "est_bpw": 5.2565,
+            "n_outliers": 281719,
+            "kind": "groupwise"
+          },
+          "attn_mid": {
+            "n_words": 40370176,
+            "est_bpw": 9.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_late": {
+            "n_words": 91521024,
+            "est_bpw": 8.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_last": {
+            "n_words": 13074432,
+            "est_bpw": 10.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "attn_last": {
+            "n_words": 1835008,
+            "est_bpw": 10.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          }
+        },
+        "kind_hist_words": {
+          "groupwise": 332251136,
+          "h95": 161781632
+        },
+        "n_outliers": 477907,
+        "note": "H95: 1 sign + 2.62 exp-ref + packed K; INT: codes + f16 scales + u8 zp + outliers; no header / X/Y"
+      },
+      "encoded": false,
+      "calib_ppl": 26.65998,
+      "heldout_ppl": 44.841899,
+      "calib_retention": 0.884058,
+      "heldout_retention": 0.870438,
+      "calib_nll": 3.2831635680756013,
+      "heldout_nll": 3.8031429520908615
+    },
+    {
+      "policy": "h_quality",
+      "description": "H95-heavy quality point: mid MLP K4 / late K5 / embed K3 / attn K5. Packed rate near S1 (~7+ BPW); used as Pareto upper quality.",
+      "packed_est_bpw": 7.76274,
+      "packed_estimate": {
+        "n_weights": 494032768,
+        "packed_est_bits": 3835048115,
+        "packed_est_bpw": 7.76274,
+        "family": {
+          "embed": {
+            "n_words": 136134656,
+            "est_bpw": 6.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "norm_bias": {
+            "n_words": 71552,
+            "est_bpw": 10.6202,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_first": {
+            "n_words": 13074432,
+            "est_bpw": 9.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "attn_first": {
+            "n_words": 1835008,
+            "est_bpw": 9.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_mid": {
+            "n_words": 196116480,
+            "est_bpw": 7.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "attn_mid": {
+            "n_words": 40370176,
+            "est_bpw": 8.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_late": {
+            "n_words": 91521024,
+            "est_bpw": 8.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "mlp_last": {
+            "n_words": 13074432,
+            "est_bpw": 10.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          },
+          "attn_last": {
+            "n_words": 1835008,
+            "est_bpw": 10.62,
+            "n_outliers": 0,
+            "kind": "h95"
+          }
+        },
+        "kind_hist_words": {
+          "h95": 494032768
+        },
+        "n_outliers": 0,
+        "note": "H95: 1 sign + 2.62 exp-ref + packed K; INT: codes + f16 scales + u8 zp + outliers; no header / X/Y"
+      },
+      "encoded": true,
+      "calib_ppl": 23.807998,
+      "heldout_ppl": 39.788667,
+      "calib_retention": 0.98996,
+      "heldout_retention": 0.980986,
+      "calib_nll": 3.170021588214032,
+      "heldout_nll": 3.683582131561893,
+      "actual_bpw": 7.765222,
+      "file_bytes": 479534240
+    }
+  ],
+  "bf16": {
+    "calib": {
+      "mean_nll": 3.15993068942776,
+      "ppl": 23.568962294190978,
+      "n_tokens": 1925,
+      "n_texts": 58,
+      "per_text": [
+        {
+          "n_tokens": 15,
+          "mean_nll": 2.644775644938151,
+          "skipped": false
+        },
+        {
+          "n_tokens": 10,
+          "mean_nll": 5.07205810546875,
+          "skipped": false
+        },
+        {
+          "n_tokens": 13,
+          "mean_nll": 2.340489754310021,
+          "skipped": false
+        },
+        {
+          "n_tokens": 15,
+          "mean_nll": 2.2811785380045575,
+          "skipped": false
+        },
+        {
+          "n_tokens": 11,
+          "mean_nll": 1.6409678025679155,
+          "skipped": false
+        },
+        {
+          "n_tokens": 11,
+          "mean_nll": 3.9346174760298296,
+          "skipped": false
+        },
+        {
+          "n_tokens": 12,
+          "mean_nll": 3.756836255391439,
+          "skipped": false
+        },
+        {
+          "n_tokens": 14,
+          "mean_nll": 2.657649721418108,
+          "skipped": false
+        },
+        {
+          "n_tokens": 17,
+          "mean_nll": 1.961789523853975,
+          "skipped": false
+        },
+        {
+          "n_tokens": 11,
+          "mean_nll": 4.150492928244851,
+          "skipped": false
+        },
+        {
+          "n_tokens": 11,
+          "mean_nll": 3.9517125216397373,
+          "skipped": false
+        },
+        {
+          "n_tokens": 15,
+          "mean_nll": 2.339923350016276,
+          "skipped": false
+        },
+        {
+          "n_tokens": 36,
+          "mean_nll": 2.278500450981988,
+          "skipped": false
+        },
+        {
+          "n_tokens": 42,
+          "mean_nll": 2.597366151355562,
+          "skipped": false
+        },
+        {
+          "n_tokens": 36,
+          "mean_nll": 3.5750384860568576,
+          "skipped": false
+        },
+        {
+          "n_tokens": 40,
+          "mean_nll": 2.4266632080078123,
+          "skipped": false
+        },
+        {
+          "n_tokens": 35,
+          "mean_nll": 3.3586512974330356,
+          "skipped": false
+        },
+        {
+          "n_tokens": 40,
+          "mean_nll": 2.373049736022949,
+          "skipped": false
+        },
+        {
+          "n_tokens": 36,
+          "mean_nll": 2.6153142717149525,
+          "skipped": false
+        },
+        {
+          "n_tokens": 36,
+          "mean_nll": 3.2564561631944446,
+          "skipped": false
+        },
+        {
+          "n_tokens": 36,
+          "mean_nll": 3.118519041273329,
+          "skipped": false
+        },
+        {
+          "n_tokens": 32,
+          "mean_nll": 3.786086082458496,
+          "skipped": false
+        },
+        {
+          "n_tokens": 34,
+          "mean_nll": 3.4445114135742188,
+          "skipped": false
+        },
+        {
+          "n_tokens": 34,
+          "mean_nll": 3.442364860983456,
+          "skipped": false
+        },
+        {
+          "n_tokens": 32,
+          "mean_nll": 3.335263252258301,
+          "skipped": false
+        },
+        {
+          "n_tokens": 34,
+          "mean_nll": 3.6211855271283317,
+          "skipped": false
+        },
+        {
+          "n_tokens": 44,
+          "mean_nll": 2.4328126040371982,
+          "skipped": false
+        },
+        {
+          "n_tokens": 43,
+          "mean_nll": 3.2668829629587575,
+          "skipped": false
+        },
+        {
+          "n_tokens": 51,
+          "mean_nll": 1.8623319139667587,
+          "skipped": false
+        },
+        {
+          "n_tokens": 43,
+          "mean_nll": 3.5500066003134085,
+          "skipped": false
+        },
+        {
+          "n_tokens": 36,
+          "mean_nll": 4.110307057698567,
+          "skipped": false
+        },
+        {
+          "n_tokens": 32,
+          "mean_nll": 3.924137830734253,
+          "skipped": false
+        },
+        {
+          "n_tokens": 33,
+          "mean_nll": 4.133893562085701,
+          "skipped": false
+        },
+        {
+          "n_tokens": 31,
+          "mean_nll": 3.9386249665291078,
+          "skipped": false
+        },
+        {
+          "n_tokens": 39,
+          "mean_nll": 1.7165190867888622,
+          "skipped": false
+        },
+        {
+          "n_tokens": 38,
+          "mean_nll": 2.007413763748972,
+          "skipped": false
+        },
+        {
+          "n_tokens": 41,
+          "mean_nll": 1.9864159560785062,
+          "skipped": false
+        },
+        {
+          "n_tokens": 30,
+          "mean_nll": 1.8646642049153646,
+          "skipped": false
+        },
+        {
+          "n_tokens": 44,
+          "mean_nll": 3.0127091841264204,
+          "skipped": false
+        },
+        {
+          "n_tokens": 37,
+          "mean_nll": 2.941057772249789,
+          "skipped": false
+        },
+        {
+          "n_tokens": 40,
+          "mean_nll": 3.370196533203125,
+          "skipped": false
+        },
+        {
+          "n_tokens": 44,
+          "mean_nll": 3.3900493275035513,
+          "skipped": false
+        },
+        {
+          "n_tokens": 41,
+          "mean_nll": 3.245814625809832,
+          "skipped": false
+        },
+        {
+          "n_tokens": 45,
+          "mean_nll": 3.1953094482421873,
+          "skipped": false
+        },
+        {
+          "n_tokens": 40,
+          "mean_nll": 3.5051231384277344,
+          "skipped": false
+        },
+        {
+          "n_tokens": 40,
+          "mean_nll": 3.269602584838867,
+          "skipped": false
+        },
+        {
+          "n_tokens": 47,
+          "mean_nll": 4.785449088887965,
+          "skipped": false
+        },
+        {
+          "n_tokens": 47,
+          "mean_nll": 2.584029826712101,
+          "skipped": false
+        },
+        {
+          "n_tokens": 39,
+          "mean_nll": 3.9616421430538864,
+          "skipped": false
+        },
+        {
+          "n_tokens": 42,
+          "mean_nll": 3.275657290504092,
+          "skipped": false
+        },
+        {
+          "n_tokens": 41,
+          "mean_nll": 3.199511272151296,
+          "skipped": false
+        },
+        {
+          "n_tokens": 42,
+          "mean_nll": 2.8263885861351374,
+          "skipped": false
+        },
+        {
+          "n_tokens": 35,
+          "mean_nll": 4.1517264229910715,
+          "skipped": false
+        },
+        {
+          "n_tokens": 39,
+          "mean_nll": 3.3825186704977965,
+          "skipped": false
+        },
+        {
+          "n_tokens": 36,
+          "mean_nll": 3.5573798285590277,
+          "skipped": false
+        },
+        {
+          "n_tokens": 36,
+          "mean_nll": 3.472888946533203,
+          "skipped": false
+        },
+        {
+          "n_tokens": 34,
+          "mean_nll": 4.7951054292566635,
+          "skipped": false
+        },
+        {
+          "n_tokens": 37,
+          "mean_nll": 3.3989494942330025,
+          "skipped": false
+        }
+      ],
+      "max_length": 256,
+      "label": "calibration_proxy_only"
+    },
+    "heldout": {
+      "mean_nll": 3.664384597834111,
+      "ppl": 39.03210832646301,
+      "n_tokens": 1094,
+      "n_texts": 32,
+      "per_text": [
+        {
+          "n_tokens": 46,
+          "mean_nll": 3.378399724545686,
+          "skipped": false
+        },
+        {
+          "n_tokens": 35,
+          "mean_nll": 4.4085457938058035,
+          "skipped": false
+        },
+        {
+          "n_tokens": 31,
+          "mean_nll": 4.0324633198399695,
+          "skipped": false
+        },
+        {
+          "n_tokens": 38,
+          "mean_nll": 2.8402095593904195,
+          "skipped": false
+        },
+        {
+          "n_tokens": 31,
+          "mean_nll": 4.021405373850176,
+          "skipped": false
+        },
+        {
+          "n_tokens": 31,
+          "mean_nll": 1.9752097591277091,
+          "skipped": false
+        },
+        {
+          "n_tokens": 36,
+          "mean_nll": 3.60874260796441,
+          "skipped": false
+        },
+        {
+          "n_tokens": 33,
+          "mean_nll": 4.381655143968986,
+          "skipped": false
+        },
+        {
+          "n_tokens": 33,
+          "mean_nll": 4.369408809777462,
+          "skipped": false
+        },
+        {
+          "n_tokens": 41,
+          "mean_nll": 3.2051920076695883,
+          "skipped": false
+        },
+        {
+          "n_tokens": 31,
+          "mean_nll": 4.233213363155242,
+          "skipped": false
+        },
+        {
+          "n_tokens": 31,
+          "mean_nll": 2.7758981027910785,
+          "skipped": false
+        },
+        {
+          "n_tokens": 41,
+          "mean_nll": 3.2238077303258383,
+          "skipped": false
+        },
+        {
+          "n_tokens": 32,
+          "mean_nll": 4.630284786224365,
+          "skipped": false
+        },
+        {
+          "n_tokens": 30,
+          "mean_nll": 4.163242594401042,
+          "skipped": false
+        },
+        {
+          "n_tokens": 31,
+          "mean_nll": 4.997378441595262,
+          "skipped": false
+        },
+        {
+          "n_tokens": 32,
+          "mean_nll": 4.055344104766846,
+          "skipped": false
+        },
+        {
+          "n_tokens": 39,
+          "mean_nll": 1.4917716001852965,
+          "skipped": false
+        },
+        {
+          "n_tokens": 34,
+          "mean_nll": 3.5984279408174404,
+          "skipped": false
+        },
+        {
+          "n_tokens": 35,
+          "mean_nll": 3.1546295166015623,
+          "skipped": false
+        },
+        {
+          "n_tokens": 26,
+          "mean_nll": 4.0590691199669475,
+          "skipped": false
+        },
+        {
+          "n_tokens": 41,
+          "mean_nll": 3.3395638814786586,
+          "skipped": false
+        },
+        {
+          "n_tokens": 29,
+          "mean_nll": 5.021464380724677,
+          "skipped": false
+        },
+        {
+          "n_tokens": 41,
+          "mean_nll": 2.4487557760099086,
+          "skipped": false
+        },
+        {
+          "n_tokens": 37,
+          "mean_nll": 3.2675880225929053,
+          "skipped": false
+        },
+        {
+          "n_tokens": 34,
+          "mean_nll": 4.298971737132353,
+          "skipped": false
+        },
+        {
+          "n_tokens": 35,
+          "mean_nll": 3.95101318359375,
+          "skipped": false
+        },
+        {
+          "n_tokens": 34,
+          "mean_nll": 3.6885416367474724,
+          "skipped": false
+        },
+        {
+          "n_tokens": 35,
+          "mean_nll": 3.9164010184151787,
+          "skipped": false
+        },
+        {
+          "n_tokens": 26,
+          "mean_nll": 2.785227555495042,
+          "skipped": false
+        },
+        {
+          "n_tokens": 36,
+          "mean_nll": 3.595871819390191,
+          "skipped": false
+        },
+        {
+          "n_tokens": 29,
+          "mean_nll": 5.994978806068158,
+          "skipped": false
+        }
+      ],
+      "max_length": 256,
+      "label": "calibration_proxy_only"
+    }
+  },
+  "calib_corpus": {
+    "path": "docs/pbr_h95/calibration_v2.json",
+    "id": "calib-v2",
+    "n_texts": 58
+  },
+  "heldout_corpus": {
+    "path": "docs/pbr_h95/heldout_v1.json",
+    "id": "heldout-v1",
+    "n_texts": 32
+  },
+  "wall_s": 444.7
+}

@@ -864,11 +864,14 @@ scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py,
                  run_phase_a_mantissa_audit.py, run_exp_coder_ablation.py,
                  run_checkpoint_delta.py, run_mantissa_zoo.py, run_pbr4.py,
                  run_path_to_50pct.py, run_adaptive_mantissa.py, disk_tunnel_infer.py,
-                 tunnel_fast_pbre.py, tunnel_faster_pbre.py, tunnel_hybrid_lossy.py
+                 tunnel_fast_pbre.py, tunnel_faster_pbre.py, tunnel_hybrid_lossy.py,
+                 run_pbr_q4_s1_xy.py, run_pbr_q4_hybrid.py
+pbr_q4/          H95Q-S1 selective X/Y; hybrid H95+INT (`pbr_q4/hybrid/`)
 tests/           exactness, codecs, Stage 1B fixtures, qualifier math,
                  hierarchical leftovers, mantissa audit, checkpoint delta,
                  mantissa zoo, PBR-4, path-to-50pct, disk tunnel,
-                 fast / faster PBR-E / hybrid lossy tunnel, adaptive mantissa
+                 fast / faster PBR-E / hybrid lossy tunnel, adaptive mantissa,
+                 H95Q-S1 X/Y, hybrid H95+INT
 configs/         poc_controlled.yaml, poc_real.yaml, poc_llama.yaml,
                  qualifier_default.yaml, poc_delta.yaml
 artifacts/       measured diagnosis / ablation / Phase A / delta / zoo /

@@ -24,5 +24,7 @@ outputs/hf_cache/
 artifacts/pbr_h95/containers/*.h95q
 *.h95x
 artifacts/pbr_q4/containers/*.h95x
+*.hybx
 *.pq4x
+artifacts/pbr_q4/containers/*.hybx
 artifacts/pbr_q4/containers/*.pq4x

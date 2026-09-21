@@ -42,6 +42,7 @@ pbr-generate-controlled = "pbr_encoder.controlled_data:main"
 pbr-4 = "pbr_encoder.pbr4_eval:main"
 pbr-adaptive-mantissa = "pbr_adaptive_mantissa.cli:main"
 pbr-q4-s1-xy = "pbr_q4.container:main_decode_cli"
+pbr-q4-hybrid = "pbr_q4.hybrid.container:main_decode_cli"
 pbr-q4-codesign = "pbr_q4.codesign.container:main_decode_cli"
 
 [project.urls]
