@@ -1,0 +1,4 @@
+exact alone (PBR-E style estimate): 10.65 bpw   [word entropy 10.58]
+ladder up to tier 1: lossy 1.09 + exact-given-lossy 10.42 = 11.50 bpw  (overhead vs exact alone +0.85)
+ladder up to tier 2: lossy 2.18 + exact-given-lossy 9.81 = 11.99 bpw  (overhead vs exact alone +1.34)
+ladder up to tier 3: lossy 3.27 + exact-given-lossy 9.23 = 12.50 bpw  (overhead vs exact alone +1.85)
