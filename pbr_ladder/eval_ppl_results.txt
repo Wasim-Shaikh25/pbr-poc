@@ -1,0 +1,9 @@
+=== baseline ===
+`torch_dtype` is deprecated! Use `dtype` instead!
+Token indices sequence length is longer than the specified maximum sequence length for this model (299078 > 131072). Running this sequence through the model will result in indexing errors
+WikiText-2 test perplexity: 14.247
+=== L12 gate swapped ===
+`torch_dtype` is deprecated! Use `dtype` instead!
+Token indices sequence length is longer than the specified maximum sequence length for this model (299078 > 131072). Running this sequence through the model will result in indexing errors
+replaced model.layers.12.mlp.gate_proj.weight
+WikiText-2 test perplexity: 14.269

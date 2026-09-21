@@ -32,3 +32,8 @@ artifacts/pbr_q4/containers/*.e3mx
 *.pq4x
 artifacts/pbr_q4/containers/*.hybx
 artifacts/pbr_q4/containers/*.pq4x
+
+# pbr_ladder real-Qwen run artifacts (reproducible, see docs/pbr_ladder/README.md)
+pbr_ladder/qwen05b/
+pbr_ladder/*.npy
+pbr_ladder/*.npz

@@ -3,12 +3,18 @@
 # UNTESTED in the author's sandbox (no Hugging Face access). Needs: torch, transformers, datasets.
 import sys, torch, numpy as np
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from datasets import load_dataset
 name, layer, module, out = sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4]
 tok = AutoTokenizer.from_pretrained(name)
-model = AutoModelForCausalLM.from_pretrained(name, torch_dtype=torch.bfloat16).eval()
+import os
+dtype = torch.float32 if os.environ.get("PBR_CPU_FP32") else torch.bfloat16
+model = AutoModelForCausalLM.from_pretrained(name, torch_dtype=dtype).eval()
 target = model.model.layers[layer].get_submodule(module)
-text = "\n\n".join(load_dataset("wikitext", "wikitext-2-raw-v1", split="train")["text"][:3000])
+import os
+if os.environ.get("PBR_TEXT"):   # local text file instead of downloading WikiText-2 (train split)
+    text = open(os.environ["PBR_TEXT"], encoding="utf-8").read()
+else:
+    from datasets import load_dataset
+    text = "\n\n".join(load_dataset("wikitext", "wikitext-2-raw-v1", split="train")["text"][:3000])
 ids = tok(text, return_tensors="pt").input_ids[:, :16384]   # calibration = TRAIN split only
 rows = []
 hook = target.register_forward_hook(
