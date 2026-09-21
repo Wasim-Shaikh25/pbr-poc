@@ -856,6 +856,8 @@ pbr_codecs/      raw, predictors, residuals, dictionaries, exp-Huffman,
                  bit-planes, grammar, transformed refs, position-value dict,
                  PBR-4 structured nibble (standalone container)
 pbr_adaptive_mantissa/  RAW / Huffman+ESCAPE / CONTEXT 7-bit mantissa codec
+pbr_h95/         H95 mantissa-keep quant + physical container
+pbr_q4/          H95Q-S1 selective X/Y; E2 mixed groupwise Q + E3 ablation
 pbr_encoder/     cost-based search, decoder, Stage 1A/1B/PBR-E/Phase A CLIs
 pbr_qualifier/   Stage 2 inventory, entropy, sample encode, BPW projection
 scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py,
@@ -864,7 +866,8 @@ scripts/         run_poc1.py, run_poc1b.py, run_qualifier.py, run_pbre.py,
                  run_phase_a_mantissa_audit.py, run_exp_coder_ablation.py,
                  run_checkpoint_delta.py, run_mantissa_zoo.py, run_pbr4.py,
                  run_path_to_50pct.py, run_adaptive_mantissa.py, disk_tunnel_infer.py,
-                 tunnel_fast_pbre.py, tunnel_faster_pbre.py, tunnel_hybrid_lossy.py
+                 tunnel_fast_pbre.py, tunnel_faster_pbre.py, tunnel_hybrid_lossy.py,
+                 run_pbr_q4_s1_xy.py, run_pbr_q4_e2_mixed.py
 tests/           exactness, codecs, Stage 1B fixtures, qualifier math,
                  hierarchical leftovers, mantissa audit, checkpoint delta,
                  mantissa zoo, PBR-4, path-to-50pct, disk tunnel,
