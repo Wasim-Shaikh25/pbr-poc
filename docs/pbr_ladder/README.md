@@ -172,16 +172,58 @@ it is not a whole-model claim and does not establish where the
 perplexity gate would actually break for this or other layers — see
 "What wasn't tested" below. Raw output: `pbr_ladder/eval_ppl_results.txt`.
 
+### Phase 1 — entire layer 12
+
+Remaining layer-12 matrices (`up_proj`, `k_proj`, `v_proj`, `o_proj`) were
+measured with the same real-activation procedure. `up_proj` shares its
+input with `gate_proj`, and `k_proj`/`v_proj` share theirs with `q_proj`
+(captured arrays are bit-identical). Raw log:
+`artifacts/pbr_ladder/phase1_L12_tensors.log`.
+
+`push_below3` `[256,256,256]` vs INT4 RTN, same ≥2 dB at ≤3.3 bpw bar as
+§5.1. `k_proj` and `v_proj` are narrow (128×896), so the codebook side
+info pushes `[256,256,256]` to 3.875 bpw, over the 3.3 bpw cap.
+
+| Tensor | nodes bpw | nodes dB | INT4 RTN dB | Δ | Gate (≥2dB @ ≤3.3bpw) |
+| --- | ---: | ---: | ---: | ---: | --- |
+| L12 up_proj | 3.040 | 18.78 | 18.45 | +0.33 | FAIL |
+| L12 k_proj | 3.875 | 25.44 | 23.92 | +1.52 | FAIL |
+| L12 v_proj | 3.875 | 21.06 | 19.08 | +1.98 | FAIL |
+| L12 o_proj | 3.140 | 19.73 | 18.26 | +1.47 | FAIL |
+
+**Whole layer 12 perplexity: PASS.** All seven attention/MLP linears in
+layer 12 were replaced together by `quantize_full_model.py`
+(`PBR_LAYERS=12`, stages `256,256,64`, sequential GPTQ-style feedback).
+The script reports ~2.75 bpw index cost on 14,909,440 parameters;
+codebook side info is under 0.1 bpw on average and about 0.66 bpw on the
+two narrow `k`/`v` tensors (`[256,256,64]` row: 3.411 bpw). The saved
+folder is a **dequantized fp32 checkpoint for perplexity**, not a smaller
+file. This run's baseline matches the logged 14.247 (same WikiText-2
+test join, 299078 tokens, `PBR_CPU_FP32=1`).
+
+| Run | WikiText-2 test perplexity |
+| --- | ---: |
+| Baseline (this run, unmodified) | 14.247 |
+| Layer 12, all 7 linears, stages 256,256,64 | 14.354 |
+
+Relative change: **+0.751%** `(14.354 − 14.247) / 14.247`, under the 1%
+Phase 1 gate. Every one of the seven matrices still fails the §5.1 dB
+bar; the perplexity gate and the dB gate are not the same evidence.
+Logs: `artifacts/pbr_ladder/phase1_quantize_L12.log`,
+`artifacts/pbr_ladder/phase1_ppl_baseline.log`,
+`artifacts/pbr_ladder/phase1_ppl_L12.log`.
+
 ## What wasn't tested
 
-- **Whole-model retention** (guide §5.3–§5.4): only one layer, one tensor,
-  one bpw point was swapped and perplexity-checked. No claim is made
-  about swapping all layers, or about retention at other bpw points.
+- **Whole-model retention** (Phase 2): layer 12 as a whole is measured
+  above. The other 23 layers are not. No claim is made about swapping
+  every layer, or about beating GGUF / a smaller on-disk format.
 - **Perplexity-vs-bpw curve**: the §5.1 sweep shows bpw options from
   `[256,256]` (~2.0bpw) up to `[256,256,256]` (~3.0-3.14bpw) per tensor in
-  `real_tensor_results.txt`, but only one of those points (2.785bpw,
-  L12 gate_proj) was perplexity-tested end-to-end. Where the 0.5% gate
-  actually breaks, per tensor, is unknown.
+  `real_tensor_results.txt`. End-to-end perplexity exists for one matrix
+  (L12 gate_proj at 2.785 bpw) and for all seven layer-12 linears together
+  at stages `256,256,64` (Phase 1). Where the gate breaks at other bpw
+  points, per tensor, is unknown.
 - `formula_probe.py`, `node_combo_q4.py`, `node_structures.py` were run
   only against synthetic data (their self-check), not real Qwen tensors —
   the guide's real-tensor procedure (§3.1–3.7) for these 3 wasn't
@@ -196,8 +238,8 @@ perplexity gate would actually break for this or other layers — see
 | Phase 0 — 9-tensor dB numbers are real activations | **PASS** — see Phase 0 section. High L2/L21 `down_proj` dB reproduced. L21 `down_proj` `push_below4` crash is fixed. |
 | Tensor quality, real weights (§5.1, ≥2dB over INT4 RTN @ ≤3.3bpw) | **FAIL on 6/9 tensors** — see table above |
 | Single-matrix perplexity (§5.2, <0.5% change) | **PASS** — +0.154% on L12 gate_proj @ 2.785bpw. One matrix only. |
-| Phase 1 — entire layer 12 perplexity (<1%) | **NOT RUN YET** |
-| Whole-model retention (Phase 2, within 5%) | **NOT RUN** — blocked on Phase 1 |
+| Phase 1 — entire layer 12 perplexity (<1%) | **PASS** — 14.247 → 14.354 (+0.751%) with all 7 L12 linears at stages 256,256,64. dB gate still fails on those tensors. |
+| Whole-model retention (Phase 2, within 5%) | **NOT RUN** — Phase 1 passed; full-model run is next |
 
 ## To reproduce
 
