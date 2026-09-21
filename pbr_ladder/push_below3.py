@@ -9,7 +9,7 @@ U = np.linalg.cholesky(np.linalg.inv(Hr + .01*np.mean(np.diag(Hr))*np.eye(I))).T
 def train(ks):
     R = (Wr/s).reshape(-1, d); out = []
     for k in ks:
-        C = kmeans(R, k); a = ((R**2).sum(1)[:,None]-2*R@C.T+(C**2).sum(1)[None]).argmin(1)
+        C = kmeans(R, k); a = assign(R, C)   # chunked; same indices as a full distance matrix
         out.append(C); R = R - C[a]
     return out
 def enc(books):

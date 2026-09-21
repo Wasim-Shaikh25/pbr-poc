@@ -100,6 +100,59 @@ Full method sweep (INT3/INT2 RTN/GPTQ/rot+GPTQ, all `push_below4.py`/
 `push_nested.py`/`push_below3.py`/`ladder_exact.py` output) for all 9
 tensors: `pbr_ladder/real_tensor_results.txt`.
 
+### Phase 0 — were those 9 tensors measured on real activations?
+
+**PASS.** The roadmap flagged the high `down_proj` scores at layers 2 and
+21 as a possible synthetic-activation fallback (a `push_*.py` run with no
+third `.npy` argument). They were re-captured and re-measured.
+
+Procedure: WikiText-2 raw v1 train, first 16384 tokens, chunks of 512,
+seed-0 subsample of 4096 rows, model in fp32 (`PBR_CPU_FP32=1`). One
+batched capture (same hook and subsample as `capture_activations.py`)
+was checked against a separate `capture_activations.py` run on
+`L12 self_attn.q_proj`: the `.npy` files are bit-identical. Raw log:
+`artifacts/pbr_ladder/capture_phase0.log`.
+
+`push_below4.py` was then re-run with the third argument set, on all 9
+tensors (`PBR_CHUNK=50000`). Every tensor whose prior `push_below4` block
+completed matches the logged table to the printed precision (bpw / weight
+dB / output dB). `L21 mlp.down_proj` had no prior `push_below4` table —
+that run died in `kmeans` with `Unable to allocate 1.04 GiB` before the
+chunked-distance fix. It now completes. Its `INT3 rot+GPTQ` output dB
+(33.69) matches the reference line already printed by the prior
+`push_nested` block on that tensor, so that prior block was on the same
+activations.
+
+`push_below3.py` `[256, 256, 256]` vs INT4 RTN was re-run on the same 9
+real activation files. Every gate-table cell above reproduced exactly,
+including the two high `down_proj` scores:
+
+| Tensor | re-measured nodes dB | re-measured INT4 RTN dB | vs logged table |
+| --- | ---: | ---: | --- |
+| L2 down_proj | 34.48 | 17.89 | match |
+| L21 down_proj | 34.53 | 22.56 | match |
+| other 7 tensors | (see §5.1) | (see §5.1) | match |
+
+The high layer-2 / layer-21 `down_proj` dB numbers are real captured
+activations, not the synthetic fallback. They stay in the decision table.
+`L21 down_proj` `push_below4` (previously crashed), real acts:
+
+| method | bpw | weight dB | output dB |
+| --- | ---: | ---: | ---: |
+| INT3 RTN | 3.250 | 12.94 | 15.03 |
+| INT3 GPTQ | 3.250 | 8.65 | 29.03 |
+| INT3 rot+GPTQ | 3.250 | 11.43 | 33.69 |
+| 3x256 8-D nodes, rot | 3.026 | 14.54 | 17.73 |
+| INT2 RTN | 2.250 | 5.39 | 6.94 |
+| INT2 GPTQ | 2.250 | -0.34 | 20.62 |
+| INT2 rot+GPTQ | 2.250 | 3.51 | 25.38 |
+| 2x256 8-D nodes, rot | 2.018 | 9.81 | 12.56 |
+
+Raw logs: `artifacts/pbr_ladder/phase0_push_below4.log`. The 3x256 node
+row above is residual VQ without the column-feedback pass; the 34.53 dB
+gate-table number is the feedback encode from `push_below3`, same
+activations.
+
 ### §5.2 single-layer perplexity gate — swap changes perplexity by <0.5%
 
 **PASS.** Layer tested: `model.layers.12.mlp.gate_proj.weight`, saved at
@@ -140,9 +193,11 @@ perplexity gate would actually break for this or other layers — see
 | Gate | Status |
 | --- | --- |
 | Environment check (synthetic, §2.3) | **PASS** — matches Appendix A |
+| Phase 0 — 9-tensor dB numbers are real activations | **PASS** — see Phase 0 section. High L2/L21 `down_proj` dB reproduced. L21 `down_proj` `push_below4` crash is fixed. |
 | Tensor quality, real weights (§5.1, ≥2dB over INT4 RTN @ ≤3.3bpw) | **FAIL on 6/9 tensors** — see table above |
-| Single-layer perplexity (§5.2, <0.5% change) | **PASS** — +0.154% on L12 gate_proj @ 2.785bpw |
-| Whole-model retention (§5.3–§5.4) | **NOT RUN** — see "What wasn't tested" |
+| Single-matrix perplexity (§5.2, <0.5% change) | **PASS** — +0.154% on L12 gate_proj @ 2.785bpw. One matrix only. |
+| Phase 1 — entire layer 12 perplexity (<1%) | **NOT RUN YET** |
+| Whole-model retention (Phase 2, within 5%) | **NOT RUN** — blocked on Phase 1 |
 
 ## To reproduce
 

@@ -1,0 +1,53 @@
+loading model
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   0%|          | 1/290 [00:00<00:51,  5.66it/s]Loading weights:  60%|█████▉    | 173/290 [00:00<00:00, 754.41it/s]Loading weights:  93%|█████████▎| 270/290 [00:00<00:00, 833.16it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 730.20it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (207673 > 131072). Running this sequence through the model will result in indexing errors
+calib tokens 16384 elapsed 1.8
+chunk 0 elapsed 2.6
+chunk 512 elapsed 3.5
+chunk 1024 elapsed 4.3
+chunk 1536 elapsed 5.1
+chunk 2048 elapsed 5.9
+chunk 2560 elapsed 6.8
+chunk 3072 elapsed 7.6
+chunk 3584 elapsed 8.4
+chunk 4096 elapsed 9.2
+chunk 4608 elapsed 10.0
+chunk 5120 elapsed 10.8
+chunk 5632 elapsed 11.6
+chunk 6144 elapsed 12.4
+chunk 6656 elapsed 13.2
+chunk 7168 elapsed 14.0
+chunk 7680 elapsed 14.8
+chunk 8192 elapsed 15.6
+chunk 8704 elapsed 16.4
+chunk 9216 elapsed 17.3
+chunk 9728 elapsed 18.1
+chunk 10240 elapsed 18.9
+chunk 10752 elapsed 19.7
+chunk 11264 elapsed 20.5
+chunk 11776 elapsed 21.4
+chunk 12288 elapsed 22.2
+chunk 12800 elapsed 23.0
+chunk 13312 elapsed 23.8
+chunk 13824 elapsed 24.7
+chunk 14336 elapsed 25.5
+chunk 14848 elapsed 26.3
+chunk 15360 elapsed 27.1
+chunk 15872 elapsed 27.9
+saved /workspace/pbr_ladder/acts_L2_gate.npy (4096, 896) float32 from_rows 16384
+saved /workspace/pbr_ladder/acts_L2_down.npy (4096, 4864) float32 from_rows 16384
+saved /workspace/pbr_ladder/acts_L2_q.npy (4096, 896) float32 from_rows 16384
+saved /workspace/pbr_ladder/acts_L12_gate.npy (4096, 896) float32 from_rows 16384
+saved /workspace/pbr_ladder/acts_L12_down.npy (4096, 4864) float32 from_rows 16384
+saved /workspace/pbr_ladder/acts_L12_q.npy (4096, 896) float32 from_rows 16384
+saved /workspace/pbr_ladder/acts_L12_up.npy (4096, 896) float32 from_rows 16384
+saved /workspace/pbr_ladder/acts_L12_k.npy (4096, 896) float32 from_rows 16384
+saved /workspace/pbr_ladder/acts_L12_v.npy (4096, 896) float32 from_rows 16384
+saved /workspace/pbr_ladder/acts_L12_o.npy (4096, 896) float32 from_rows 16384
+saved /workspace/pbr_ladder/acts_L21_gate.npy (4096, 896) float32 from_rows 16384
+saved /workspace/pbr_ladder/acts_L21_down.npy (4096, 4864) float32 from_rows 16384
+saved /workspace/pbr_ladder/acts_L21_q.npy (4096, 896) float32 from_rows 16384
+L12 gate==up True max_abs 0.0
+L12 q==k True q==v True
+done 28.6

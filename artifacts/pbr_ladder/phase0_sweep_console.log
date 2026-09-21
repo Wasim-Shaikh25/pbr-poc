@@ -1,0 +1,11 @@
+SUMMARY
+L2 mlp.gate_proj MATCH
+L2 mlp.down_proj MATCH
+L2 self_attn.q_proj MATCH
+L12 mlp.gate_proj MATCH
+L12 mlp.down_proj MATCH
+L12 self_attn.q_proj MATCH
+L21 mlp.gate_proj MATCH
+L21 mlp.down_proj DIFFER
+    row count 8 vs 0
+L21 self_attn.q_proj MATCH

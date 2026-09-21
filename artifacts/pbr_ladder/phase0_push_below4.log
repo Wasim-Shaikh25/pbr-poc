@@ -1,0 +1,266 @@
+
+===== sweep below4 2026-09-21 18:56:16 =====
+
+########## L2 mlp.gate_proj ##########
+--- push_below4.py ---
+
+$ /usr/bin/python3 push_below4.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.2.mlp.gate_proj.weight /workspace/pbr_ladder/acts_L2_gate.npy
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      13.01      15.76
+INT3 GPTQ                   3.250      10.97      19.50
+INT3 rot+GPTQ               3.250      11.35      20.07
+3x256 8-D nodes, rot        3.040      14.54      17.12
+INT2 RTN                    2.250       5.46       8.40
+INT2 GPTQ                   2.250       3.01      11.48
+INT2 rot+GPTQ               2.250       3.47      12.08
+2x256 8-D nodes, rot        2.033       9.83      12.12
+[exit 0 elapsed 77.3s]
+COMPARE L2 mlp.gate_proj: MATCH
+
+########## L2 mlp.down_proj ##########
+--- push_below4.py ---
+
+$ /usr/bin/python3 push_below4.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.2.mlp.down_proj.weight /workspace/pbr_ladder/acts_L2_down.npy
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.80       9.44
+INT3 GPTQ                   3.250       7.26      31.34
+INT3 rot+GPTQ               3.250      12.70      36.08
+3x256 8-D nodes, rot        3.026      14.53      13.50
+INT2 RTN                    2.250       5.20       0.92
+INT2 GPTQ                   2.250      -5.80      17.85
+INT2 rot+GPTQ               2.250       5.16      28.49
+2x256 8-D nodes, rot        2.018       9.81       8.92
+[exit 0 elapsed 124.0s]
+COMPARE L2 mlp.down_proj: MATCH
+
+########## L2 self_attn.q_proj ##########
+--- push_below4.py ---
+
+$ /usr/bin/python3 push_below4.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.2.self_attn.q_proj.weight /workspace/pbr_ladder/acts_L2_q.npy
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.29      14.43
+INT3 GPTQ                   3.250       9.17      19.04
+INT3 rot+GPTQ               3.250      10.97      21.64
+3x256 8-D nodes, rot        3.140      14.76      16.93
+INT2 RTN                    2.250       4.53       6.17
+INT2 GPTQ                   2.250       0.19       9.69
+INT2 rot+GPTQ               2.250       2.98      13.36
+2x256 8-D nodes, rot        2.099       9.94      11.85
+[exit 0 elapsed 13.9s]
+COMPARE L2 self_attn.q_proj: MATCH
+
+########## L12 mlp.gate_proj ##########
+--- push_below4.py ---
+
+$ /usr/bin/python3 push_below4.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.12.mlp.gate_proj.weight /workspace/pbr_ladder/acts_L12_gate.npy
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.56      16.44
+INT3 GPTQ                   3.250      10.48      21.14
+INT3 rot+GPTQ               3.250      11.38      22.31
+3x256 8-D nodes, rot        3.040      14.55      18.06
+INT2 RTN                    2.250       4.89       8.58
+INT2 GPTQ                   2.250       2.37      13.02
+INT2 rot+GPTQ               2.250       3.53      14.34
+2x256 8-D nodes, rot        2.033       9.82      12.98
+[exit 0 elapsed 85.9s]
+COMPARE L12 mlp.gate_proj: MATCH
+
+########## L12 mlp.down_proj ##########
+--- push_below4.py ---
+
+$ /usr/bin/python3 push_below4.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.12.mlp.down_proj.weight /workspace/pbr_ladder/acts_L12_down.npy
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.43      12.74
+INT3 GPTQ                   3.250       7.87      18.93
+INT3 rot+GPTQ               3.250       9.32      20.37
+3x256 8-D nodes, rot        3.026      14.53      14.83
+INT2 RTN                    2.250       4.75       4.97
+INT2 GPTQ                   2.250      -1.42       8.45
+INT2 rot+GPTQ               2.250       0.72      10.90
+2x256 8-D nodes, rot        2.018       9.81      10.08
+[exit 0 elapsed 126.0s]
+COMPARE L12 mlp.down_proj: MATCH
+
+########## L12 self_attn.q_proj ##########
+--- push_below4.py ---
+
+$ /usr/bin/python3 push_below4.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.12.self_attn.q_proj.weight /workspace/pbr_ladder/acts_L12_q.npy
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.79      14.51
+INT3 GPTQ                   3.250       9.77      19.34
+INT3 rot+GPTQ               3.250      10.64      21.44
+3x256 8-D nodes, rot        3.140      14.77      16.28
+INT2 RTN                    2.250       5.23       6.61
+INT2 GPTQ                   2.250       1.18      10.40
+INT2 rot+GPTQ               2.250       2.59      13.09
+2x256 8-D nodes, rot        2.099       9.95      11.42
+[exit 0 elapsed 13.9s]
+COMPARE L12 self_attn.q_proj: MATCH
+
+########## L21 mlp.gate_proj ##########
+--- push_below4.py ---
+
+$ /usr/bin/python3 push_below4.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.21.mlp.gate_proj.weight /workspace/pbr_ladder/acts_L21_gate.npy
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.85      16.67
+INT3 GPTQ                   3.250      10.34      21.26
+INT3 rot+GPTQ               3.250      11.17      22.90
+3x256 8-D nodes, rot        3.040      14.54      18.07
+INT2 RTN                    2.250       5.26       9.13
+INT2 GPTQ                   2.250       2.32      13.36
+INT2 rot+GPTQ               2.250       3.27      14.82
+2x256 8-D nodes, rot        2.033       9.82      13.00
+[exit 0 elapsed 75.5s]
+COMPARE L21 mlp.gate_proj: MATCH
+
+########## L21 mlp.down_proj ##########
+--- push_below4.py ---
+
+$ /usr/bin/python3 push_below4.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.21.mlp.down_proj.weight /workspace/pbr_ladder/acts_L21_down.npy
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.94      15.03
+INT3 GPTQ                   3.250       8.65      29.03
+INT3 rot+GPTQ               3.250      11.43      33.69
+3x256 8-D nodes, rot        3.026      14.54      17.73
+INT2 RTN                    2.250       5.39       6.94
+INT2 GPTQ                   2.250      -0.34      20.62
+INT2 rot+GPTQ               2.250       3.51      25.38
+2x256 8-D nodes, rot        2.018       9.81      12.56
+[exit 0 elapsed 121.7s]
+COMPARE L21 mlp.down_proj: DIFFER
+  row count 8 vs 0
+
+########## L21 self_attn.q_proj ##########
+--- push_below4.py ---
+
+$ /usr/bin/python3 push_below4.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.21.self_attn.q_proj.weight /workspace/pbr_ladder/acts_L21_q.npy
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      11.96       9.98
+INT3 GPTQ                   3.250       6.20      13.74
+INT3 rot+GPTQ               3.250      10.59      20.50
+3x256 8-D nodes, rot        3.140      14.77      13.45
+INT2 RTN                    2.250       4.04       1.48
+INT2 GPTQ                   2.250      -5.09       1.00
+INT2 rot+GPTQ               2.250       2.45      11.78
+2x256 8-D nodes, rot        2.099       9.95       8.68
+[exit 0 elapsed 14.9s]
+COMPARE L21 self_attn.q_proj: MATCH
+
+===== sweep below3 2026-09-21 19:08:07 =====
+
+########## L2 mlp.gate_proj ##########
+--- push_below3.py ---
+
+$ /usr/bin/python3 push_below3.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.2.mlp.gate_proj.weight /workspace/pbr_ladder/acts_L2_gate.npy
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.033        2.031      16.06
+[256, 256, 4]             2.283        2.281      16.97
+[256, 256, 16]            2.533        2.531      18.33
+[256, 256, 64]            2.785        2.782      19.69
+[256, 256, 256]           3.040        3.032      21.03
+INT4 RTN (ref)            4.250                   22.43
+[exit 0 elapsed 118.7s]
+
+########## L2 mlp.down_proj ##########
+--- push_below3.py ---
+
+$ /usr/bin/python3 push_below3.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.2.mlp.down_proj.weight /workspace/pbr_ladder/acts_L2_down.npy
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.018        2.015      29.30
+[256, 256, 4]             2.268        2.266      30.10
+[256, 256, 16]            2.519        2.515      31.70
+[256, 256, 64]            2.770        2.767      33.04
+[256, 256, 256]           3.026        3.015      34.48
+INT4 RTN (ref)            4.250                   17.89
+[exit 0 elapsed 129.9s]
+
+########## L2 self_attn.q_proj ##########
+--- push_below3.py ---
+
+$ /usr/bin/python3 push_below3.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.2.self_attn.q_proj.weight /workspace/pbr_ladder/acts_L2_q.npy
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.099        2.097      17.52
+[256, 256, 4]             2.350        2.347      18.43
+[256, 256, 16]            2.602        2.599      19.81
+[256, 256, 64]            2.860        2.856      21.25
+[256, 256, 256]           3.140        3.129      22.62
+INT4 RTN (ref)            4.250                   21.05
+[exit 0 elapsed 20.9s]
+
+########## L12 mlp.gate_proj ##########
+--- push_below3.py ---
+
+$ /usr/bin/python3 push_below3.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.12.mlp.gate_proj.weight /workspace/pbr_ladder/acts_L12_gate.npy
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.033        2.031      18.35
+[256, 256, 4]             2.283        2.281      19.26
+[256, 256, 16]            2.533        2.531      20.61
+[256, 256, 64]            2.785        2.782      21.97
+[256, 256, 256]           3.040        3.031      23.30
+INT4 RTN (ref)            4.250                   23.12
+[exit 0 elapsed 116.0s]
+
+########## L12 mlp.down_proj ##########
+--- push_below3.py ---
+
+$ /usr/bin/python3 push_below3.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.12.mlp.down_proj.weight /workspace/pbr_ladder/acts_L12_down.npy
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.018        2.017      15.75
+[256, 256, 4]             2.268        2.267      16.80
+[256, 256, 16]            2.519        2.517      18.34
+[256, 256, 64]            2.770        2.768      19.81
+[256, 256, 256]           3.026        3.018      21.28
+INT4 RTN (ref)            4.250                   19.42
+[exit 0 elapsed 130.7s]
+
+########## L12 self_attn.q_proj ##########
+--- push_below3.py ---
+
+$ /usr/bin/python3 push_below3.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.12.self_attn.q_proj.weight /workspace/pbr_ladder/acts_L12_q.npy
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.099        2.097      17.37
+[256, 256, 4]             2.350        2.347      18.29
+[256, 256, 16]            2.602        2.598      19.70
+[256, 256, 64]            2.860        2.855      21.11
+[256, 256, 256]           3.140        3.129      22.49
+INT4 RTN (ref)            4.250                   21.11
+[exit 0 elapsed 21.8s]
+
+########## L21 mlp.gate_proj ##########
+--- push_below3.py ---
+
+$ /usr/bin/python3 push_below3.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.21.mlp.gate_proj.weight /workspace/pbr_ladder/acts_L21_gate.npy
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.033        2.031      18.86
+[256, 256, 4]             2.283        2.281      19.78
+[256, 256, 16]            2.533        2.531      21.13
+[256, 256, 64]            2.785        2.782      22.53
+[256, 256, 256]           3.040        3.031      23.87
+INT4 RTN (ref)            4.250                   23.35
+[exit 0 elapsed 118.5s]
+
+########## L21 mlp.down_proj ##########
+--- push_below3.py ---
+
+$ /usr/bin/python3 push_below3.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.21.mlp.down_proj.weight /workspace/pbr_ladder/acts_L21_down.npy
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.018        2.016      29.24
+[256, 256, 4]             2.268        2.266      30.24
+[256, 256, 16]            2.519        2.516      31.71
+[256, 256, 64]            2.770        2.767      33.14
+[256, 256, 256]           3.026        3.016      34.53
+INT4 RTN (ref)            4.250                   22.56
+[exit 0 elapsed 145.5s]
+
+########## L21 self_attn.q_proj ##########
+--- push_below3.py ---
+
+$ /usr/bin/python3 push_below3.py /workspace/pbr_ladder/qwen05b/model.safetensors model.layers.21.self_attn.q_proj.weight /workspace/pbr_ladder/acts_L21_q.npy
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.099        2.097      16.27
+[256, 256, 4]             2.350        2.347      17.25
+[256, 256, 16]            2.602        2.598      18.66
+[256, 256, 64]            2.860        2.856      20.11
+[256, 256, 256]           3.140        3.128      21.51
+INT4 RTN (ref)            4.250                   17.33
+[exit 0 elapsed 25.9s]

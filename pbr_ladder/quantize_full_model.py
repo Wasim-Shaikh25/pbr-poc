@@ -45,7 +45,13 @@ if os.environ.get("PBR_TEXT"):
     text = open(os.environ["PBR_TEXT"], encoding="utf-8").read()
 else:
     from datasets import load_dataset
-    text = "\n\n".join(load_dataset("wikitext", "wikitext-2-raw-v1", split="train")["text"][:4000])
+    # Legacy id "wikitext" is the same corpus as Salesforce/wikitext. Current
+    # huggingface_hub rejects the un-namespaced id.
+    try:
+        _wt = load_dataset("wikitext", "wikitext-2-raw-v1", split="train")
+    except Exception:
+        _wt = load_dataset("Salesforce/wikitext", "wikitext-2-raw-v1", split="train")
+    text = "\n\n".join(_wt["text"][:4000])
 ids = tok(text, return_tensors="pt").input_ids
 n_tok = SAMPLES * SEQ
 if ids.shape[1] < n_tok:
@@ -64,12 +70,18 @@ def rotation(n):
     if n not in rot_cache: rot_cache[n] = ortho(n, n)   # cached: same rotation reused for every layer of this width
     return rot_cache[n]
 
-def kmeans(V, k, it=10, chunk=50000):
+# Same chunk bound as push_below4.py (PBR_CHUNK). The post-fit assign below
+# used to build one (rows, k) distance matrix — 544,768 x 256 float64 is
+# 1.04 GiB and OOMs next to the live fp32 model.
+CHUNK = int(os.environ.get("PBR_CHUNK", 50000))
+def assign_rows(V, C, chunk=CHUNK):
+    return np.concatenate([((V[i:i+chunk]**2).sum(1)[:, None] - 2*V[i:i+chunk]@C.T
+                             + (C**2).sum(1)[None]).argmin(1) for i in range(0, len(V), chunk)])
+def kmeans(V, k, it=10, chunk=CHUNK):
     rng = np.random.default_rng(0)
     C = V[rng.choice(len(V), k, replace=False)]
     for _ in range(it):
-        a = np.concatenate([((V[i:i+chunk]**2).sum(1)[:, None] - 2*V[i:i+chunk]@C.T
-                              + (C**2).sum(1)[None]).argmin(1) for i in range(0, len(V), chunk)])
+        a = assign_rows(V, C, chunk)
         for j in range(k):
             m = a == j
             if m.any(): C[j] = V[m].mean(0)
@@ -97,7 +109,7 @@ def quantize_linear(Wt, H):
     books, Rres = [], pool.copy()
     for k in STAGES:
         C = kmeans(Rres, k)
-        a = ((Rres**2).sum(1)[:, None] - 2*Rres@C.T + (C**2).sum(1)[None]).argmin(1)
+        a = assign_rows(Rres, C)
         books.append(C); Rres = Rres - C[a]
 
     T = Wr.copy(); Q = np.zeros_like(T)            # pass 2: column-block feedback
@@ -135,7 +147,9 @@ for li in which:
 
     for name, mod in targets.items():
         X = torch.cat(inputs[name]).reshape(-1, mod.in_features).numpy()   # (tokens, in_features)
+        inputs[name].clear()
         H = X.T @ X / len(X)
+        del X
         Wq = quantize_linear(mod.weight, H)
         with torch.no_grad(): mod.weight.copy_(Wq)
         total_params += mod.weight.numel(); quantized_params += mod.weight.numel()
