@@ -62,6 +62,26 @@ Artifacts: `artifacts/pbr_q4/e2_mixed_qwen.{json,md}`. Large `.e2mx` /
 python -m pbr_q4.e2_mixed.container artifacts/pbr_q4/containers/PBR-Q4-e2_budget_5_00.e3mx --expect-sha <sha>
 ```
 
+## Measured (Qwen2.5-0.5B-Instruct)
+
+Winner `e2_q6_tight` (Q6 floor + light structured Q8/BF16 protect):
+
+```
+E2 physical BPW  6.283588
+E3 physical BPW  6.283611
+Δ = E2 − E3      -0.000023   (below_useful; 0 XY tiles)
+```
+
+| Gate | Target | Measured | Verdict |
+| --- | --- | ---: | --- |
+| Practical rate | ≤ 5.0 | 6.283611 | **FAIL** |
+| Stretch rate | ≤ 4.75 | 6.283611 | **FAIL** |
+| Held-out ≥ 0.95 | 0.95 | 0.957372 | **PASS** |
+| Held-out aim 0.97 | 0.97 | 0.957372 | **FAIL** |
+| Exact Q-ref decode | SHA | `141c08c6…3b46cdac` | **PASS** |
+
+Q4-class maps under a ≤5.0 packed-est still fail heldout (~0.79–0.80). Q5 floor reaches 0.922. First ≥0.95 is Q6-class, same qualitative wall as PR #17.
+
 ## Honesty
 
 - In-repo calib-v2 / heldout-v1 PPL proxy — not MMLU.
