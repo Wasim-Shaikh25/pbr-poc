@@ -2,19 +2,24 @@
 # Usage: python eval_ppl.py Qwen/Qwen2.5-0.5B-Instruct [replacements.npz]
 #   replacements.npz: keys = parameter names (e.g. model.layers.12.mlp.gate_proj.weight), values = float arrays
 # UNTESTED in the author's sandbox (no Hugging Face access). Needs: torch, transformers, datasets.
-import sys, torch, numpy as np
+import sys, os, torch, numpy as np
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from datasets import load_dataset
 name = sys.argv[1]
 tok = AutoTokenizer.from_pretrained(name)
-model = AutoModelForCausalLM.from_pretrained(name, torch_dtype=torch.bfloat16).eval()
+dtype = torch.float32 if os.environ.get("PBR_CPU_FP32") else torch.bfloat16
+model = AutoModelForCausalLM.from_pretrained(name, torch_dtype=dtype).eval()
 if len(sys.argv) > 2:
     rep = np.load(sys.argv[2]); params = dict(model.named_parameters())
     for k in rep.files:
         with torch.no_grad():
             params[k].copy_(torch.from_numpy(rep[k]).to(params[k].dtype))
         print("replaced", k)
-text = "\n\n".join(load_dataset("wikitext", "wikitext-2-raw-v1", split="test")["text"])
+import os
+if os.environ.get("PBR_TEXT"):   # local text file instead of downloading WikiText-2 (test split)
+    text = open(os.environ["PBR_TEXT"], encoding="utf-8").read()
+else:
+    from datasets import load_dataset
+    text = "\n\n".join(load_dataset("wikitext", "wikitext-2-raw-v1", split="test")["text"])
 ids = tok(text, return_tensors="pt").input_ids
 seq, nll, n = 2048, 0.0, 0
 with torch.no_grad():
