@@ -10,6 +10,7 @@ channels take Q6 / Q8 / BF16 from the protect set.
 
 from __future__ import annotations
 
+import heapq
 from dataclasses import dataclass, field
 from typing import Any, Mapping, Sequence
 
@@ -185,35 +186,36 @@ def allocate(
         higher = [b for b in u.candidates if b > cur]
         return int(higher[0]) if higher else None
 
-    # Greedy: spend leftover budget on the best Δerror / Δbits upgrades.
-    while True:
-        best_i = -1
-        best_nb = 0
-        best_gain = 0.0
-        best_dc = 0
-        for i, u in enumerate(units):
-            nb = next_bits(u, bits[i])
-            if nb is None:
-                continue
-            dc = _unit_cost(u, nb, group_size) - _unit_cost(u, bits[i], group_size)
-            if dc <= 0:
-                continue
-            if total + dc > budget_bits + 1e-6:
-                continue
-            dE = u.importance * (mse_scale(bits[i]) - mse_scale(nb))
-            gain = dE / float(dc)
-            # Tie-break: higher importance, then lower name/row for determinism.
-            if gain > best_gain + 1e-18 or (
-                abs(gain - best_gain) <= 1e-18 and (best_i < 0 or (u.importance, -u.row0, u.name) > (units[best_i].importance, -units[best_i].row0, units[best_i].name))
-            ):
-                best_gain = gain
-                best_i = i
-                best_nb = nb
-                best_dc = dc
-        if best_i < 0:
-            break
-        total += best_dc
-        bits[best_i] = best_nb
+    def heap_item(i: int, cur: int, nb: int, dc: int) -> tuple:
+        u = units[i]
+        dE = u.importance * (mse_scale(cur) - mse_scale(nb))
+        gain = dE / float(dc)
+        # Max-heap via negatives. Tie-break: higher importance, lower row, name.
+        return (-gain, -u.importance, u.row0, u.name, i, cur, nb, dc)
+
+    heap: list[tuple] = []
+    for i, u in enumerate(units):
+        nb = next_bits(u, bits[i])
+        if nb is None:
+            continue
+        dc = _unit_cost(u, nb, group_size) - _unit_cost(u, bits[i], group_size)
+        if dc > 0:
+            heapq.heappush(heap, heap_item(i, bits[i], nb, dc))
+
+    while heap:
+        _neg_gain, _neg_imp, _row0, _name, i, cur, nb, dc = heapq.heappop(heap)
+        if bits[i] != cur:
+            continue
+        if total + dc > budget_bits + 1e-6:
+            continue
+        total += dc
+        bits[i] = nb
+        nb2 = next_bits(units[i], nb)
+        if nb2 is None:
+            continue
+        dc2 = _unit_cost(units[i], nb2, group_size) - _unit_cost(units[i], nb, group_size)
+        if dc2 > 0:
+            heapq.heappush(heap, heap_item(i, nb, nb2, dc2))
 
     row_bits: dict[str, np.ndarray] = {}
     bit_hist: dict[str, int] = {}

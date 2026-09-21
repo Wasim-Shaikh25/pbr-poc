@@ -552,6 +552,7 @@ def main() -> int:
             embed_freq=embed_freq,
             special_ids=special_ids,
         )
+        print(f"  {len(units)} channel-group units; allocating…", flush=True)
         alloc = allocate(units, budget_bpw=budget, n_weights=n_weights)
         print(
             f"  packed-est BPW={alloc.packed_est_bpw} (budget {budget}) "
