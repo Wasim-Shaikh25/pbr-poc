@@ -1,0 +1,198 @@
+{
+  "experiment": "phase2b_l0_l1_l2_isolation",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "gate": null,
+  "gate_note": "Diagnostic only. No pass/fail gate.",
+  "baseline_ppl": 14.247,
+  "baseline_reproduced_this_run": 14.247,
+  "eval": {
+    "script": "pbr_ladder/eval_ppl.py",
+    "env": "PBR_CPU_FP32=1",
+    "dataset": "Salesforce/wikitext",
+    "config": "wikitext-2-raw-v1",
+    "split": "test",
+    "tokens": 299078,
+    "checkpoint": "dequantized fp32 written by quantize_full_model.py; perplexity only, not a packed checkpoint"
+  },
+  "recipe": {
+    "script": "pbr_ladder/quantize_full_model.py",
+    "stages": [
+      256,
+      256,
+      64
+    ],
+    "samples": 64,
+    "seq": 512,
+    "index_bpw_touched": 2.75,
+    "linears_per_layer": [
+      "self_attn.q_proj",
+      "self_attn.k_proj",
+      "self_attn.v_proj",
+      "self_attn.o_proj",
+      "mlp.gate_proj",
+      "mlp.up_proj",
+      "mlp.down_proj"
+    ]
+  },
+  "stack": {
+    "torch": "2.14.0+cpu",
+    "transformers": "5.17.0",
+    "datasets": "5.0.1",
+    "numpy": "2.4.4"
+  },
+  "runs": [
+    {
+      "name": "baseline",
+      "layers_quantized": [],
+      "ppl": 14.247,
+      "delta_ppl": 0.0,
+      "pct_vs_14_247": 0.0,
+      "source": "this_run",
+      "parameters_quantized": 0
+    },
+    {
+      "name": "L0",
+      "layers_quantized": [
+        0
+      ],
+      "ppl": 14.528,
+      "delta_ppl": 0.281,
+      "pct_vs_14_247": 1.972,
+      "source": "this_run",
+      "parameters_quantized": 14909440
+    },
+    {
+      "name": "L1",
+      "layers_quantized": [
+        1
+      ],
+      "ppl": 14.445,
+      "delta_ppl": 0.198,
+      "pct_vs_14_247": 1.39,
+      "source": "this_run",
+      "parameters_quantized": 14909440
+    },
+    {
+      "name": "L2",
+      "layers_quantized": [
+        2
+      ],
+      "ppl": 14.467,
+      "delta_ppl": 0.22,
+      "pct_vs_14_247": 1.544,
+      "source": "this_run",
+      "parameters_quantized": 14909440
+    },
+    {
+      "name": "L0+L1",
+      "layers_quantized": [
+        0,
+        1
+      ],
+      "ppl": 14.702,
+      "delta_ppl": 0.455,
+      "pct_vs_14_247": 3.194,
+      "source": "this_run",
+      "parameters_quantized": 29818880
+    },
+    {
+      "name": "L1+L2",
+      "layers_quantized": [
+        1,
+        2
+      ],
+      "ppl": 14.674,
+      "delta_ppl": 0.427,
+      "pct_vs_14_247": 2.997,
+      "source": "this_run",
+      "parameters_quantized": 29818880
+    },
+    {
+      "name": "L0+L1+L2",
+      "layers_quantized": [
+        0,
+        1,
+        2
+      ],
+      "ppl": 15.005,
+      "delta_ppl": 0.758,
+      "pct_vs_14_247": 5.32,
+      "source": "phase2_log",
+      "parameters_quantized": 44728320
+    },
+    {
+      "name": "L12",
+      "layers_quantized": [
+        12
+      ],
+      "ppl": 14.354,
+      "delta_ppl": 0.107,
+      "pct_vs_14_247": 0.751,
+      "source": "phase1_log",
+      "parameters_quantized": 14909440
+    },
+    {
+      "name": "all_24",
+      "layers_quantized": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "ppl": 19.427,
+      "delta_ppl": 5.18,
+      "pct_vs_14_247": 36.359,
+      "source": "phase2_log",
+      "parameters_quantized": 357826560
+    }
+  ],
+  "additivity_ppl": {
+    "note": "Isolated deltas are single-layer runs (full-precision upstream). Measured multi-layer runs are sequential. extra = measured delta - sum of isolated deltas.",
+    "L0_plus_L1": {
+      "sum_of_isolated": 0.479,
+      "measured": 0.455,
+      "extra": -0.024
+    },
+    "L1_plus_L2": {
+      "sum_of_isolated": 0.418,
+      "measured": 0.427,
+      "extra": 0.009
+    },
+    "L0_plus_L1_plus_L2": {
+      "sum_of_isolated": 0.699,
+      "measured": 0.758,
+      "extra": 0.059
+    }
+  },
+  "index_bpw_if_early_layers_stay_fp16": {
+    "note": "Illustration only. Average index cost over 24 equal linear blocks if the first k blocks stay at 16-bit and the rest stay at 2.75. Not a measured packed rate. Embeddings, head, and norms are outside this average.",
+    "k_to_bpw": {
+      "0": 2.75,
+      "1": 3.302,
+      "2": 3.854,
+      "3": 4.406,
+      "4": 4.958
+    }
+  },
+  "phase4_recommendation": "Raise bits on the early block (layers 0-2, and layer 3 with them; layer 3 was not isolated). Start with layer 0, the largest of the three isolated hits (+1.972%). Keep stages 256,256,64 on the middle, where layer 12 measured +0.751%. A modest bit increase on layers 0-2 is the next experiment; a full Phase 4 bit search was not run."
+}
