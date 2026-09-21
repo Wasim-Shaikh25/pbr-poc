@@ -165,39 +165,42 @@ def _candidates_aligned_phase1(arr: np.ndarray, nbits: int, th: int, tw: int) ->
     margin = tile_margin_bits(th * tw, nbits)
     Ttot = int(tiles_all.shape[0])
     out: list[_Cand] = []
-    maps = batched_residual_maps(tiles_all, nbits)
-    maps = [(t, p, r) for t, p, r in maps if t == TRAV_ROW and p in E3_PREDS]
-    if not maps:
-        return out
-    T = Ttot
-    best_z = np.full(T, -1.0)
-    best_pred = np.full(T, 99, dtype=np.int16)
-    best_res = np.empty(tiles_all.shape, dtype=np.uint8)
-    for trav, pred, res in maps:
-        z = np.mean(res == 0, axis=(1, 2))
-        better = (z > best_z + 1e-12) | ((np.abs(z - best_z) <= 1e-12) & (pred < best_pred))
-        if not np.any(better):
+    chunk = 4096
+    for start in range(0, Ttot, chunk):
+        tiles = tiles_all[start : start + chunk]
+        maps = batched_residual_maps(tiles, nbits)
+        maps = [(t, p, r) for t, p, r in maps if t == TRAV_ROW and p in E3_PREDS]
+        if not maps:
             continue
-        best_z = np.where(better, z, best_z)
-        best_pred = np.where(better, pred, best_pred)
-        best_res[better] = res[better]
-    compete = best_z >= _ZRATE_COMPETE
-    if nbits > 0:
-        uni = np.zeros(T, dtype=bool)
-        for b in range(nbits):
-            plane = (best_res >> np.uint8(b)) & np.uint8(1)
-            flatp = plane.reshape(T, -1)
-            uni |= flatp.all(axis=1) | (~flatp.any(axis=1))
-        compete = compete | uni
-    for i in np.flatnonzero(compete).tolist():
-        enc = _encode_phase1(
-            best_res[i], pred=int(best_pred[i]), trav=TRAV_ROW, nbits=nbits
-        )
-        if enc.mode == MODE_MATRIX:
-            continue
-        save_bits = (packed_one - (1 + len(enc.payload))) * 8
-        if save_bits >= margin:
-            out.append(_Cand(int(i), th * tw, packed_one, enc))
+        T = int(tiles.shape[0])
+        best_z = np.full(T, -1.0)
+        best_pred = np.full(T, 99, dtype=np.int16)
+        best_res = np.empty(tiles.shape, dtype=np.uint8)
+        for trav, pred, res in maps:
+            z = np.mean(res == 0, axis=(1, 2))
+            better = (z > best_z + 1e-12) | ((np.abs(z - best_z) <= 1e-12) & (pred < best_pred))
+            if not np.any(better):
+                continue
+            best_z = np.where(better, z, best_z)
+            best_pred = np.where(better, pred, best_pred)
+            best_res[better] = res[better]
+        compete = best_z >= _ZRATE_COMPETE
+        if nbits > 0:
+            uni = np.zeros(T, dtype=bool)
+            for b in range(nbits):
+                plane = (best_res >> np.uint8(b)) & np.uint8(1)
+                flatp = plane.reshape(T, -1)
+                uni |= flatp.all(axis=1) | (~flatp.any(axis=1))
+            compete = compete | uni
+        for i in np.flatnonzero(compete).tolist():
+            enc = _encode_phase1(
+                best_res[i], pred=int(best_pred[i]), trav=TRAV_ROW, nbits=nbits
+            )
+            if enc.mode == MODE_MATRIX:
+                continue
+            save_bits = (packed_one - (1 + len(enc.payload))) * 8
+            if save_bits >= margin:
+                out.append(_Cand(start + int(i), th * tw, packed_one, enc))
     return out
 
 

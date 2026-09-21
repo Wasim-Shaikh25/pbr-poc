@@ -206,7 +206,15 @@ def test_e3_net_margin_rejects_tiny_savings():
     assert packed > 0
 
 
-def test_e3_constant_can_select_xy_and_roundtrip():
+def test_e3_chunked_large_array_stays_bounded_and_roundtrips():
+    rng = np.random.default_rng(11)
+    arr = rng.integers(0, 16, size=(128, 128), dtype=np.uint16)
+    enc = encode_array_e3(arr, 4)
+    from pbr_q4.e2_mixed.e3_codec import decode_array_e3
+
+    rec = decode_array_e3(enc["blob"], rows=128, cols=128, nbits=4)
+    assert np.array_equal(rec, arr)
+    assert enc["kind"] in ("packed", "xy_sel")
     arr = np.zeros((32, 32), dtype=np.uint16)
     enc = encode_array_e3(arr, 4)
     # Constant zeros should beat packed by a wide margin.

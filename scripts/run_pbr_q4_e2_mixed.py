@@ -68,7 +68,8 @@ LADDER: tuple[tuple[str, float, int, str], ...] = (
     ("e2_budget_5_00", 5.00, 4, "Practical ≤5.0 packed-est; Q4 default + structured protect."),
     ("e2_backoff_5_50", 5.50, 4, "Quality backoff: allow 5.50 packed-est (may miss ≤5.0)."),
     ("e2_backoff_6_00", 6.00, 5, "Quality backoff: Q5 floor, budget 6.00."),
-    ("e2_q6_floor", 8.00, 6, "Q6 floor + leftover protect (PR #17-class rate; expected >5.0)."),
+    ("e2_q6_tight", 6.25, 6, "Q6 floor with a tight budget (no leftover Q8 spend)."),
+    ("e2_q6_protect", 6.75, 6, "Q6 floor + modest structured Q8 protect."),
 )
 
 HONESTY = [
@@ -616,11 +617,22 @@ def main() -> int:
         winner_eval = pareto[-1]
         winner_name = names[-1]
 
+    # Drop the BF16 numpy state and the live model before physical encode.
+    del state
     e2_stats: dict[str, Any] = {}
     e3_stats: dict[str, Any] = {}
     exact = False
     sub_ok = False
     if not args.skip_encode:
+        if model is not None:
+            del model
+            model = None
+        if baseline is not None:
+            del baseline
+            baseline = None
+        import gc
+
+        gc.collect()
         args.container_dir.mkdir(parents=True, exist_ok=True)
         e2_stats, e3_stats, exact, sub_ok = encode_pair(winner_qts, args.container_dir, winner_name or "e2")
         for row in pareto:
