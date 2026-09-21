@@ -33,7 +33,11 @@ artifacts/pbr_q4/containers/*.e3mx
 artifacts/pbr_q4/containers/*.hybx
 artifacts/pbr_q4/containers/*.pq4x
 
+# local Hugging Face cache
+.hf/
+
 # pbr_ladder real-Qwen run artifacts (reproducible, see docs/pbr_ladder/README.md)
 pbr_ladder/qwen05b/
+pbr_ladder/qwen05b_*/
 pbr_ladder/*.npy
 pbr_ladder/*.npz

@@ -19,7 +19,14 @@ if os.environ.get("PBR_TEXT"):   # local text file instead of downloading WikiTe
     text = open(os.environ["PBR_TEXT"], encoding="utf-8").read()
 else:
     from datasets import load_dataset
-    text = "\n\n".join(load_dataset("wikitext", "wikitext-2-raw-v1", split="test")["text"])
+    # Legacy id "wikitext" is the same corpus as Salesforce/wikitext (WikiText-2
+    # raw v1 test = 299078 Qwen tokens, the 14.247 baseline). Current
+    # huggingface_hub rejects the un-namespaced id.
+    try:
+        _wt = load_dataset("wikitext", "wikitext-2-raw-v1", split="test")
+    except Exception:
+        _wt = load_dataset("Salesforce/wikitext", "wikitext-2-raw-v1", split="test")
+    text = "\n\n".join(_wt["text"])
 ids = tok(text, return_tensors="pt").input_ids
 seq, nll, n = 2048, 0.0, 0
 with torch.no_grad():

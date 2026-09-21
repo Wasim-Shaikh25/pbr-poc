@@ -1,0 +1,10 @@
+SUMMARY
+L2 mlp.gate_proj push_below3.py
+L2 mlp.down_proj push_below3.py
+L2 self_attn.q_proj push_below3.py
+L12 mlp.gate_proj push_below3.py
+L12 mlp.down_proj push_below3.py
+L12 self_attn.q_proj push_below3.py
+L21 mlp.gate_proj push_below3.py
+L21 mlp.down_proj push_below3.py
+L21 self_attn.q_proj push_below3.py

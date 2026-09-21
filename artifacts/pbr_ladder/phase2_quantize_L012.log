@@ -1,0 +1,15 @@
+Loading model from qwen05b ...
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:  16%|█▌        | 45/290 [00:00<00:00, 449.29it/s]Loading weights:  45%|████▌     | 131/290 [00:00<00:00, 687.73it/s]Loading weights:  69%|██████▉   | 200/290 [00:00<00:00, 661.27it/s]Loading weights:  92%|█████████▏| 267/290 [00:00<00:00, 409.07it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 488.96it/s]
+Model has 24 layers; quantizing: [0, 1, 2]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (276404 > 131072). Running this sequence through the model will result in indexing errors
+layer  0/23  quantized 7 tensors  [  83.8s elapsed]
+layer  1/23  quantized 7 tensors  [ 160.6s elapsed]
+layer  2/23  quantized 7 tensors  [ 236.5s elapsed]
+
+Quantized 44,728,320 parameters across 3 layer(s), ~2.75 bpw for touched tensors (stages=[256, 256, 64], codebook overhead <0.1 bpw).
+Embeddings, output head, and norms were left untouched (full precision).
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:01<00:00,  1.98s/it]Writing model shards: 100%|██████████| 1/1 [00:01<00:00,  1.98s/it]
+
+Saved new checkpoint to: qwen05b_L012
+Load and test it directly:  python eval_ppl.py qwen05b_L012

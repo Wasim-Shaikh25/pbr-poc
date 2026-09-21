@@ -14,7 +14,13 @@ if os.environ.get("PBR_TEXT"):   # local text file instead of downloading WikiTe
     text = open(os.environ["PBR_TEXT"], encoding="utf-8").read()
 else:
     from datasets import load_dataset
-    text = "\n\n".join(load_dataset("wikitext", "wikitext-2-raw-v1", split="train")["text"][:3000])
+    # Legacy id "wikitext" is the same corpus as Salesforce/wikitext (WikiText-2
+    # raw v1). Current huggingface_hub rejects the un-namespaced id.
+    try:
+        _wt = load_dataset("wikitext", "wikitext-2-raw-v1", split="train")
+    except Exception:
+        _wt = load_dataset("Salesforce/wikitext", "wikitext-2-raw-v1", split="train")
+    text = "\n\n".join(_wt["text"][:3000])
 ids = tok(text, return_tensors="pt").input_ids[:, :16384]   # calibration = TRAIN split only
 rows = []
 hook = target.register_forward_hook(

@@ -1,0 +1,104 @@
+
+########## model.layers.12.mlp.up_proj.weight ##########
+--- push_below4.py ---
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.58      11.68
+INT3 GPTQ                   3.250      10.50      16.62
+INT3 rot+GPTQ               3.250      11.38      17.79
+3x256 8-D nodes, rot        3.040      14.55      13.88
+INT2 RTN                    2.250       4.92       3.52
+INT2 GPTQ                   2.250       2.36       8.47
+INT2 rot+GPTQ               2.250       3.52       9.81
+2x256 8-D nodes, rot        2.033       9.83       9.17
+
+[exit 0 elapsed 84.3s]
+
+########## model.layers.12.mlp.up_proj.weight ##########
+--- push_below3.py ---
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.033        2.031      13.86
+[256, 256, 4]             2.283        2.281      14.75
+[256, 256, 16]            2.533        2.531      16.11
+[256, 256, 64]            2.785        2.782      17.45
+[256, 256, 256]           3.040        3.030      18.78
+INT4 RTN (ref)            4.250                   18.45
+
+[exit 0 elapsed 125.6s]
+
+########## model.layers.12.self_attn.k_proj.weight ##########
+--- push_below4.py ---
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.64      17.10
+INT3 GPTQ                   3.250       9.60      22.02
+INT3 rot+GPTQ               3.250      10.66      24.25
+3x256 8-D nodes, rot        3.875      15.83      19.83
+INT2 RTN                    2.250       5.02       9.20
+INT2 GPTQ                   2.250       1.16      13.31
+INT2 rot+GPTQ               2.250       2.61      15.88
+2x256 8-D nodes, rot        2.589      10.59      14.42
+
+[exit 0 elapsed 3.1s]
+
+########## model.layers.12.self_attn.k_proj.weight ##########
+--- push_below3.py ---
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.589        2.580      19.98
+[256, 256, 4]             2.844        2.834      21.04
+[256, 256, 16]            3.107        3.098      22.45
+[256, 256, 64]            3.411        3.398      23.91
+[256, 256, 256]           3.875        3.852      25.44
+INT4 RTN (ref)            4.250                   23.92
+
+[exit 0 elapsed 4.2s]
+
+########## model.layers.12.self_attn.v_proj.weight ##########
+--- push_below4.py ---
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.43      12.15
+INT3 GPTQ                   3.250       9.36      17.13
+INT3 rot+GPTQ               3.250      10.71      19.75
+3x256 8-D nodes, rot        3.875      15.88      15.71
+INT2 RTN                    2.250       4.72       3.54
+INT2 GPTQ                   2.250       0.71       8.22
+INT2 rot+GPTQ               2.250       2.61      11.41
+2x256 8-D nodes, rot        2.589      10.62      10.45
+
+[exit 0 elapsed 3.2s]
+
+########## model.layers.12.self_attn.v_proj.weight ##########
+--- push_below3.py ---
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.589        2.582      15.46
+[256, 256, 4]             2.844        2.834      16.50
+[256, 256, 16]            3.107        3.098      17.96
+[256, 256, 64]            3.411        3.400      19.48
+[256, 256, 256]           3.875        3.855      21.06
+INT4 RTN (ref)            4.250                   19.08
+
+[exit 0 elapsed 4.5s]
+
+########## model.layers.12.self_attn.o_proj.weight ##########
+--- push_below4.py ---
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      13.09      11.67
+INT3 GPTQ                   3.250       9.77      17.18
+INT3 rot+GPTQ               3.250      10.23      18.74
+3x256 8-D nodes, rot        3.140      14.77      12.78
+INT2 RTN                    2.250       5.63       4.14
+INT2 GPTQ                   2.250       1.63       8.92
+INT2 rot+GPTQ               2.250       2.00       9.89
+2x256 8-D nodes, rot        2.099       9.94       7.99
+
+[exit 0 elapsed 14.2s]
+
+########## model.layers.12.self_attn.o_proj.weight ##########
+--- push_below3.py ---
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.099        2.097      14.55
+[256, 256, 4]             2.350        2.347      15.49
+[256, 256, 16]            2.602        2.598      16.95
+[256, 256, 64]            2.860        2.855      18.38
+[256, 256, 256]           3.140        3.129      19.73
+INT4 RTN (ref)            4.250                   18.26
+
+[exit 0 elapsed 22.0s]
