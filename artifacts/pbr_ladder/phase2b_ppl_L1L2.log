@@ -1,0 +1,7 @@
+=== EVAL ./qwen05b_iso_L1L2 2026-09-21T23:17:26+00:00 ===
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:  26%|██▌       | 74/290 [00:00<00:00, 700.62it/s]Loading weights:  50%|█████     | 145/290 [00:00<00:00, 692.27it/s]Loading weights:  85%|████████▌ | 247/290 [00:00<00:00, 835.57it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 817.54it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (299078 > 131072). Running this sequence through the model will result in indexing errors
+WikiText-2 test perplexity: 14.674
+=== EVAL DONE ./qwen05b_iso_L1L2 2026-09-21T23:27:45+00:00 ===
