@@ -1,0 +1,10 @@
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      11.03      11.11
+INT3 GPTQ                   3.250       5.85      13.52
+INT3 rot+GPTQ               3.250      10.36      18.91
+3x256 8-D nodes, rot        3.232      14.95      15.01
+INT2 RTN                    2.250       2.90       3.05
+INT2 GPTQ                   2.250      -3.55       3.18
+INT2 rot+GPTQ               2.250       2.24      10.53
+2x256 8-D nodes, rot        2.161      10.05      10.13
+numpy 2.4.6
