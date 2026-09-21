@@ -1,0 +1,474 @@
+Real-model run: Qwen/Qwen2.5-0.5B-Instruct
+Run environment: user's local machine (Windows, C:\python_project\pbr-poc), with
+huggingface.co access. Not reproduced in the cloud sandbox (see docs/pbr_ladder/README.md
+for why). Pasted verbatim from the user's console, only trimmed of nothing.
+
+Tensors: gate_proj / down_proj / q_proj at layers 2, 12, 21 (Qwen2.5-0.5B has 24 layers,
+0-indexed), per guide guide docs/pbr_ladder/PBR_Ladder_Script_Guide.docx section 5.1.
+Calibration activations: real, captured with capture_activations.py per tensor's own
+layer/module (gate_proj and up_proj share input; down_proj captured separately).
+
+########## L12 mlp.gate_proj ##########
+--- push_below4 ---
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.56      16.44
+INT3 GPTQ                   3.250      10.48      21.14
+INT3 rot+GPTQ               3.250      11.38      22.31
+3x256 8-D nodes, rot        3.040      14.55      18.05
+INT2 RTN                    2.250       4.89       8.58
+INT2 GPTQ                   2.250       2.37      13.02
+INT2 rot+GPTQ               2.250       3.52      14.33
+2x256 8-D nodes, rot        2.033       9.82      12.98
+--- push_nested ---
+method                                bpw  output dB
+3x256 nodes rot                     3.040      17.84
+3x256 nodes rot +feedback           3.040      23.29
+2x256 nodes rot                     2.033      12.80
+2x256 nodes rot +feedback           2.033      18.35
+1x256 nodes rot                     1.025       7.06
+1x256 nodes rot +feedback           1.025      12.42
+INT3 rot+GPTQ (ref)                 3.250      22.31
+INT2 rot+GPTQ (ref)                 2.250      14.33
+INT4 RTN (ref)                      4.250      23.12
+
+ONE file, truncated tiers (codes from single 3-stage feedback encode):
+  tier 3 stages  bpw 3.040  output dB 23.29
+  tier 2 stages  bpw 2.033  output dB 14.24
+  tier 1 stages  bpw 1.025  output dB 7.62
+
+Tier-aware feedback (alpha = weight on tier-2 error):
+  alpha 1.0: T3 3.04bpw 15.04dB  T2 2.03bpw 18.35dB  T1 1.03bpw  8.46dB
+  alpha 0.7: T3 3.04bpw 17.68dB  T2 2.03bpw 17.68dB  T1 1.03bpw  8.26dB
+  alpha 0.5: T3 3.04bpw 19.67dB  T2 2.03bpw 16.79dB  T1 1.03bpw  8.06dB
+
+Successive refinement (one file, every tier feedback-optimized):
+  tier 1: 1.025 bpw  output 12.42 dB
+  tier 2: 2.051 bpw  output 16.79 dB
+  tier 3: 3.076 bpw  output 20.30 dB
+--- push_below3 ---
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.033        2.031      18.35
+[256, 256, 4]             2.283        2.281      19.25
+[256, 256, 16]            2.533        2.531      20.62
+[256, 256, 64]            2.785        2.782      21.96
+[256, 256, 256]           3.040        3.031      23.30
+INT4 RTN (ref)            4.250                   23.12
+--- ladder_exact ---
+exact alone (PBR-E style estimate): 10.64 bpw   [word entropy 10.57]
+ladder up to tier 1: lossy 1.09 + exact-given-lossy 10.42 = 11.51 bpw  (overhead vs exact alone +0.87)
+ladder up to tier 2: lossy 2.18 + exact-given-lossy 9.73 = 11.91 bpw  (overhead vs exact alone +1.26)
+ladder up to tier 3: lossy 3.27 + exact-given-lossy 9.06 = 12.33 bpw  (overhead vs exact alone +1.69)
+########## L12 mlp.down_proj ##########
+--- push_below4 ---
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.43      12.74
+INT3 GPTQ                   3.250       7.86      18.93
+INT3 rot+GPTQ               3.250       9.33      20.37
+3x256 8-D nodes, rot        3.026      14.53      14.82
+INT2 RTN                    2.250       4.75       4.97
+INT2 GPTQ                   2.250      -1.43       8.44
+INT2 rot+GPTQ               2.250       0.73      10.90
+2x256 8-D nodes, rot        2.018       9.81      10.08
+--- push_nested ---
+method                                bpw  output dB
+3x256 nodes rot                     3.026      14.74
+3x256 nodes rot +feedback           3.026      21.28
+2x256 nodes rot                     2.018      10.02
+2x256 nodes rot +feedback           2.018      15.75
+1x256 nodes rot                     1.011       5.10
+1x256 nodes rot +feedback           1.011       8.87
+INT3 rot+GPTQ (ref)                 3.250      20.37
+INT2 rot+GPTQ (ref)                 2.250      10.90
+INT4 RTN (ref)                      4.250      19.42
+
+ONE file, truncated tiers (codes from single 3-stage feedback encode):
+  tier 3 stages  bpw 3.026  output dB 21.28
+  tier 2 stages  bpw 2.018  output dB 11.31
+  tier 1 stages  bpw 1.011  output dB 5.45
+
+Tier-aware feedback (alpha = weight on tier-2 error):
+  alpha 1.0: T3 3.03bpw 11.91dB  T2 2.02bpw 15.75dB  T1 1.01bpw  6.10dB
+  alpha 0.7: T3 3.03bpw 14.64dB  T2 2.02bpw 15.09dB  T1 1.01bpw  5.98dB
+  alpha 0.5: T3 3.03bpw 16.83dB  T2 2.02bpw 14.11dB  T1 1.01bpw  5.89dB
+
+Successive refinement (one file, every tier feedback-optimized):
+  tier 1: 1.011 bpw  output 8.87 dB
+  tier 2: 2.022 bpw  output 12.93 dB
+  tier 3: 3.032 bpw  output 15.33 dB
+--- push_below3 ---
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.018        2.017      15.75
+[256, 256, 4]             2.268        2.267      16.78
+[256, 256, 16]            2.519        2.517      18.34
+[256, 256, 64]            2.770        2.768      19.82
+[256, 256, 256]           3.026        3.018      21.28
+INT4 RTN (ref)            4.250                   19.42
+--- ladder_exact ---
+exact alone (PBR-E style estimate): 10.66 bpw   [word entropy 10.59]
+ladder up to tier 1: lossy 1.09 + exact-given-lossy 10.62 = 11.70 bpw  (overhead vs exact alone +1.04)
+ladder up to tier 2: lossy 2.18 + exact-given-lossy 10.12 = 12.30 bpw  (overhead vs exact alone +1.64)
+ladder up to tier 3: lossy 3.27 + exact-given-lossy 9.66 = 12.93 bpw  (overhead vs exact alone +2.27)
+########## L12 self_attn.q_proj ##########
+--- push_below4 ---
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.79      14.51
+INT3 GPTQ                   3.250       9.77      19.34
+INT3 rot+GPTQ               3.250      10.64      21.44
+3x256 8-D nodes, rot        3.140      14.77      16.28
+INT2 RTN                    2.250       5.23       6.61
+INT2 GPTQ                   2.250       1.18      10.40
+INT2 rot+GPTQ               2.250       2.59      13.09
+2x256 8-D nodes, rot        2.099       9.95      11.42
+--- push_nested ---
+method                                bpw  output dB
+3x256 nodes rot                     3.140      16.14
+3x256 nodes rot +feedback           3.140      22.48
+2x256 nodes rot                     2.099      11.27
+2x256 nodes rot +feedback           2.099      17.37
+1x256 nodes rot                     1.059       6.05
+1x256 nodes rot +feedback           1.059      11.05
+INT3 rot+GPTQ (ref)                 3.250      21.44
+INT2 rot+GPTQ (ref)                 2.250      13.09
+INT4 RTN (ref)                      4.250      21.11
+
+ONE file, truncated tiers (codes from single 3-stage feedback encode):
+  tier 3 stages  bpw 3.140  output dB 22.48
+  tier 2 stages  bpw 2.099  output dB 12.56
+  tier 1 stages  bpw 1.059  output dB 6.54
+
+Tier-aware feedback (alpha = weight on tier-2 error):
+  alpha 1.0: T3 3.14bpw 13.19dB  T2 2.10bpw 17.37dB  T1 1.06bpw  7.13dB
+  alpha 0.7: T3 3.14bpw 15.88dB  T2 2.10bpw 16.54dB  T1 1.06bpw  7.02dB
+  alpha 0.5: T3 3.14bpw 18.05dB  T2 2.10bpw 15.43dB  T1 1.06bpw  6.93dB
+
+Successive refinement (one file, every tier feedback-optimized):
+  tier 1: 1.059 bpw  output 11.05 dB
+  tier 2: 2.117 bpw  output 15.14 dB
+  tier 3: 3.176 bpw  output 18.14 dB
+--- push_below3 ---
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.099        2.097      17.37
+[256, 256, 4]             2.350        2.347      18.29
+[256, 256, 16]            2.602        2.598      19.70
+[256, 256, 64]            2.860        2.855      21.11
+[256, 256, 256]           3.140        3.129      22.49
+INT4 RTN (ref)            4.250                   21.11
+--- ladder_exact ---
+exact alone (PBR-E style estimate): 10.71 bpw   [word entropy 10.64]
+ladder up to tier 1: lossy 1.09 + exact-given-lossy 10.49 = 11.58 bpw  (overhead vs exact alone +0.88)
+ladder up to tier 2: lossy 2.18 + exact-given-lossy 9.87 = 12.05 bpw  (overhead vs exact alone +1.34)
+ladder up to tier 3: lossy 3.27 + exact-given-lossy 9.28 = 12.55 bpw  (overhead vs exact alone +1.85)
+########## L2 mlp.gate_proj ##########
+--- push_below4 ---
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      13.01      15.76
+INT3 GPTQ                   3.250      10.97      19.49
+INT3 rot+GPTQ               3.250      11.35      20.06
+3x256 8-D nodes, rot        3.040      14.54      17.12
+INT2 RTN                    2.250       5.46       8.40
+INT2 GPTQ                   2.250       3.01      11.47
+INT2 rot+GPTQ               2.250       3.47      12.08
+2x256 8-D nodes, rot        2.033       9.83      12.12
+--- push_nested ---
+method                                bpw  output dB
+3x256 nodes rot                     3.040      16.92
+3x256 nodes rot +feedback           3.040      21.02
+2x256 nodes rot                     2.033      11.99
+2x256 nodes rot +feedback           2.033      16.06
+1x256 nodes rot                     1.025       6.56
+1x256 nodes rot +feedback           1.025      10.25
+INT3 rot+GPTQ (ref)                 3.250      20.06
+INT2 rot+GPTQ (ref)                 2.250      12.08
+INT4 RTN (ref)                      4.250      22.43
+
+ONE file, truncated tiers (codes from single 3-stage feedback encode):
+  tier 3 stages  bpw 3.040  output dB 21.02
+  tier 2 stages  bpw 2.033  output dB 13.14
+  tier 1 stages  bpw 1.025  output dB 6.97
+
+Tier-aware feedback (alpha = weight on tier-2 error):
+  alpha 1.0: T3 3.04bpw 14.54dB  T2 2.03bpw 16.06dB  T1 1.03bpw  7.60dB
+  alpha 0.7: T3 3.04bpw 16.84dB  T2 2.03bpw 15.65dB  T1 1.03bpw  7.47dB
+  alpha 0.5: T3 3.04bpw 18.47dB  T2 2.03bpw 15.06dB  T1 1.03bpw  7.34dB
+
+Successive refinement (one file, every tier feedback-optimized):
+  tier 1: 1.025 bpw  output 10.25 dB
+  tier 2: 2.051 bpw  output 14.74 dB
+  tier 3: 3.076 bpw  output 18.37 dB
+--- push_below3 ---
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.033        2.031      16.06
+[256, 256, 4]             2.283        2.281      16.96
+[256, 256, 16]            2.533        2.531      18.33
+[256, 256, 64]            2.785        2.782      19.69
+[256, 256, 256]           3.040        3.031      21.03
+INT4 RTN (ref)            4.250                   22.43
+--- ladder_exact ---
+exact alone (PBR-E style estimate): 10.58 bpw   [word entropy 10.51]
+ladder up to tier 1: lossy 1.09 + exact-given-lossy 10.34 = 11.43 bpw  (overhead vs exact alone +0.85)
+ladder up to tier 2: lossy 2.18 + exact-given-lossy 9.63 = 11.80 bpw  (overhead vs exact alone +1.22)
+ladder up to tier 3: lossy 3.27 + exact-given-lossy 8.95 = 12.22 bpw  (overhead vs exact alone +1.64)
+########## L2 mlp.down_proj ##########
+--- push_below4 ---
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.80       9.44
+INT3 GPTQ                   3.250       7.26      31.34
+INT3 rot+GPTQ               3.250      12.70      36.08
+3x256 8-D nodes, rot        3.026      14.53      13.50
+INT2 RTN                    2.250       5.20       0.92
+INT2 GPTQ                   2.250      -5.80      17.85
+INT2 rot+GPTQ               2.250       5.16      28.49
+2x256 8-D nodes, rot        2.018       9.81       8.92
+--- push_nested ---
+method                                bpw  output dB
+3x256 nodes rot                     3.026      13.29
+3x256 nodes rot +feedback           3.026      34.32
+2x256 nodes rot                     2.018       9.03
+2x256 nodes rot +feedback           2.018      29.30
+1x256 nodes rot                     1.011       4.06
+1x256 nodes rot +feedback           1.011      22.16
+INT3 rot+GPTQ (ref)                 3.250      36.08
+INT2 rot+GPTQ (ref)                 2.250      28.49
+INT4 RTN (ref)                      4.250      17.89
+
+ONE file, truncated tiers (codes from single 3-stage feedback encode):
+  tier 3 stages  bpw 3.026  output dB 34.32
+  tier 2 stages  bpw 2.018  output dB 10.71
+  tier 1 stages  bpw 1.011  output dB 4.76
+
+Tier-aware feedback (alpha = weight on tier-2 error):
+  alpha 1.0: T3 3.03bpw  9.86dB  T2 2.02bpw 29.30dB  T1 1.01bpw  5.94dB
+  alpha 0.7: T3 3.03bpw 13.45dB  T2 2.02bpw 20.08dB  T1 1.01bpw  5.63dB
+  alpha 0.5: T3 3.03bpw 16.61dB  T2 2.02bpw 16.35dB  T1 1.01bpw  5.35dB
+
+Successive refinement (one file, every tier feedback-optimized):
+  tier 1: 1.011 bpw  output 22.16 dB
+  tier 2: 2.022 bpw  output 24.95 dB
+  tier 3: 3.032 bpw  output 27.72 dB
+--- push_below3 ---
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.018        2.015      29.30
+[256, 256, 4]             2.268        2.266      30.11
+[256, 256, 16]            2.519        2.515      31.70
+[256, 256, 64]            2.770        2.767      33.04
+[256, 256, 256]           3.026        3.015      34.48
+INT4 RTN (ref)            4.250                   17.89
+--- ladder_exact ---
+exact alone (PBR-E style estimate): 10.60 bpw   [word entropy 10.52]
+ladder up to tier 1: lossy 1.09 + exact-given-lossy 10.21 = 11.30 bpw  (overhead vs exact alone +0.70)
+ladder up to tier 2: lossy 2.18 + exact-given-lossy 9.36 = 11.54 bpw  (overhead vs exact alone +0.94)
+ladder up to tier 3: lossy 3.27 + exact-given-lossy 8.56 = 11.83 bpw  (overhead vs exact alone +1.23)
+########## L2 self_attn.q_proj ##########
+--- push_below4 ---
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.29      14.43
+INT3 GPTQ                   3.250       9.17      19.04
+INT3 rot+GPTQ               3.250      10.97      21.64
+3x256 8-D nodes, rot        3.140      14.76      16.93
+INT2 RTN                    2.250       4.53       6.17
+INT2 GPTQ                   2.250       0.19       9.69
+INT2 rot+GPTQ               2.250       2.98      13.36
+2x256 8-D nodes, rot        2.099       9.94      11.85
+--- push_nested ---
+method                                bpw  output dB
+3x256 nodes rot                     3.140      16.80
+3x256 nodes rot +feedback           3.140      22.61
+2x256 nodes rot                     2.099      11.75
+2x256 nodes rot +feedback           2.099      17.52
+1x256 nodes rot                     1.059       6.42
+1x256 nodes rot +feedback           1.059      11.20
+INT3 rot+GPTQ (ref)                 3.250      21.64
+INT2 rot+GPTQ (ref)                 2.250      13.36
+INT4 RTN (ref)                      4.250      21.05
+
+ONE file, truncated tiers (codes from single 3-stage feedback encode):
+  tier 3 stages  bpw 3.140  output dB 22.61
+  tier 2 stages  bpw 2.099  output dB 13.03
+  tier 1 stages  bpw 1.059  output dB 6.77
+
+Tier-aware feedback (alpha = weight on tier-2 error):
+  alpha 1.0: T3 3.14bpw 13.75dB  T2 2.10bpw 17.52dB  T1 1.06bpw  7.61dB
+  alpha 0.7: T3 3.14bpw 16.38dB  T2 2.10bpw 16.74dB  T1 1.06bpw  7.40dB
+  alpha 0.5: T3 3.14bpw 18.55dB  T2 2.10bpw 15.78dB  T1 1.06bpw  7.24dB
+
+Successive refinement (one file, every tier feedback-optimized):
+  tier 1: 1.059 bpw  output 11.20 dB
+  tier 2: 2.117 bpw  output 15.46 dB
+  tier 3: 3.176 bpw  output 18.58 dB
+--- push_below3 ---
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.099        2.097      17.52
+[256, 256, 4]             2.350        2.347      18.43
+[256, 256, 16]            2.602        2.599      19.81
+[256, 256, 64]            2.860        2.856      21.25
+[256, 256, 256]           3.140        3.129      22.62
+INT4 RTN (ref)            4.250                   21.05
+--- ladder_exact ---
+exact alone (PBR-E style estimate): 10.76 bpw   [word entropy 10.69]
+ladder up to tier 1: lossy 1.09 + exact-given-lossy 10.55 = 11.63 bpw  (overhead vs exact alone +0.88)
+ladder up to tier 2: lossy 2.18 + exact-given-lossy 9.91 = 12.09 bpw  (overhead vs exact alone +1.34)
+ladder up to tier 3: lossy 3.27 + exact-given-lossy 9.31 = 12.58 bpw  (overhead vs exact alone +1.83)
+########## L21 mlp.gate_proj ##########
+--- push_below4 ---
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      12.85      16.67
+INT3 GPTQ                   3.250      10.34      21.26
+INT3 rot+GPTQ               3.250      11.17      22.90
+3x256 8-D nodes, rot        3.040      14.54      18.07
+INT2 RTN                    2.250       5.26       9.13
+INT2 GPTQ                   2.250       2.32      13.36
+INT2 rot+GPTQ               2.250       3.27      14.82
+2x256 8-D nodes, rot        2.033       9.82      13.00
+--- push_nested ---
+method                                bpw  output dB
+3x256 nodes rot                     3.040      17.84
+3x256 nodes rot +feedback           3.040      23.86
+2x256 nodes rot                     2.033      12.80
+2x256 nodes rot +feedback           2.033      18.86
+1x256 nodes rot                     1.025       7.09
+1x256 nodes rot +feedback           1.025      12.61
+INT3 rot+GPTQ (ref)                 3.250      22.90
+INT2 rot+GPTQ (ref)                 2.250      14.82
+INT4 RTN (ref)                      4.250      23.35
+
+ONE file, truncated tiers (codes from single 3-stage feedback encode):
+  tier 3 stages  bpw 3.040  output dB 23.86
+  tier 2 stages  bpw 2.033  output dB 14.32
+  tier 1 stages  bpw 1.025  output dB 7.64
+
+Tier-aware feedback (alpha = weight on tier-2 error):
+  alpha 1.0: T3 3.04bpw 14.99dB  T2 2.03bpw 18.86dB  T1 1.03bpw  8.49dB
+  alpha 0.7: T3 3.04bpw 17.79dB  T2 2.03bpw 18.09dB  T1 1.03bpw  8.30dB
+  alpha 0.5: T3 3.04bpw 19.88dB  T2 2.03bpw 17.11dB  T1 1.03bpw  8.11dB
+
+Successive refinement (one file, every tier feedback-optimized):
+  tier 1: 1.025 bpw  output 12.61 dB
+  tier 2: 2.051 bpw  output 17.03 dB
+  tier 3: 3.076 bpw  output 20.32 dB
+--- push_below3 ---
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.033        2.031      18.86
+[256, 256, 4]             2.283        2.281      19.78
+[256, 256, 16]            2.533        2.531      21.13
+[256, 256, 64]            2.785        2.782      22.53
+[256, 256, 256]           3.040        3.031      23.87
+INT4 RTN (ref)            4.250                   23.35
+--- ladder_exact ---
+exact alone (PBR-E style estimate): 10.59 bpw   [word entropy 10.51]
+ladder up to tier 1: lossy 1.09 + exact-given-lossy 10.38 = 11.47 bpw  (overhead vs exact alone +0.88)
+ladder up to tier 2: lossy 2.18 + exact-given-lossy 9.70 = 11.88 bpw  (overhead vs exact alone +1.29)
+ladder up to tier 3: lossy 3.27 + exact-given-lossy 9.05 = 12.32 bpw  (overhead vs exact alone +1.73)
+########## L21 mlp.down_proj ##########
+--- push_below4 ---
+Traceback (most recent call last):
+  File "C:\python_project\pbr-poc\pbr_ladder\push_below4.py", line 77, in <module>
+    Wq, b = rvq(Wr, stages=bits); add(f"{bits}x256 8-D nodes, rot", b, unrot(Wq))
+            ^^^^^^^^^^^^^^^^^^^^
+  File "C:\python_project\pbr-poc\pbr_ladder\push_below4.py", line 53, in rvq
+    C = kmeans(R, k); dd = (R**2).sum(1)[:, None]-2*R@C.T+(C**2).sum(1)[None]
+        ^^^^^^^^^^^^
+  File "C:\python_project\pbr-poc\pbr_ladder\push_below4.py", line 44, in kmeans
+    d = (V**2).sum(1)[:, None] - 2*V@C.T + (C**2).sum(1)[None]; a = d.argmin(1)
+        ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+numpy.core._exceptions._ArrayMemoryError: Unable to allocate 1.04 GiB for an array with shape (544768, 256) and data type float64
+--- push_nested ---
+method                                bpw  output dB
+3x256 nodes rot                     3.026      17.56
+3x256 nodes rot +feedback           3.026      34.52
+2x256 nodes rot                     2.018      12.23
+2x256 nodes rot +feedback           2.018      29.24
+1x256 nodes rot                     1.011       6.87
+1x256 nodes rot +feedback           1.011      21.32
+INT3 rot+GPTQ (ref)                 3.250      33.69
+INT2 rot+GPTQ (ref)                 2.250      25.38
+INT4 RTN (ref)                      4.250      22.56
+
+ONE file, truncated tiers (codes from single 3-stage feedback encode):
+  tier 3 stages  bpw 3.026  output dB 34.52
+  tier 2 stages  bpw 2.018  output dB 14.36
+  tier 1 stages  bpw 1.011  output dB 7.53
+
+Tier-aware feedback (alpha = weight on tier-2 error):
+  alpha 1.0: T3 3.03bpw 13.64dB  T2 2.02bpw 29.24dB  T1 1.01bpw  8.57dB
+  alpha 0.7: T3 3.03bpw 17.07dB  T2 2.02bpw 23.17dB  T1 1.01bpw  8.47dB
+  alpha 0.5: T3 3.03bpw 20.10dB  T2 2.02bpw 19.71dB  T1 1.01bpw  8.24dB
+
+Successive refinement (one file, every tier feedback-optimized):
+  tier 1: 1.011 bpw  output 21.32 dB
+  tier 2: 2.022 bpw  output 23.89 dB
+  tier 3: 3.032 bpw  output 27.51 dB
+--- push_below3 ---
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.018        2.016      29.24
+[256, 256, 4]             2.268        2.266      30.24
+[256, 256, 16]            2.519        2.516      31.71
+[256, 256, 64]            2.770        2.767      33.13
+[256, 256, 256]           3.026        3.016      34.53
+INT4 RTN (ref)            4.250                   22.56
+--- ladder_exact ---
+exact alone (PBR-E style estimate): 10.61 bpw   [word entropy 10.53]
+ladder up to tier 1: lossy 1.09 + exact-given-lossy 10.38 = 11.47 bpw  (overhead vs exact alone +0.86)
+ladder up to tier 2: lossy 2.18 + exact-given-lossy 9.69 = 11.87 bpw  (overhead vs exact alone +1.26)
+ladder up to tier 3: lossy 3.27 + exact-given-lossy 9.05 = 12.32 bpw  (overhead vs exact alone +1.71)
+########## L21 self_attn.q_proj ##########
+--- push_below4 ---
+method                        bpw  weight dB  output dB
+INT3 RTN                    3.250      11.96       9.98
+INT3 GPTQ                   3.250       6.20      13.74
+INT3 rot+GPTQ               3.250      10.59      20.50
+3x256 8-D nodes, rot        3.140      14.77      13.45
+INT2 RTN                    2.250       4.04       1.48
+INT2 GPTQ                   2.250      -5.09       1.00
+INT2 rot+GPTQ               2.250       2.45      11.78
+2x256 8-D nodes, rot        2.099       9.95       8.68
+--- push_nested ---
+method                                bpw  output dB
+3x256 nodes rot                     3.140      13.41
+3x256 nodes rot +feedback           3.140      21.48
+2x256 nodes rot                     2.099       8.72
+2x256 nodes rot +feedback           2.099      16.27
+1x256 nodes rot                     1.059       3.96
+1x256 nodes rot +feedback           1.059       9.76
+INT3 rot+GPTQ (ref)                 3.250      20.50
+INT2 rot+GPTQ (ref)                 2.250      11.78
+INT4 RTN (ref)                      4.250      17.33
+
+ONE file, truncated tiers (codes from single 3-stage feedback encode):
+  tier 3 stages  bpw 3.140  output dB 21.48
+  tier 2 stages  bpw 2.099  output dB 10.05
+  tier 1 stages  bpw 1.059  output dB 4.41
+
+Tier-aware feedback (alpha = weight on tier-2 error):
+  alpha 1.0: T3 3.14bpw 10.16dB  T2 2.10bpw 16.27dB  T1 1.06bpw  5.05dB
+  alpha 0.7: T3 3.14bpw 13.15dB  T2 2.10bpw 15.05dB  T1 1.06bpw  5.02dB
+  alpha 0.5: T3 3.14bpw 15.56dB  T2 2.10bpw 13.54dB  T1 1.06bpw  4.82dB
+
+Successive refinement (one file, every tier feedback-optimized):
+  tier 1: 1.059 bpw  output 9.76 dB
+  tier 2: 2.117 bpw  output 12.77 dB
+  tier 3: 3.176 bpw  output 15.22 dB
+--- push_below3 ---
+stages (codebook sizes)     bpw  bpw+entropy  output dB
+[256, 256]                2.099        2.097      16.27
+[256, 256, 4]             2.350        2.347      17.25
+[256, 256, 16]            2.602        2.598      18.66
+[256, 256, 64]            2.860        2.856      20.11
+[256, 256, 256]           3.140        3.128      21.51
+INT4 RTN (ref)            4.250                   17.33
+--- ladder_exact ---
+exact alone (PBR-E style estimate): 10.90 bpw   [word entropy 10.85]
+ladder up to tier 1: lossy 1.09 + exact-given-lossy 10.74 = 11.83 bpw  (overhead vs exact alone +0.93)
+ladder up to tier 2: lossy 2.18 + exact-given-lossy 10.20 = 12.38 bpw  (overhead vs exact alone +1.48)
+ladder up to tier 3: lossy 3.27 + exact-given-lossy 9.71 = 12.98 bpw  (overhead vs exact alone +2.07)
+
+
+
+=== baseline ===
+`torch_dtype` is deprecated! Use `dtype` instead!
+Token indices sequence length is longer than the specified maximum sequence length for this model (299078 > 131072). Running this sequence through the model will result in indexing errors
+WikiText-2 test perplexity: 14.247
+=== L12 gate swapped ===
+`torch_dtype` is deprecated! Use `dtype` instead!
+Token indices sequence length is longer than the specified maximum sequence length for this model (299078 > 131072). Running this sequence through the model will result in indexing errors
+replaced model.layers.12.mlp.gate_proj.weight
+WikiText-2 test perplexity: 14.269

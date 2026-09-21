@@ -1,5 +1,12 @@
 # Handoff: PBR-Ladder real-Qwen run (do this on a machine with HF access)
 
+**Status: done for the 9-tensor + single-layer-swap scope below.** Real
+results are in `docs/pbr_ladder/README.md` ("Real Qwen2.5-0.5B-Instruct
+run") and `artifacts/pbr_ladder/real_qwen05b_run.txt`. What's still open:
+§5.3 whole-model quantization (driver script not built) and §5.4
+retention across the 5-task benchmark set (needs §5.3). The rest of this
+file is kept as reference for repeating or extending the run.
+
 Context: this repo's cloud sandbox cannot reach `huggingface.co` (blocked
 by the sandbox's egress proxy policy — confirmed, not a code issue). All
 real-model steps below need to run on your own machine, or any environment
