@@ -16,9 +16,14 @@
 #   PBR_TEXT=calib.txt python quantize_full_model.py ./qwen05b ./qwen05b_pbr3bit
 #   PBR_STAGES=256,256,64 PBR_SAMPLES=64 PBR_SEQ=512 PBR_LAYERS=0,1,2 \
 #     python quantize_full_model.py ./qwen05b ./qwen05b_test   # quick dry run
+#   # Mixed bits, one sequential pass (unset layers keep PBR_STAGES):
+#   PBR_LAYERS=0,1,2 PBR_STAGES=256,256,64 PBR_LAYER_STAGES='0:512,256,64' \
+#     python quantize_full_model.py ./qwen05b ./qwen05b_L0hi
 #
 # PBR_LAYERS restricts to a few layers for a fast first check before committing
 # to a full run, which can take a long time on CPU for a 0.5B model.
+# PBR_LAYER_STAGES is optional: "layer:k1,k2,...;layer:k1,k2,..." overrides
+# PBR_STAGES for those layers only. Omitted, every selected layer uses PBR_STAGES.
 
 import os, sys, time, numpy as np, torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -27,6 +32,19 @@ src, out = sys.argv[1], sys.argv[2]
 STAGES = [int(x) for x in os.environ.get("PBR_STAGES", "256,256,64").split(",")]
 SAMPLES = int(os.environ.get("PBR_SAMPLES", "64"))
 SEQ = int(os.environ.get("PBR_SEQ", "512"))
+
+def parse_layer_stages(spec):
+    """'0:512,256,64;1:256,256,256' -> {0: [512,256,64], 1: [256,256,256]}."""
+    out = {}
+    for part in spec.split(";"):
+        part = part.strip()
+        if not part:
+            continue
+        layer_s, ks_s = part.split(":")
+        out[int(layer_s)] = [int(x) for x in ks_s.split(",") if x.strip()]
+    return out
+
+LAYER_STAGES = parse_layer_stages(os.environ.get("PBR_LAYER_STAGES", ""))
 TARGETS = ["self_attn.q_proj", "self_attn.k_proj", "self_attn.v_proj", "self_attn.o_proj",
            "mlp.gate_proj", "mlp.up_proj", "mlp.down_proj"]
 D = 8            # node-vector width, same as the proven method
@@ -87,7 +105,7 @@ def kmeans(V, k, it=10, chunk=CHUNK):
             if m.any(): C[j] = V[m].mean(0)
     return C
 
-def quantize_linear(Wt, H):
+def quantize_linear(Wt, H, stages):
     """Wt: torch weight (out, in). H: numpy (in, in) uncentered covariance of its real inputs.
        Returns a torch tensor of the same shape, quantized then dequantized.
        Two passes, matching the design already validated in push_nested.py:
@@ -107,7 +125,7 @@ def quantize_linear(Wt, H):
 
     pool = (Wr / s).reshape(-1, D)               # pass 1: fit codebooks on the whole tensor
     books, Rres = [], pool.copy()
-    for k in STAGES:
+    for k in stages:
         C = kmeans(Rres, k)
         a = assign_rows(Rres, C)
         books.append(C); Rres = Rres - C[a]
@@ -124,9 +142,19 @@ def quantize_linear(Wt, H):
     Wq = Ro.T @ Q @ Ri.T
     return torch.from_numpy(Wq).to(Wt.dtype)
 
+def index_bpw(stages):
+    return sum(np.log2(k) for k in stages) / D
+
+def fmt_bpw(x):
+    # 2.75 stays 2.75; 2.875 stays 2.875 (a .2f format would print 2.88).
+    return f"{x:.4f}".rstrip("0").rstrip(".")
+
 total_params, quantized_params = 0, 0
 t0 = time.time()
+used_stages = {}
 for li in which:
+    stages = LAYER_STAGES.get(li, STAGES)
+    used_stages[li] = stages
     block = layers[li]
     targets = {}
     for name in TARGETS:
@@ -150,16 +178,29 @@ for li in which:
         inputs[name].clear()
         H = X.T @ X / len(X)
         del X
-        Wq = quantize_linear(mod.weight, H)
+        Wq = quantize_linear(mod.weight, H, stages)
         with torch.no_grad(): mod.weight.copy_(Wq)
         total_params += mod.weight.numel(); quantized_params += mod.weight.numel()
+    stage_note = ""
+    if LAYER_STAGES:
+        stage_note = f"  stages={stages}  index {fmt_bpw(index_bpw(stages))} bpw"
     print(f"layer {li:2d}/{n_layers-1}  quantized {len(targets)} tensors  "
-          f"[{time.time()-t0:6.1f}s elapsed]")
+          f"[{time.time()-t0:6.1f}s elapsed]{stage_note}")
 
-codebook_bpw = sum(np.log2(k) for k in STAGES) / D   # index cost; codebook storage itself is
-                                                       # shared and negligible on tensors this large
-print(f"\nQuantized {quantized_params:,} parameters across {len(which)} layer(s), "
-      f"~{codebook_bpw:.2f} bpw for touched tensors (stages={STAGES}, codebook overhead <0.1 bpw).")
+# Index cost only (codebook storage is shared and <0.1 bpw on tensors this large,
+# larger on the narrow k/v projections). One number when every layer shares a recipe.
+unique = {tuple(s) for s in used_stages.values()} if used_stages else {tuple(STAGES)}
+if len(unique) == 1:
+    stages = list(next(iter(unique))) if used_stages else STAGES
+    codebook_bpw = index_bpw(stages)
+    print(f"\nQuantized {quantized_params:,} parameters across {len(which)} layer(s), "
+          f"~{fmt_bpw(codebook_bpw)} bpw for touched tensors (stages={stages}, codebook overhead <0.1 bpw).")
+else:
+    print(f"\nQuantized {quantized_params:,} parameters across {len(which)} layer(s), mixed stages:")
+    for li in which:
+        s = used_stages[li]
+        print(f"  layer {li}: stages={s}  index {fmt_bpw(index_bpw(s))} bpw")
+    print("Codebook overhead is <0.1 bpw on wide tensors and larger on narrow k/v.")
 print(f"Embeddings, output head, and norms were left untouched (full precision).")
 
 os.makedirs(out, exist_ok=True)

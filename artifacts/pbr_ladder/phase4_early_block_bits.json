@@ -1,0 +1,132 @@
+{
+  "experiment": "phase4_early_block_bits",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "gate_ppl": 14.959,
+  "gate_rule": "printed WikiText-2 test perplexity of layers 0-2 <= 14.959 (+5% vs 14.247)",
+  "verdict_L012_bumped_512": "PASS",
+  "verdict_L0_bump_L1L2_default": "PASS",
+  "full_24_layer_run": false,
+  "baseline_ppl": 14.247,
+  "baseline_reproduced_this_run": 14.247,
+  "eval": {
+    "script": "pbr_ladder/eval_ppl.py",
+    "env": "PBR_CPU_FP32=1",
+    "dataset": "Salesforce/wikitext",
+    "config": "wikitext-2-raw-v1",
+    "split": "test",
+    "tokens": 299078,
+    "checkpoint": "dequantized fp32 written by quantize_full_model.py; perplexity only, not a packed checkpoint"
+  },
+  "recipe": {
+    "script": "pbr_ladder/quantize_full_model.py",
+    "samples": 64,
+    "seq": 512,
+    "node_dim": 8,
+    "old_stages": [256, 256, 64],
+    "old_index_bpw": 2.75,
+    "bumped_stages": [512, 256, 64],
+    "bumped_index_bpw": 2.875,
+    "index_bpw_formula": "sum(log2(k))/8",
+    "what_changed": "First residual codebook 256 -> 512. Same rotation, pooled k-means, and column-block GPTQ feedback as Phase 2. Not a fourth stage and not INT4.",
+    "not_run": ["256,256,256", "256,256,64,16"],
+    "not_run_reason": "512,256,64 on layers 0-2 printed 14.873, under 14.959, so the higher rungs were skipped.",
+    "linears_per_layer": [
+      "self_attn.q_proj",
+      "self_attn.k_proj",
+      "self_attn.v_proj",
+      "self_attn.o_proj",
+      "mlp.gate_proj",
+      "mlp.up_proj",
+      "mlp.down_proj"
+    ],
+    "shapes_layer0": {
+      "q_proj": [896, 896],
+      "k_proj": [128, 896],
+      "v_proj": [128, 896],
+      "o_proj": [896, 896],
+      "gate_proj": [4864, 896],
+      "up_proj": [4864, 896],
+      "down_proj": [896, 4864]
+    }
+  },
+  "stack": {
+    "torch": "2.14.0+cpu",
+    "transformers": "5.17.0",
+    "datasets": "5.0.1",
+    "numpy": "2.4.4"
+  },
+  "runs": [
+    {
+      "name": "baseline",
+      "layers_quantized": [],
+      "stages_by_layer": {},
+      "ppl": 14.247,
+      "delta_ppl": 0.0,
+      "pct_vs_14_247": 0.0,
+      "gate": null,
+      "source": "this_run",
+      "parameters_quantized": 0
+    },
+    {
+      "name": "L012_phase2",
+      "layers_quantized": [0, 1, 2],
+      "stages_by_layer": {"0": [256, 256, 64], "1": [256, 256, 64], "2": [256, 256, 64]},
+      "ppl": 15.005,
+      "delta_ppl": 0.758,
+      "pct_vs_14_247": 5.32,
+      "gate": "FAIL",
+      "source": "phase2_log",
+      "parameters_quantized": 44728320,
+      "index_bpw": 2.75
+    },
+    {
+      "name": "L0_512_L1L2_default",
+      "layers_quantized": [0, 1, 2],
+      "stages_by_layer": {"0": [512, 256, 64], "1": [256, 256, 64], "2": [256, 256, 64]},
+      "ppl": 14.951,
+      "delta_ppl": 0.704,
+      "pct_vs_14_247": 4.941,
+      "gate": "PASS",
+      "source": "this_run",
+      "parameters_quantized": 44728320,
+      "index_bpw_early_block_average": 2.7917,
+      "command": "PBR_LAYERS=0,1,2 PBR_STAGES=256,256,64 PBR_LAYER_STAGES=0:512,256,64 python3 quantize_full_model.py ./qwen05b ./qwen05b_p4_L0hi_L12def"
+    },
+    {
+      "name": "L012_512",
+      "layers_quantized": [0, 1, 2],
+      "stages_by_layer": {"0": [512, 256, 64], "1": [512, 256, 64], "2": [512, 256, 64]},
+      "ppl": 14.873,
+      "delta_ppl": 0.626,
+      "pct_vs_14_247": 4.394,
+      "gate": "PASS",
+      "source": "this_run",
+      "parameters_quantized": 44728320,
+      "index_bpw": 2.875,
+      "command": "PBR_LAYERS=0,1,2 PBR_STAGES=512,256,64 python3 quantize_full_model.py ./qwen05b ./qwen05b_p4_L012_s512"
+    }
+  ],
+  "bpw_estimate": {
+    "note": "Index bpw is the quantizer print. raw adds push_below3.py codebook side info: (sum(k)*8*16 + out_features*16) / n_params, fp16 codebooks and per-row scales. Not a measured file size. Checkpoints on disk are dequantized fp32.",
+    "per_tensor": [
+      {"name": "q_proj", "shape": [896, 896], "params": 802816, "old_index": 2.75, "old_raw": 2.86, "new_index": 2.875, "new_raw": 3.026},
+      {"name": "k_proj", "shape": [128, 896], "params": 114688, "old_index": 2.75, "old_raw": 3.411, "new_index": 2.875, "new_raw": 3.821},
+      {"name": "v_proj", "shape": [128, 896], "params": 114688, "old_index": 2.75, "old_raw": 3.411, "new_index": 2.875, "new_raw": 3.821},
+      {"name": "o_proj", "shape": [896, 896], "params": 802816, "old_index": 2.75, "old_raw": 2.86, "new_index": 2.875, "new_raw": 3.026},
+      {"name": "gate_proj", "shape": [4864, 896], "params": 4358144, "old_index": 2.75, "old_raw": 2.785, "new_index": 2.875, "new_raw": 2.917},
+      {"name": "up_proj", "shape": [4864, 896], "params": 4358144, "old_index": 2.75, "old_raw": 2.785, "new_index": 2.875, "new_raw": 2.917},
+      {"name": "down_proj", "shape": [896, 4864], "params": 4358144, "old_index": 2.75, "old_raw": 2.77, "new_index": 2.875, "new_raw": 2.903}
+    ],
+    "one_layer_weighted": {
+      "params": 14909440,
+      "stages_256_256_64": {"index": 2.75, "raw": 2.798},
+      "stages_512_256_64": {"index": 2.875, "raw": 2.939}
+    },
+    "early_block_three_layers": {
+      "params": 44728320,
+      "all_256_256_64": {"index": 2.75, "raw": 2.798},
+      "L0_512_L1L2_256": {"index": 2.7917, "raw": 2.845},
+      "all_512_256_64": {"index": 2.875, "raw": 2.939}
+    }
+  }
+}

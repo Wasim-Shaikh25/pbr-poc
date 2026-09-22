@@ -1,0 +1,28 @@
+=== PHASE4 START 2026-09-21T23:38:30+00:00 ===
+2.14.0+cpu 5.17.0 5.0.1 2.4.4
+=== DOWNLOAD 2026-09-21T23:38:32+00:00 ===
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 10 files:  80%|████████  | 8/10 [00:00<00:00, 76.95it/s]Fetching 10 files: 100%|██████████| 10/10 [00:03<00:00,  2.99it/s]
+=== DOWNLOAD DONE 2026-09-21T23:38:36+00:00 ===
+=== SHAPES 2026-09-21T23:38:36+00:00 ===
+hidden 896 intermediate 4864 heads 14 kv 2 layers 24
+shards ['qwen05b/model.safetensors']
+Traceback (most recent call last):
+  File "<stdin>", line 24, in <module>
+TypeError: data type 'bfloat16' not understood
+=== EVAL baseline ./qwen05b 2026-09-21T23:38:36+00:00 ===
+=== EVAL DONE baseline rc=0 2026-09-21T23:47:51+00:00 ===
+BASELINE_PPL=14.247
+=== QUANTIZE L012_s512 2026-09-21T23:47:51+00:00 ===
+env: PBR_LAYERS=0,1,2 PBR_STAGES=512,256,64
+=== QUANTIZE DONE L012_s512 rc=0 2026-09-21T23:53:21+00:00 ===
+=== EVAL L012_s512 ./qwen05b_p4_L012_s512 2026-09-21T23:53:21+00:00 ===
+=== EVAL DONE L012_s512 rc=0 2026-09-22T00:03:20+00:00 ===
+P512=14.873
+=== QUANTIZE L0hi_L12def 2026-09-22T00:03:20+00:00 ===
+env: PBR_LAYERS=0,1,2 PBR_STAGES=256,256,64 PBR_LAYER_STAGES=0:512,256,64
+=== QUANTIZE DONE L0hi_L12def rc=0 2026-09-22T00:08:06+00:00 ===
+=== EVAL L0hi_L12def ./qwen05b_p4_L0hi_L12def 2026-09-22T00:08:06+00:00 ===
+=== EVAL DONE L0hi_L12def rc=0 2026-09-22T00:17:15+00:00 ===
+PMIX=14.951
+=== PHASE4 DONE 2026-09-22T00:17:15+00:00 ===

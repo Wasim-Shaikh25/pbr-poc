@@ -1,0 +1,18 @@
+=== QUANTIZE L012_s512 2026-09-21T23:47:51+00:00 ===
+env: PBR_LAYERS=0,1,2 PBR_STAGES=512,256,64
+Loading model from ./qwen05b ...
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   0%|          | 1/290 [00:00<01:03,  4.56it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 1292.33it/s]
+Model has 24 layers; quantizing: [0, 1, 2]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (276404 > 131072). Running this sequence through the model will result in indexing errors
+layer  0/23  quantized 7 tensors  [ 120.9s elapsed]
+layer  1/23  quantized 7 tensors  [ 219.1s elapsed]
+layer  2/23  quantized 7 tensors  [ 321.3s elapsed]
+
+Quantized 44,728,320 parameters across 3 layer(s), ~2.875 bpw for touched tensors (stages=[512, 256, 64], codebook overhead <0.1 bpw).
+Embeddings, output head, and norms were left untouched (full precision).
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:01<00:00,  1.50s/it]Writing model shards: 100%|██████████| 1/1 [00:01<00:00,  1.50s/it]
+
+Saved new checkpoint to: ./qwen05b_p4_L012_s512
+Load and test it directly:  python eval_ppl.py ./qwen05b_p4_L012_s512
+=== QUANTIZE DONE L012_s512 rc=0 2026-09-21T23:53:21+00:00 ===

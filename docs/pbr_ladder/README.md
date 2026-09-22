@@ -298,13 +298,52 @@ layers to ~4.41 bpw. One layer is a small move on a 0.5B model. Three
 layers left at 16-bit is a large move next to a dry run that sits 0.046
 ppl over the 5% cap of 14.959 (the measured L1+L2-only point is already
 14.674). The proportionate next experiment is a modest bit increase on
-layers 0–2, scored with the same WikiText-2 test perplexity. That search
-was not run here.
+layers 0–2, scored with the same WikiText-2 test perplexity. That probe
+is Phase 4 below.
 
 Write-up and raw logs: `artifacts/pbr_ladder/phase2b_l0_l1_l2_isolation.md`,
 `artifacts/pbr_ladder/phase2b_l0_l1_l2_isolation.json`,
 `artifacts/pbr_ladder/phase2b_quantize_*.log`,
 `artifacts/pbr_ladder/phase2b_ppl_*.log`.
+
+### Phase 4 — modest bit increase on layers 0–2
+
+**PASS** against the probe gate (perplexity ≤ 14.959). Same model, same
+`eval_ppl.py` (`PBR_CPU_FP32=1`, WikiText-2 raw v1 test, 299078 tokens).
+This run's baseline is again **14.247**. Layers 3–23 stay full precision.
+No 24-layer run. Checkpoints are still dequantized fp32.
+
+The bump is stages `512,256,64` instead of `256,256,64`: the first 8-D
+codebook grows from 256 to 512. Index cost goes from 2.75 bpw to 2.875
+bpw (`(9+8+6)/8`). Same rotation, pooled k-means, and column-block
+feedback. `256,256,256` (3.00 index bpw) was the next rung and was not
+run, because 2.875 already cleared 14.959.
+
+| Run | Stages on layers 0, 1, 2 | WikiText-2 test ppl | vs 14.247 | vs 14.959 |
+| --- | --- | ---: | ---: | --- |
+| Baseline (this run) | full precision | 14.247 | — | — |
+| Phase 2 dry run | `256,256,64` on all three | 15.005 | +5.320% | FAIL |
+| L0 bumped, L1 and L2 default | `512,256,64` / `256,256,64` / `256,256,64` | 14.951 | +4.941% | **PASS** |
+| L0–L2 bumped | `512,256,64` on all three | 14.873 | +4.394% | **PASS** |
+
+The Phase 2 row is the earlier log. The other rows are this run.
+Percent is `(ppl − 14.247) / 14.247`.
+
+Estimated rate on one early layer (index, and index plus the
+`push_below3.py` fp16 codebook/scale side info), parameter-weighted
+across the seven linears: **2.750 / 2.798** at `256,256,64`, **2.875 /
+2.939** at `512,256,64`. The three-layer mix (only layer 0 bumped)
+averages **2.7917 / 2.845**. Narrow `k`/`v` stay well above that average
+(3.411 → 3.821 including side info). This is not an on-disk size.
+
+`quantize_full_model.py` takes optional `PBR_LAYER_STAGES`
+(`0:512,256,64`) so one sequential pass can mix recipes. Unset, behavior
+matches Phase 1/2.
+
+Write-up, per-tensor bpw table, and commands:
+`artifacts/pbr_ladder/phase4_early_block_bits.md`,
+`artifacts/pbr_ladder/phase4_early_block_bits.json`. Logs:
+`phase4_quantize_*.log`, `phase4_ppl_*.log`.
 
 ## What wasn't tested
 
@@ -315,12 +354,15 @@ Write-up and raw logs: `artifacts/pbr_ladder/phase2b_l0_l1_l2_isolation.md`,
   `[256,256]` (~2.0bpw) up to `[256,256,256]` (~3.0-3.14bpw) per tensor in
   `real_tensor_results.txt`. End-to-end perplexity exists for one matrix
   (L12 gate_proj at 2.785 bpw), for all seven layer-12 linears together
-  at stages `256,256,64` (Phase 1), and for layers 0, 1, and 2 at that
-  same single recipe (Phase 2b). Where the gate breaks at other bpw
-  points, per tensor, is unknown.
-- **Phase 4 bit search, and layer 3.** Phase 2b isolates layers 0, 1, and
-  2 (plus the 0+1 and 1+2 pairs) at stages `256,256,64` only. Layer 3
-  was not run on its own. No higher-bit early-block sweep was run.
+  at stages `256,256,64` (Phase 1), for layers 0–2 at that recipe
+  (Phase 2b, 15.005), and for layers 0–2 at `512,256,64` plus the
+  layer-0-only bump (Phase 4, 14.873 and 14.951). Other rungs
+  (`256,256,256` and above) were not scored. Per-tensor perplexity at
+  the new stages is unknown.
+- **Layer 3, and the other 21 layers at the bumped recipe.** Phase 4
+  quantizes only layers 0–2. Layer 3 was not run on its own. The
+  24-layer model was not rerun; Phase 2's 19.427 stands at stages
+  `256,256,64`.
 - `formula_probe.py`, `node_combo_q4.py`, `node_structures.py` were run
   only against synthetic data (their self-check), not real Qwen tensors —
   the guide's real-tensor procedure (§3.1–3.7) for these 3 wasn't
@@ -338,6 +380,7 @@ Write-up and raw logs: `artifacts/pbr_ladder/phase2b_l0_l1_l2_isolation.md`,
 | Phase 1 — entire layer 12 perplexity (<1%) | **PASS** — 14.247 → 14.354 (+0.751%) with all 7 L12 linears at stages 256,256,64. dB gate still fails on those tensors. |
 | Whole-model retention (Phase 2, within 5% of 14.247) | **FAIL** — all 24 layers: 14.247 → 19.427 (+36.359%). Dry run layers 0–2: 15.005 (+5.320%). |
 | Phase 2b — isolate L0 / L1 / L2 | **diagnostic, no gate** — L0 14.528 (+1.972%), L1 14.445 (+1.390%), L2 14.467 (+1.544%). The three share the +5.320%. |
+| Phase 4 — L0–L2 at a modest bit bump (≤ 14.959) | **PASS** — all three layers at `512,256,64`: 14.873 (+4.394%). L0 only at `512,256,64`, L1 and L2 still `256,256,64`: 14.951 (+4.941%). Not a 24-layer result. |
 
 ## To reproduce
 
@@ -373,3 +416,7 @@ python3 eval_ppl.py Qwen/Qwen2.5-0.5B-Instruct L12_gate_293.npz
   L12, and all-24 figures in that table are the earlier Phase 1/2 logs,
   not a second measurement. Checkpoints used for these perplexities are
   dequantized fp32.
+- Phase 4 perplexities are the printed lines 14.247, 14.873, and 14.951.
+  The 15.005 row in that table is the Phase 2 log. bpw figures with
+  side info are the `push_below3.py` formula on the measured shapes,
+  not a packed-file size.
