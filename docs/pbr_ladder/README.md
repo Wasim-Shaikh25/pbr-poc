@@ -1,5 +1,9 @@
 # PBR-Ladder — script guide run, now including real Qwen2.5-0.5B-Instruct results
 
+**Status as of 2026-09-22:** Phase 4 iterate stopped after PR #33 (full-24
+PPL **18.492**, gate **14.959**). L8–12 all-bump cancelled — no result.
+Operational handoff for the next session: `docs/pbr_ladder/GROK_HANDOFF.md`.
+
 Source: user-supplied `PBR_Ladder_Script_Guide.docx`, all 9 scripts it
 describes (`push_below4.py`, `push_below3.py`, `push_nested.py`,
 `ladder_exact.py`, `capture_activations.py`, `eval_ppl.py`,
