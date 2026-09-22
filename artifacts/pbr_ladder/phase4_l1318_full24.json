@@ -1,0 +1,142 @@
+{
+  "experiment": "phase4_l1318_protect_full24",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "gate_ppl": 14.959,
+  "gate_rule": "printed WikiText-2 test perplexity <= 14.959 (+5% vs 14.247). Phase 4 is done only if the whole-model perplexity clears this gate.",
+  "verdict": "FAIL",
+  "phase4_done": false,
+  "full_24_layer_run": true,
+  "ppl": 18.803,
+  "delta_ppl_vs_14_247": 4.556,
+  "pct_vs_14_247": 31.979,
+  "over_gate": 3.844,
+  "phase2_flat_all24_ppl": 19.427,
+  "delta_ppl_vs_phase2_flat": -0.624,
+  "phase2_retry_early_only_mixed_ppl": 19.280,
+  "delta_ppl_vs_early_only_mixed": -0.477,
+  "late_block_full24_ppl": 19.039,
+  "delta_ppl_vs_late_block": -0.236,
+  "phase4_L012_only_ppl": 14.873,
+  "baseline_ppl": 14.247,
+  "baseline_reproduced_this_run": 14.247,
+  "partial_fix": true,
+  "partial_fix_note": "Protecting layers 13-18 at 512,256,64, with layers 0-2 and 19-23 already at 512,256,64, lowered full-24 perplexity from 19.039 to 18.803. The gate is 14.959.",
+  "resumed_from_partial_checkpoint": false,
+  "resume_note": "Full 24-layer pass. The baseline log (14.247) was written first. A wrapper exit stopped that process before quantization. The second invocation kept the baseline log and quantized from an empty output directory. layer_npz and pbr_progress.json were written after each layer and all 24 completed. Resume was available and was not needed.",
+  "next_protect_layers": [3, 4, 5, 6, 7],
+  "next_protect_note": "No new mid-layer isolation was run. The Phase 4 map already ranked the remaining chunks. After this miss, the next protect is layers 3-7 (alone 14.897, delta +0.650), then 8-12 (alone 14.767, delta +0.520). A follow-up full-24 raising 3-7 was not started: the 13-18 bump moved the full model by only -0.236, and 18.803 is still 3.844 over the gate.",
+  "eval": {
+    "script": "pbr_ladder/eval_ppl.py",
+    "env": "PBR_CPU_FP32=1",
+    "dataset": "Salesforce/wikitext",
+    "config": "wikitext-2-raw-v1",
+    "split": "test",
+    "tokens": 299078,
+    "checkpoint": "dequantized fp32 written by quantize_full_model.py; perplexity only, not a packed checkpoint, not a size win",
+    "checked_dtype": "F32"
+  },
+  "recipe": {
+    "script": "pbr_ladder/quantize_full_model.py",
+    "samples": 64,
+    "seq": 512,
+    "chunk": 20000,
+    "chunk_note": "PBR_CHUNK only splits the pooled distance matrix. Per-row argmin matches the default chunk of 50000.",
+    "node_dim": 8,
+    "default_stages": [256, 256, 64],
+    "layer_stages": {
+      "0": [512, 256, 64],
+      "1": [512, 256, 64],
+      "2": [512, 256, 64],
+      "13": [512, 256, 64],
+      "14": [512, 256, 64],
+      "15": [512, 256, 64],
+      "16": [512, 256, 64],
+      "17": [512, 256, 64],
+      "18": [512, 256, 64],
+      "19": [512, 256, 64],
+      "20": [512, 256, 64],
+      "21": [512, 256, 64],
+      "22": [512, 256, 64],
+      "23": [512, 256, 64]
+    },
+    "layers_3_to_12_stages": [256, 256, 64],
+    "parameters_quantized": 357826560,
+    "parameters_per_layer": 14909440,
+    "linears_per_layer": [
+      "self_attn.q_proj",
+      "self_attn.k_proj",
+      "self_attn.v_proj",
+      "self_attn.o_proj",
+      "mlp.gate_proj",
+      "mlp.up_proj",
+      "mlp.down_proj"
+    ]
+  },
+  "stack": {
+    "torch": "2.14.0+cpu",
+    "transformers": "5.17.0",
+    "datasets": "5.0.1",
+    "numpy": "2.4.4"
+  },
+  "bpw_estimate": {
+    "note": "Index bpw is the quantizer print, averaged with equal per-layer parameter counts. raw adds the push_below3.py fp16 codebook/scale side info. Not a measured file size.",
+    "layers_0_2_index_bpw": 2.875,
+    "layers_3_12_index_bpw": 2.75,
+    "layers_13_18_index_bpw": 2.875,
+    "layers_19_23_index_bpw": 2.875,
+    "average_index_bpw": 2.822917,
+    "average_index_bpw_exact": 2.8229166666666665,
+    "average_index_bpw_formula": "(14*2.875 + 10*2.75) / 24",
+    "one_layer_index_plus_side_256_256_64": 2.798,
+    "one_layer_index_plus_side_512_256_64": 2.939,
+    "average_index_plus_side_bpw": 2.88025,
+    "average_index_plus_side_formula": "(14*2.939 + 10*2.798) / 24",
+    "phase2_flat_index_bpw": 2.75,
+    "phase2_retry_index_bpw": 2.765625,
+    "late_block_index_bpw": 2.791667,
+    "index_bpw_delta_vs_phase2_flat": 0.072917,
+    "index_bpw_delta_vs_phase2_retry": 0.057292,
+    "index_bpw_delta_vs_late_block": 0.03125
+  },
+  "runs": [
+    {
+      "name": "baseline",
+      "ppl": 14.247,
+      "tokens": 299078,
+      "source": "this_run",
+      "log": "artifacts/pbr_ladder/phase4_l1318_ppl_baseline.log"
+    },
+    {
+      "name": "phase2_flat_all24",
+      "ppl": 19.427,
+      "source": "prior_log",
+      "log": "artifacts/pbr_ladder/phase2_ppl_full.log"
+    },
+    {
+      "name": "phase4_L012_only",
+      "ppl": 14.873,
+      "source": "prior_log",
+      "log": "artifacts/pbr_ladder/phase4_ppl_L012_s512.log"
+    },
+    {
+      "name": "phase2_retry_early_only_mixed",
+      "ppl": 19.280,
+      "source": "prior_log",
+      "log": "artifacts/pbr_ladder/phase2_retry_ppl_full.log"
+    },
+    {
+      "name": "late_block_protected_full24",
+      "ppl": 19.039,
+      "tokens": 299078,
+      "source": "prior_log",
+      "log": "artifacts/pbr_ladder/phase4_late_ppl_full.log"
+    },
+    {
+      "name": "l13_18_protected_full24",
+      "ppl": 18.803,
+      "tokens": 299078,
+      "source": "this_run",
+      "log": "artifacts/pbr_ladder/phase4_l1318_ppl_full.log"
+    }
+  ]
+}
