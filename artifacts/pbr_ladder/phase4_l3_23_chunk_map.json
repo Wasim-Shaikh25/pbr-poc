@@ -8,7 +8,7 @@
   "hot_chunk_ppl": 15.447,
   "hot_chunk_delta_ppl": 1.2,
   "hot_chunk_pct_vs_14_247": 8.423,
-  "recommendation": "Spend the next extra bits on layers 19-23 first. Layers 8-12 are the smallest isolated hit. Layers 3-7 and 13-18 are in between.",
+  "recommendation": "Hot chunk is layers 19-23. Inside it, spend the next extra bits on layers 22 and 23 first (alone delta +0.724), then layers 19-21 (+0.499). Layers 8-12 are the smallest isolated hit. Layers 3-7 and 13-18 are in between.",
   "baseline_ppl": 14.247,
   "baseline_reproduced_this_run": 14.247,
   "sum_of_chunk_deltas_ppl": 3.176,
@@ -149,5 +149,40 @@
     "early_plus_chunk_sum_ppl": 3.934,
     "phase2_flat_all24_delta_ppl": 5.18,
     "flat_all24_minus_early_and_chunks_ppl": 1.246
+  },
+  "bisection": {
+    "note": "test_d split in order into layers 19-21 and 22-23. Same stages 256,256,64. Each half leaves every other layer full precision.",
+    "sum_of_half_deltas_ppl": 1.223,
+    "test_d_delta_ppl": 1.2,
+    "test_d_minus_half_sum_ppl": -0.023,
+    "runs": [
+      {
+        "name": "test_d1",
+        "layers_quantized": [19, 20, 21],
+        "n_layers": 3,
+        "ppl": 14.746,
+        "delta_ppl": 0.499,
+        "pct_vs_14_247": 3.502,
+        "delta_ppl_per_layer": 0.166,
+        "share_of_half_sum": 0.408,
+        "parameters_quantized": 44728320,
+        "tokens": 299078,
+        "log": "artifacts/pbr_ladder/phase4map_ppl_test_d1.log"
+      },
+      {
+        "name": "test_d2",
+        "layers_quantized": [22, 23],
+        "n_layers": 2,
+        "ppl": 14.971,
+        "delta_ppl": 0.724,
+        "pct_vs_14_247": 5.082,
+        "delta_ppl_per_layer": 0.362,
+        "share_of_half_sum": 0.592,
+        "parameters_quantized": 29818880,
+        "tokens": 299078,
+        "log": "artifacts/pbr_ladder/phase4map_ppl_test_d2.log",
+        "hotter_half": true
+      }
+    ]
   }
 }
