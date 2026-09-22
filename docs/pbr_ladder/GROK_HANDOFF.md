@@ -1,144 +1,120 @@
-# Handoff to Grok: PBR-Ladder Phase 0–2 (whole-model quantization)
+# PBR-Ladder operational handoff (Phase 4 through PR #33)
 
-This session (Claude) is stepping back; a Grok-driven session is taking
-over from here. This file is the complete state transfer: what's proven,
-what's not, what just landed, and the immediate next steps per
-`docs/pbr_ladder/PBR_Ladder_Whats_Next.docx` (the roadmap doc — read that
-first for the full 9-phase plan, this file is just the operational
-handoff).
+**Date:** 2026-09-22  
+**Status:** **STOPPED.** User said **Stop all** (~16:07 IST). Do not auto-resume compute.
 
-## What's true right now
+This file is the current operational handoff for a fresh session. It replaces the stale Claude→Grok Phase 0–2 intro. Detail logs live in `docs/pbr_ladder/README.md` and `artifacts/pbr_ladder/`; roadmap scope stays in `docs/pbr_ladder/PBR_Ladder_Whats_Next.docx`. Read this first, not the full PR history.
 
-- One tensor (`model.layers.12.mlp.gate_proj.weight`), quantized to
-  ~2.785 bpw, swapped into the real Qwen2.5-0.5B-Instruct model: baseline
-  perplexity 14.247 → 14.269 (+0.154%), well under the 0.5% gate. **This
-  is the only real, whole-model-level result that exists.**
-- 9 tensors (`gate_proj`/`down_proj`/`q_proj` × layers 2/12/21) have
-  per-tensor output-dB numbers against real captured activations. Tensor
-  quality gate (≥2dB over INT4 RTN @ ≤3.3bpw): **FAIL on 6/9**, only the
-  3 `down_proj` tensors clear it clearly (+11.97 to +16.59dB); `gate_proj`
-  is flat/negative, `q_proj` marginal. Full numbers and raw logs:
-  `docs/pbr_ladder/README.md`, `pbr_ladder/real_tensor_results.txt`.
-- Everything else in the model — the other 23 layers, `up_proj`/
-  `k_proj`/`v_proj`/`o_proj`, embeddings, output head, norms — is
-  **untouched, full precision, unmeasured.**
+---
 
-Do not let "0.15% perplexity change" get generalized to "the whole model
-compresses cleanly." It hasn't been tested yet. See the roadmap doc §1.2
-and §5 for the exact claims-discipline line to hold.
+## Snapshot (what is true now)
 
-## What landed in this push
+| Item | Value |
+| --- | --- |
+| Model | `Qwen/Qwen2.5-0.5B-Instruct` BF16 |
+| Eval | WikiText-2 raw v1 test, **299078** tokens via `pbr_ladder/eval_ppl.py` (`PBR_CPU_FP32=1`) |
+| Baseline PPL | **14.247** |
+| Phase 2 / Phase 4 gate | **≤14.959** (+5%) |
+| Latest full-24 PPL | **18.492** (PR #33) — **+3.533** over gate |
+| Avg index bpw @ #33 | ~**2.849** |
+| Phase 4 done? | **No** |
+| L8–12 all-bump run | **Cancelled mid-flight — no result** |
 
-1. **`pbr_ladder/quantize_full_model.py`** (new, user-supplied, UNTESTED
-   here — no `huggingface.co` access in this sandbox, same limitation as
-   every other real-model script in this repo). This is the Phase 2
-   driver: loops every attention/MLP linear layer across all 24 layers,
-   quantizes each (rotation + GPTQ-style error feedback + 8-D residual
-   node codebooks — the same method already proven layer-by-layer),
-   **sequentially** (layer *n* is quantized and written back before
-   calibration text is re-run for layer *n+1*, so later layers see real
-   already-quantized inputs, matching production GPTQ practice).
+`quantize_full_model.py` saves a **dequantized FP** checkpoint for PPL only. It is **not** a smaller packed file. Size wins are a later phase. Do not claim size from these checkpoints.
 
-   **Important:** this script saves a **full-precision, dequantized**
-   checkpoint via `model.save_pretrained(..., safe_serialization=True)`.
-   The output folder is for perplexity measurement (Phase 2's gate), not
-   a compressed file — it will NOT be smaller on disk than the original.
-   Building an actual smaller file format is Phase 7, not this script.
-   Don't let anyone read "saved a new checkpoint" as "shrunk the file."
+### Recipes
 
-2. **`docs/pbr_ladder/PBR_Ladder_Whats_Next.docx`** — the full 9-phase
-   roadmap (source of truth for scope/gates/claims discipline). Read
-   this before doing anything below.
+| Name | Stages | Index bpw (approx) |
+| --- | --- | ---: |
+| Default | `256,256,64` | ~2.75 |
+| Bumped | `512,256,64` | ~2.875 |
 
-3. **Bug fix in `pbr_ladder/push_below4.py`**: its `kmeans`/`rvq`
-   functions built a full `(rows, 256)` float64 distance matrix in one
-   shot — on `L21 down_proj` (544,768 rows after the 8-D reshape) that's
-   ~1.04 GiB per allocation and previously crashed with
-   `numpy.core._exceptions._ArrayMemoryError` (see the traceback in
-   `pbr_ladder/real_tensor_results.txt`, `L21 mlp.down_proj` section).
-   Fixed by chunking those distance-matrix computations (`PBR_CHUNK`,
-   default 50000 rows/batch — same pattern `quantize_full_model.py`'s own
-   `kmeans` already uses). **Verified bit-identical** on the synthetic
-   self-check (`python3 push_below4.py` with no args still prints exactly
-   `INT3 RTN 11.11`, `INT3 GPTQ 13.52`, `INT3 rot+GPTQ 18.91`, matching
-   the guide's Appendix A) — this is a pure memory-behavior fix, not a
-   numeric change. Also smoke-tested on a synthetic tensor sized to match
-   the crash (896×4864, same shape as the real `down_proj` that OOM'd)
-   without running out of memory.
+---
 
-## Phase 0 — one open item, not resolved here
+## Proven milestones (on `main`)
 
-The roadmap doc (§3, Phase 0) flags: "the unusually high scores on
-`down_proj` at layers 2 and 21 suggest synthetic activations were likely
-used there" — i.e. confirm whether `push_below4`/`push_nested`/
-`push_below3`'s real-tensor runs for **all 9 tensors** actually used real
-captured activations (`capture_activations.py` output) or fell back to
-the synthetic default (which happens automatically if a script is called
-without a 3rd `.npy` argument).
+| Milestone | Result |
+| --- | --- |
+| Phase 0 | **PASS** — 9-tensor dB table used real activations |
+| Phase 1 L12 all mats | **PASS** — 14.247 → **14.354** (+0.75% &lt;1%) |
+| Phase 2 flat all-24 @ default | **FAIL** — **19.427** (+36.4%) |
+| L0/L1/L2 isolation (#25) | Nearly additive; no single villain |
+| L0–2 @ bumped only, rest FP (#26) | **PASS** 14.873 |
+| Full-24 early bump L0–2 (#27) | **FAIL** **19.280** |
+| L3–23 four-block map (#28/#30) | Alone Δ%: L19–23 hottest (+8.4%), then 13–18 (+5.7%), 3–7 (+4.6%), 8–12 (+3.7%) |
+| Protect L19–23 full-24 (#31) | **FAIL** **19.039** (−0.24 vs early-mix) |
+| Also protect L13–18 (#32) | **FAIL** **18.803** (−0.24 vs #31) |
+| Also protect L3–7 (#33) | **FAIL** **18.492** (−0.311 vs #32); avg index ~**2.849** bpw; **+3.533** over gate |
 
-**This session could not resolve it** — the commit history and PR body
-for the real-tensor run (`docs/pbr_ladder/README.md`, PR #21) say real
-activations were used for all 9, but the actual shell commands/activation
-files aren't in the repo (they're gitignored, `pbr_ladder/*.npy`) to
-check directly. First action for the Grok session: re-verify by either
-(a) asking whoever ran it to confirm/paste the exact commands used per
-tensor, or (b) re-running `capture_activations.py` for all 9 tensor/layer
-combos and re-doing the 9-tensor sweep from scratch, discarding the old
-numbers if they turn out to have used synthetic activations anywhere.
-Don't build Phase 1/2 conclusions on numbers that might be synthetic
-without settling this first — that's exactly what Phase 0's gate is for.
+### Full-24 stack (same gate each time)
 
-## Immediate next steps (Phase 1, then Phase 2)
+flat **19.427** → early-mix **19.280** → +late **19.039** → +L13–18 **18.803** → +L3–7 **18.492**. Gate still far.
 
-Needs a machine with `huggingface.co` access — this sandbox doesn't have
-it (blocked by egress policy, confirmed repeatedly, see
-`docs/pbr_ladder/HANDOFF.md`).
+---
 
-**Phase 1 — finish layer 12** (a few days, mostly compute):
-```bash
-cd pbr_ladder
-# up_proj, k_proj, v_proj, o_proj on layer 12, same procedure as gate_proj/q_proj already used
-python3 capture_activations.py Qwen/Qwen2.5-0.5B-Instruct 12 mlp.up_proj acts_L12_up.npy
-python3 capture_activations.py Qwen/Qwen2.5-0.5B-Instruct 12 self_attn.k_proj acts_L12_k.npy
-python3 capture_activations.py Qwen/Qwen2.5-0.5B-Instruct 12 self_attn.v_proj acts_L12_v.npy
-python3 capture_activations.py Qwen/Qwen2.5-0.5B-Instruct 12 self_attn.o_proj acts_L12_o.npy
-# gate_proj/up_proj share input (already captured as acts_L12_gate.npy from the §5.1 run)
-M=qwen05b/model.safetensors
-python3 push_below4.py $M model.layers.12.mlp.up_proj.weight acts_L12_gate.npy
-python3 push_below4.py $M model.layers.12.self_attn.k_proj.weight acts_L12_k.npy
-python3 push_below4.py $M model.layers.12.self_attn.v_proj.weight acts_L12_v.npy
-python3 push_below4.py $M model.layers.12.self_attn.o_proj.weight acts_L12_o.npy
-```
-Then replace **all** layer-12 matrices at once (not just gate_proj) and
-re-measure whole-model perplexity — gate: <1% change. There's no ready
-"replace all matrices in one layer" script yet; `quantize_full_model.py`
-with `PBR_LAYERS=12` does this as a side effect (it quantizes every
-targeted matrix in the given layer(s)) — reasonable to reuse for Phase 1
-instead of writing a separate one-layer-only tool:
-```bash
-PBR_LAYERS=12 python3 quantize_full_model.py qwen05b qwen05b_L12_only
-python3 eval_ppl.py qwen05b_L12_only   # compare against the 14.247 baseline
-```
+## Stopped work (important)
 
-**Phase 2 — whole model** (~a week, compute-bound), only after Phase 1's
-gate passes:
-```bash
-# quick dry run first (per the script's own header) before committing to a full run
-PBR_LAYERS=0,1,2 python3 quantize_full_model.py qwen05b qwen05b_test
-python3 eval_ppl.py qwen05b_test
+- User: **Stop all** on **2026-09-22 ~16:07 IST**.
+- Cloud agent for **L8–12 / all-24 @ `512,256,64`** was **cancelled mid-flight**.
+- **No result** from that run. Do **not** claim all-bump / uniform-`512,256,64` numbers.
+- Do **not** auto-resume that run unless the user explicitly asks.
 
-# full run
-python3 quantize_full_model.py qwen05b qwen05b_pbr3bit
-python3 eval_ppl.py qwen05b_pbr3bit
-```
-Gate: whole-model perplexity within 5% of the 14.247 baseline.
+---
 
-## Claims discipline (carry this forward)
+## Locked Phase 4 iterate (Wasim via GitHub) — status
 
-Same rule as everywhere else in this repo: only claim what the current
-phase has actually measured. The roadmap doc §5 has the exact fair/unfair
-claim table per phase — follow it. In particular, right now the only fair
-claim is "one MLP matrix in one layer, ~2.8 bpw, <0.2% perplexity change,
-measured on the real model." Nothing about the whole model, nothing about
-2-bit budgets, nothing about beating GGUF/AQLM/QuIP#, nothing about a
-real loadable compressed file — all of that is future phases.
+Protect hot chunks at `512,256,64` in map order, remasure full-24 each time:
+
+1. L19–23 → **done** (#31)
+2. L13–18 → **done** (#32)
+3. L3–7 → **done** (#33)
+4. L8–12 → **started then cancelled** — unfinished (last map chunk at this rung)
+
+Expectation from the #33 agent: even finishing L8–12 at this rung likely will **not** clear the remaining **+3.533**. If/when that PR is resumed and merges, **stop** inventing the next recipe without a new locked step from the user.
+
+---
+
+## Explicit non-retries (user)
+
+- No KLT / shared rotation retries (transform storage tax).
+- Don’t bother weak per-channel scale/permute for a ~30%+ hole.
+- Outlier correction only later, aimed at concentrated damage — not as global bit-reduction now.
+
+---
+
+## Product / strategy (short)
+
+- Compressed file ≠ lower RAM unless packed-resident or disk tunnel.
+- vs PrismML Ternary Bonsai / GGUF: Bonsai wins tiny fixed SOTA; the wedge is BYO weights + tunnel. The core puzzle is a **low-bit recipe the model absorbs**, not more packing of noisy codes.
+- Do **not** claim size wins from dequant checkpoints.
+
+---
+
+## Claims discipline
+
+Only claim what the current phase measured. **Phase 4 is not done.**
+
+Fair claim now: selective `512,256,64` bumps on most layers still leave full-24 PPL ~**18.5** vs **14.25** baseline (~**+30%**).
+
+Do **not** claim: whole-model gate pass, packed-file size wins, beating GGUF/AQLM/QuIP#/Bonsai, or any all-24 @ uniform `512,256,64` result.
+
+---
+
+## Immediate next steps (wait for user)
+
+1. Optionally finish the last map chunk: all L0–23 @ `512,256,64`, remasure vs 14.959 (honest **FAIL** expected; closes the rung).
+2. Then **stop and decide** a new locked recipe (higher stages / different method / outlier correction) — do not invent unilaterally.
+3. Later roadmap phases unchanged: quality broaden (3), adaptive bits (4 formal), multi-quality (5), baselines (6), packed runtime (7), prior art (8).
+
+---
+
+## Repo pointers
+
+| What | Where |
+| --- | --- |
+| Quantize / eval / acts | `pbr_ladder/quantize_full_model.py`, `eval_ppl.py`, `capture_activations.py`, `push_below4.py`, … |
+| Long-form results | `docs/pbr_ladder/README.md` |
+| Roadmap | `docs/pbr_ladder/PBR_Ladder_Whats_Next.docx` |
+| Phase logs | `artifacts/pbr_ladder/` (where present on `main`) |
+
+GitHub agent owns review/merge under Wasim policy (**honest FAIL OK to merge**).
