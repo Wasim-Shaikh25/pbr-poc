@@ -429,6 +429,62 @@ re-bit late block.
 Write-up: `artifacts/pbr_ladder/phase4_l3_23_chunk_map.md` and `.json`.
 Logs: `phase4map_quantize_test_*.log`, `phase4map_ppl_*.log`.
 
+The full-24 that protects layers 19–23 at `512,256,64` was run next.
+It misses. See the late-block section below.
+
+### Phase 4 late-block protect — full 24 layers
+
+**FAIL** against the same 5% gate (perplexity ≤ 14.959). Layers 0–2
+and layers 19–23 at `512,256,64`, layers 3–18 at `256,256,64`. Same
+`quantize_full_model.py` and `eval_ppl.py` (`PBR_CPU_FP32=1`,
+WikiText-2 raw v1 test, 299078 tokens). This run's baseline is again
+**14.247**. The checkpoint is dequantized fp32 for perplexity. It is
+not a packed file and it is not a size win.
+
+`PBR_CHUNK=20000` only splits the pooled distance matrix; the per-row
+argmin matches the default chunk. This was a full pass. The script can
+resume from `pbr_progress.json` after a later kill; this run finished
+all 24 layers without needing that. Phase 4 is done only if the
+whole-model perplexity is ≤ 14.959. It is not.
+
+| Layers | Stages | Index bpw |
+| --- | --- | ---: |
+| 0–2 | `512,256,64` | 2.875 |
+| 3–18 | `256,256,64` | 2.75 |
+| 19–23 | `512,256,64` | 2.875 |
+
+357,826,560 parameters touched. Average index cost is **2.791667** bpw
+(`(8 × 2.875 + 16 × 2.75) / 24`). Adding the `push_below3.py` fp16
+codebook/scale side info puts the same average at **2.845**. Phase 2
+flat was 2.75 index / 2.798 with side info. The Phase 2 retry
+(early-only mix) was 2.765625 / 2.816. 2.791667 stays well under ~4.
+None of these bpw figures is an on-disk size.
+
+| Run | Recipe | WikiText-2 test ppl | vs 14.247 | vs 14.959 |
+| --- | --- | ---: | ---: | --- |
+| Baseline (this run) | full precision | 14.247 | — | — |
+| Phase 2 flat all-24 (prior log) | `256,256,64` on 0–23 | 19.427 | +36.359% | FAIL |
+| Phase 2 retry, early-only mix (prior log) | `512,256,64` on 0–2; `256,256,64` on 3–23 | 19.280 | +35.327% | FAIL |
+| This run | `512,256,64` on 0–2 and 19–23; `256,256,64` on 3–18 | 19.039 | +33.635% | **FAIL** |
+
+19.039 − 19.427 = −0.388 versus the flat recipe. 19.039 − 19.280 =
+−0.241 versus the early-only mix, which is the late-block bump with
+layers 0–2 already at `512,256,64`. 19.039 − 14.959 = +4.080 versus
+the gate. Protecting the hot chunk is a partial fix.
+
+No new mid-layer isolation was run. The Phase 4 map already has that
+ranking, and it already named the fallback if this full-24 missed.
+The next extra bits go on **layers 13–18** (alone 15.053, Δ +0.806),
+then layers 3–7 (Δ +0.650), then layers 8–12 (Δ +0.520). That
+follow-up full-24 was not started here. The late-block bump moved the
+full model by −0.241, and the miss that remains is +4.080, so one more
+chunk at this rung is not enough to clear the gate on the evidence in
+hand. KLT, rotation, and permutation were not retried.
+
+Write-up: `artifacts/pbr_ladder/phase4_late_block_full24.md` and
+`.json`. Logs: `phase4_late_quantize.log`,
+`phase4_late_ppl_baseline.log`, `phase4_late_ppl_full.log`.
+
 ## What wasn't tested
 
 - **A smaller on-disk format, and any comparison to GGUF / AQLM / QuIP#.**
@@ -441,18 +497,23 @@ Logs: `phase4map_quantize_test_*.log`, `phase4map_ppl_*.log`.
   at stages `256,256,64` (Phase 1), for layers 0–2 at that recipe
   (Phase 2b, 15.005), for layers 0–2 at `512,256,64` plus the
   layer-0-only bump (Phase 4, 14.873 and 14.951), and for all 24 layers
-  at the mixed recipe (Phase 2 retry, 19.280), and for four L3–23
-  chunks at `256,256,64` with every other layer full precision
+  at the mixed recipe (Phase 2 retry, 19.280), for all 24 layers
+  with layers 0–2 and 19–23 at `512,256,64` and layers 3–18 at
+  `256,256,64` (Phase 4 late-block protect, 19.039), and for four
+  L3–23 chunks at `256,256,64` with every other layer full precision
   (Phase 4 map: 14.897, 14.767, 15.053, 15.447; the layer 19–23
   split is 14.746 and 14.971). Other rungs
   (`256,256,256` and above) were not scored. A uniform 24-layer
   `512,256,64` run was not scored. Per-tensor perplexity at the new
   stages is unknown.
-- **Layer 3 on its own, and layers 3–23 at `512,256,64`.** The Phase 4
+- **Layer 3 on its own, and layers 3–18 at `512,256,64`.** The Phase 4
   map scores layers 3–7, 8–12, 13–18, and 19–23 separately at
-  `256,256,64`. It does not score a single layer inside those chunks,
-  and it does not raise bits on layers 3–23. Phase 2's flat all-24
-  number remains 19.427. The mixed full-24 number is 19.280.
+  `256,256,64`, and it splits 19–23 into 19–21 and 22–23. The
+  late-block full-24 raises bits on 0–2 and 19–23 together and leaves
+  3–18 at `256,256,64` (perplexity 19.039). It does not raise 13–18,
+  3–7, or 8–12, and it does not raise 22–23 on their own inside the
+  full model. Phase 2's flat all-24 number remains 19.427. The
+  early-only mixed full-24 number is 19.280.
 - `formula_probe.py`, `node_combo_q4.py`, `node_structures.py` were run
   only against synthetic data (their self-check), not real Qwen tensors —
   the guide's real-tensor procedure (§3.1–3.7) for these 3 wasn't
@@ -473,6 +534,7 @@ Logs: `phase4map_quantize_test_*.log`, `phase4map_ppl_*.log`.
 | Phase 4 — L0–L2 at a modest bit bump (≤ 14.959) | **PASS** — all three layers at `512,256,64`: 14.873 (+4.394%). L0 only at `512,256,64`, L1 and L2 still `256,256,64`: 14.951 (+4.941%). Not a 24-layer result. |
 | Whole-model retention, Phase 2 retry (mixed bits, ≤ 14.959) | **FAIL** — layers 0–2 at `512,256,64`, layers 3–23 at `256,256,64`: 14.247 → 19.280 (+35.327%). Gate is 14.959. Flat Phase 2 all-24 was 19.427. Average index bpw 2.765625. Dequantized fp32 checkpoint, not a size win. |
 | Phase 4 map — L3–23 in four chunks at `256,256,64` | **diagnostic, no gate** — test_a L3–7 14.897 (+4.562%), test_b L8–12 14.767 (+3.650%), test_c L13–18 15.053 (+5.657%), test_d L19–23 15.447 (+8.423%). Hot chunk is layers 19–23. Bisect: L19–21 14.746 (+3.502%), L22–23 14.971 (+5.082%). Sum of the four isolated deltas +3.176. Dequantized fp32, not a size win. |
+| Whole-model retention, Phase 4 late-block protect (≤ 14.959) | **FAIL** — layers 0–2 and 19–23 at `512,256,64`, layers 3–18 at `256,256,64`: 14.247 → 19.039 (+33.635%). Gate is 14.959. Flat Phase 2 all-24 was 19.427. Early-only mixed full-24 was 19.280. Average index bpw 2.791667. Dequantized fp32 checkpoint, not a size win. Phase 4 is not done. |
 
 ## To reproduce
 
@@ -525,3 +587,9 @@ python3 eval_ppl.py Qwen/Qwen2.5-0.5B-Instruct L12_gate_293.npz
   The 19.280, 14.873, 19.427, and 15.005 figures used in the
   additivity comparison are the earlier Phase 2, Phase 4, and Phase 2
   retry logs. The chunk checkpoints are dequantized fp32.
+- Phase 4 late-block perplexities are the printed lines 14.247
+  (baseline) and 19.039 (full 24-layer mix), both at 299078 tokens.
+  The 19.427 and 19.280 rows in that table are the Phase 2 and Phase 2
+  retry logs. 2.791667 is `(8 × 2.875 + 16 × 2.75) / 24` on the printed
+  index costs. 2.845 adds estimated codebook side info. Neither number
+  is an on-disk size. Percent is `(19.039 − 14.247) / 14.247`.
