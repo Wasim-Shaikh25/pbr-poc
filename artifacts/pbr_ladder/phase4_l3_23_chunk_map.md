@@ -150,8 +150,28 @@ stack, not spread evenly through layers 3–23.
 Closing one chunk will not reproduce the full-model gap. The four
 isolated deltas sum to +3.176, and the sequential L3–23-ish envelopes
 are about +4.4. A bit bump on layers 22–23, then 19–21, is the first
-L3–23 spend, scored later with the same WikiText-2 test. It was not
-run here.
+L3–23 spend suggested by the halves. It was not run here.
+
+## If a late-block full-24 still misses
+
+This map did not run a 24-layer model, and it did not score layers
+19–23 at `512,256,64`. A separate full-24 that protects that whole
+late block at `512,256,64` is a different experiment. The four-block
+order below is only the isolated `256,256,64` ranking, for the case
+where that full-24 still misses 14.959 and the next chunk has to be
+chosen from this table.
+
+| Order | Chunk | Layers | Alone Δppl | Alone ppl |
+| --- | --- | --- | ---: | ---: |
+| 1 (hottest) | test_d | 19–23 | +1.200 | 15.447 |
+| 2 (next) | test_c | 13–18 | +0.806 | 15.053 |
+| 3 | test_a | 3–7 | +0.650 | 14.897 |
+| 4 (mildest) | test_b | 8–12 | +0.520 | 14.767 |
+
+The next chunk after 19–23 is **layers 13–18**. Then layers 3–7. Layers
+8–12 are last. That order is the four alone deltas. It is not a
+prediction of how those chunks add inside a full-24 that has already
+raised bits on 19–23.
 
 ## Commands
 
