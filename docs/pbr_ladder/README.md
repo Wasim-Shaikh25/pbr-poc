@@ -418,7 +418,13 @@ to +1.223, against +1.200 on layers 19–23 together. Layers 8–12 are
 the smallest isolated hit (+0.520, and they contain the Phase 1
 layer-12 point). Layers 3–7 and 13–18 are about +0.13 ppl per layer.
 A bump on 22–23 was not run here. One chunk's fix does not close the
-full-model gap.
+full-model gap. This map also did not run a 24-layer model and did
+not score layers 19–23 at `512,256,64`. If a separate full-24 that
+protects that whole late block at `512,256,64` still misses, the next
+chunk on this table is **layers 13–18** (Δ +0.806), then layers 3–7
+(Δ +0.650), then layers 8–12 (Δ +0.520). That order is the four
+alone deltas, not a forecast of those chunks inside an already
+re-bit late block.
 
 Write-up: `artifacts/pbr_ladder/phase4_l3_23_chunk_map.md` and `.json`.
 Logs: `phase4map_quantize_test_*.log`, `phase4map_ppl_*.log`.
