@@ -1,0 +1,88 @@
+{
+  "experiment": "phase4_l812_protect_full24",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "gate_ppl": 14.959,
+  "gate_rule": "printed WikiText-2 test perplexity <= 14.959 (+5% vs 14.247). Phase 4 is done only if the whole-model perplexity clears this gate.",
+  "verdict": "RUN_IN_PROGRESS",
+  "phase4_done": false,
+  "full_24_layer_run": true,
+  "ppl": null,
+  "baseline_ppl": 14.247,
+  "prior_l37_full24_ppl": 18.492,
+  "prior_remaining_miss_vs_gate": 3.533,
+  "l8_12_alone_delta_ppl_at_256": 0.52,
+  "map_exhausted_at_512_256_64_rung_note": "If this full-24 still misses, Phase 4 at the 512,256,64 rung is exhausted. Do not invent a next recipe or start another full-24 without a new locked step.",
+  "next_rung_options_bullets_only": [
+    "Higher stage (e.g. 1024,... or 256,256,256) on selected layers",
+    "Outlier correction later",
+    "Other transforms (KLT / shared rotation / permutation) if locked later"
+  ],
+  "eval": {
+    "script": "pbr_ladder/eval_ppl.py",
+    "env": "PBR_CPU_FP32=1",
+    "dataset": "Salesforce/wikitext",
+    "config": "wikitext-2-raw-v1",
+    "split": "test",
+    "tokens": null,
+    "checkpoint": "dequantized fp32 written by quantize_full_model.py; perplexity only"
+  },
+  "recipe": {
+    "script": "pbr_ladder/quantize_full_model.py",
+    "samples": 64,
+    "seq": 512,
+    "chunk": 20000,
+    "node_dim": 8,
+    "default_stages": [512, 256, 64],
+    "layer_stages": {},
+    "all_layers_stages": [512, 256, 64],
+    "parameters_quantized": 357826560,
+    "parameters_per_layer": 14909440,
+    "linears_per_layer": [
+      "self_attn.q_proj",
+      "self_attn.k_proj",
+      "self_attn.v_proj",
+      "self_attn.o_proj",
+      "mlp.gate_proj",
+      "mlp.up_proj",
+      "mlp.down_proj"
+    ]
+  },
+  "stack": {
+    "torch": "2.14.0+cpu",
+    "transformers": "5.17.0",
+    "datasets": "5.0.1",
+    "numpy": "2.4.4"
+  },
+  "bpw_estimate": {
+    "note": "Index bpw is the quantizer print, averaged with equal per-layer parameter counts. raw adds the push_below3.py fp16 codebook/scale side info. Not a measured file size.",
+    "all_layers_index_bpw": 2.875,
+    "average_index_bpw": 2.875,
+    "average_index_bpw_formula": "(24*2.875) / 24",
+    "one_layer_index_plus_side_512_256_64": 2.939,
+    "average_index_plus_side_bpw": 2.939,
+    "phase2_flat_index_bpw": 2.75,
+    "l37_protect_index_bpw": 2.848958,
+    "index_bpw_delta_vs_phase2_flat": 0.125,
+    "index_bpw_delta_vs_l37": 0.026042
+  },
+  "runs": [
+    {
+      "name": "baseline",
+      "ppl": null,
+      "source": "this_run_pending",
+      "log": "artifacts/pbr_ladder/phase4_l812_ppl_baseline.log"
+    },
+    {
+      "name": "l3_7_protected_full24",
+      "ppl": 18.492,
+      "source": "prior_log",
+      "log": "artifacts/pbr_ladder/phase4_l37_ppl_full.log"
+    },
+    {
+      "name": "l8_12_also_protected_full24_all_bumped",
+      "ppl": null,
+      "source": "this_run_pending",
+      "log": "artifacts/pbr_ladder/phase4_l812_ppl_full.log"
+    }
+  ]
+}
