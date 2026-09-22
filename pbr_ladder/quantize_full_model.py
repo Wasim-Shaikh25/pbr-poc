@@ -234,6 +234,21 @@ def kmeans(V, k, it=10, chunk=CHUNK):
             if m.any(): C[j] = V[m].mean(0)
     return C
 
+def beam_assign(Rb, books, B):
+    """Beam-search RVQ assignment for a D-wide block. Rb: (rows, D). Keep the B best
+    cumulative stage-combinations per row (AQLM-style) instead of greedy-nearest.
+    Same stored bits; measured +0.25..0.65 dB free on real tensors (beam_vq.py)."""
+    n = Rb.shape[0]; recon = np.zeros((n, 1, Rb.shape[1]))
+    for C in books:
+        bb = recon.shape[1]; k = len(C)
+        cand = recon[:, :, None, :] + C[None, None, :, :]          # (n, bb, k, D)
+        d = ((Rb[:, None, None, :] - cand)**2).sum(-1).reshape(n, bb*k)
+        keep = min(B, bb*k)
+        idx = np.argpartition(d, keep-1, axis=1)[:, :keep]
+        recon = np.take_along_axis(cand.reshape(n, bb*k, -1), idx[:, :, None], axis=1)
+    fd = ((Rb[:, None, :] - recon)**2).sum(-1)
+    return recon[np.arange(n), fd.argmin(1)]
+
 def quantize_linear(Wt, H, stages, name="", li=0):
     """Wt: torch weight (out, in). H: numpy (in, in) uncentered covariance of its real inputs.
        Returns a torch tensor of the same shape, quantized then dequantized.
@@ -250,6 +265,20 @@ def quantize_linear(Wt, H, stages, name="", li=0):
     Hr = Ri.T @ H @ Ri
     Hr = Hr + 0.01 * np.mean(np.diag(Hr)) * np.eye(I)
     U = np.linalg.cholesky(np.linalg.inv(Hr)).T
+
+    # PBR_INT4: strong-baseline mode -- same rotation + GPTQ feedback, but uniform
+    # per-group int4 instead of VQ codebooks. This is the fair "strong 4-bit" ref.
+    if os.environ.get("PBR_INT4") == "1":
+        bits = int(os.environ.get("PBR_INT4_BITS", "4")); g = int(os.environ.get("PBR_INT4_G", "128"))
+        L = 2**bits; T = Wr.copy(); Q = np.zeros_like(T); sc = None
+        for j in range(I):
+            if j % g == 0:
+                sc = np.abs(T[:, j:j+g]).max(1) / ((L-1)/2) + 1e-12
+            q = (np.clip(np.round(T[:, j]/sc - .5), -L/2, L/2-1) + .5) * sc
+            Q[:, j] = q; e = (T[:, j] - q) / U[j, j]
+            T[:, j+1:] -= np.outer(e, U[j, j+1:])
+        return torch.from_numpy(Ro.T @ Q @ Ri.T).to(Wt.dtype)
+
     s = np.sqrt((Wr**2).mean(1, keepdims=True)) + 1e-12
 
     pool = (Wr / s).reshape(-1, D)               # pass 1: fit codebooks on the whole tensor
@@ -259,12 +288,17 @@ def quantize_linear(Wt, H, stages, name="", li=0):
         a = assign_rows(Rres, C)
         books.append(C); Rres = Rres - C[a]
 
+    BEAM = int(os.environ.get("PBR_BEAM", "1"))    # >1 enables beam-search assignment (free quality)
     T = Wr.copy(); Q = np.zeros_like(T)            # pass 2: column-block feedback
     for j in range(0, I, D):
-        b = slice(j, j + D); R = T[:, b] / s; q = np.zeros_like(R)
-        for C in books:
-            a = ((R**2).sum(1)[:, None] - 2*R@C.T + (C**2).sum(1)[None]).argmin(1)
-            q += C[a]; R -= C[a]
+        b = slice(j, j + D); R = T[:, b] / s
+        if BEAM > 1:
+            q = beam_assign(R, books, BEAM)        # keep top-B cumulative combos per row
+        else:
+            q = np.zeros_like(R); r = R.copy()
+            for C in books:
+                a = ((r**2).sum(1)[:, None] - 2*r@C.T + (C**2).sum(1)[None]).argmin(1)
+                q += C[a]; r -= C[a]
         Q[:, b] = q * s
         if j + D < I:
             T[:, j+D:] -= (T[:, b] - Q[:, b]) @ np.linalg.solve(U[b, b], U[b, j+D:])
@@ -338,7 +372,11 @@ for li in which:
 # Index cost only (codebook storage is shared and <0.1 bpw on tensors this large,
 # larger on the narrow k/v projections). One number when every layer shares a recipe.
 unique = {tuple(s) for s in used_stages.values()} if used_stages else {tuple(STAGES)}
-if len(unique) == 1:
+if os.environ.get("PBR_INT4") == "1":
+    _bits = int(os.environ.get("PBR_INT4_BITS", "4")); _g = int(os.environ.get("PBR_INT4_G", "128"))
+    print(f"\nQuantized {quantized_params:,} parameters across {len(which)} layer(s) as INT{_bits} "
+          f"(group {_g}) = {_bits + 16.0/_g:.3f} bpw. (codebook 'stages' are ignored in INT4 mode)")
+elif len(unique) == 1:
     stages = list(next(iter(unique))) if used_stages else STAGES
     codebook_bpw = index_bpw(stages)
     print(f"\nQuantized {quantized_params:,} parameters across {len(which)} layer(s), "
