@@ -1,0 +1,92 @@
+=== QUANTIZE START 2026-09-22T01:23:36+00:00 ===
+env: PBR_STAGES=256,256,64 PBR_LAYER_STAGES=0:512,256,64;1:512,256,64;2:512,256,64 PBR_CHUNK=20000 PBR_CPU_FP32=1
+stack 2.14.0+cpu 5.17.0 5.0.1 2.4.4
+Loading model from ./qwen05b ...
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   0%|          | 1/290 [00:00<00:57,  5.05it/s]Loading weights:  80%|███████▉  | 231/290 [00:00<00:00, 932.63it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 798.97it/s]
+Model has 24 layers; quantizing: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Generating test split:   0%|          | 0/4358 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 4358/4358 [00:00<00:00, 192300.89 examples/s]
+Generating train split:   0%|          | 0/36718 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 36718/36718 [00:00<00:00, 774158.54 examples/s]
+Generating validation split:   0%|          | 0/3760 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 3760/3760 [00:00<00:00, 1084932.79 examples/s]
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (276404 > 131072). Running this sequence through the model will result in indexing errors
+layer  0/23  quantized 7 tensors  [ 103.9s elapsed]  stages=[512, 256, 64]  index 2.875 bpw
+progress saved through layer 0
+layer  1/23  quantized 7 tensors  [ 192.8s elapsed]  stages=[512, 256, 64]  index 2.875 bpw
+progress saved through layer 1
+layer  2/23  quantized 7 tensors  [ 285.0s elapsed]  stages=[512, 256, 64]  index 2.875 bpw
+progress saved through layer 2
+layer  3/23  quantized 7 tensors  [ 354.6s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 3
+layer  4/23  quantized 7 tensors  [ 425.7s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 4
+layer  5/23  quantized 7 tensors  [ 501.4s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 5
+layer  6/23  quantized 7 tensors  [ 581.4s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 6
+layer  7/23  quantized 7 tensors  [ 659.7s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 7
+layer  8/23  quantized 7 tensors  [ 737.8s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 8
+layer  9/23  quantized 7 tensors  [ 820.9s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 9
+layer 10/23  quantized 7 tensors  [ 904.7s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 10
+layer 11/23  quantized 7 tensors  [ 986.3s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 11
+layer 12/23  quantized 7 tensors  [1068.8s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 12
+layer 13/23  quantized 7 tensors  [1152.7s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 13
+layer 14/23  quantized 7 tensors  [1239.6s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 14
+layer 15/23  quantized 7 tensors  [1326.5s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 15
+layer 16/23  quantized 7 tensors  [1413.0s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 16
+layer 17/23  quantized 7 tensors  [1500.1s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 17
+layer 18/23  quantized 7 tensors  [1592.6s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 18
+layer 19/23  quantized 7 tensors  [1690.8s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 19
+layer 20/23  quantized 7 tensors  [1783.8s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 20
+layer 21/23  quantized 7 tensors  [1880.1s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 21
+layer 22/23  quantized 7 tensors  [1988.6s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 22
+layer 23/23  quantized 7 tensors  [2100.4s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+progress saved through layer 23
+
+Quantized 357,826,560 parameters across 24 layer(s), mixed stages:
+  layer 0: stages=[512, 256, 64]  index 2.875 bpw
+  layer 1: stages=[512, 256, 64]  index 2.875 bpw
+  layer 2: stages=[512, 256, 64]  index 2.875 bpw
+  layer 3: stages=[256, 256, 64]  index 2.75 bpw
+  layer 4: stages=[256, 256, 64]  index 2.75 bpw
+  layer 5: stages=[256, 256, 64]  index 2.75 bpw
+  layer 6: stages=[256, 256, 64]  index 2.75 bpw
+  layer 7: stages=[256, 256, 64]  index 2.75 bpw
+  layer 8: stages=[256, 256, 64]  index 2.75 bpw
+  layer 9: stages=[256, 256, 64]  index 2.75 bpw
+  layer 10: stages=[256, 256, 64]  index 2.75 bpw
+  layer 11: stages=[256, 256, 64]  index 2.75 bpw
+  layer 12: stages=[256, 256, 64]  index 2.75 bpw
+  layer 13: stages=[256, 256, 64]  index 2.75 bpw
+  layer 14: stages=[256, 256, 64]  index 2.75 bpw
+  layer 15: stages=[256, 256, 64]  index 2.75 bpw
+  layer 16: stages=[256, 256, 64]  index 2.75 bpw
+  layer 17: stages=[256, 256, 64]  index 2.75 bpw
+  layer 18: stages=[256, 256, 64]  index 2.75 bpw
+  layer 19: stages=[256, 256, 64]  index 2.75 bpw
+  layer 20: stages=[256, 256, 64]  index 2.75 bpw
+  layer 21: stages=[256, 256, 64]  index 2.75 bpw
+  layer 22: stages=[256, 256, 64]  index 2.75 bpw
+  layer 23: stages=[256, 256, 64]  index 2.75 bpw
+Codebook overhead is <0.1 bpw on wide tensors and larger on narrow k/v.
+Embeddings, output head, and norms were left untouched (full precision).
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:01<00:00,  1.33s/it]Writing model shards: 100%|██████████| 1/1 [00:01<00:00,  1.33s/it]
+
+Saved new checkpoint to: ./qwen05b_p2r_mixed
+Load and test it directly:  python eval_ppl.py ./qwen05b_p2r_mixed
+=== QUANTIZE DONE rc=0 2026-09-22T01:58:47+00:00 ===

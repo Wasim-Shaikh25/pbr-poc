@@ -1,0 +1,8 @@
+=== EVAL START baseline 2026-09-22T02:14:32+00:00 ===
+checkpoint: ./qwen05b  PBR_CPU_FP32=1
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   0%|          | 1/290 [00:00<01:44,  2.77it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 788.39it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (299078 > 131072). Running this sequence through the model will result in indexing errors
+WikiText-2 test perplexity: 14.247
+=== EVAL DONE rc=0 2026-09-22T02:24:46+00:00 ===

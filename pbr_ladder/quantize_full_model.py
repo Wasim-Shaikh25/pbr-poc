@@ -24,8 +24,17 @@
 # to a full run, which can take a long time on CPU for a 0.5B model.
 # PBR_LAYER_STAGES is optional: "layer:k1,k2,...;layer:k1,k2,..." overrides
 # PBR_STAGES for those layers only. Omitted, every selected layer uses PBR_STAGES.
+#
+# Resume: after each finished layer the script writes
+#   <out>/layer_npz/layer_<i>.npz
+#   <out>/pbr_progress.json
+# A later invocation with the same output path and the same recipe (stages,
+# per-layer overrides, sample count, sequence length, layer list) reloads
+# those weights and continues at the next layer. The quantization math is
+# unchanged. Delete the output folder to force a full re-run. A progress
+# file whose recipe does not match this invocation is refused.
 
-import os, sys, time, numpy as np, torch
+import gc, os, sys, time, json, numpy as np, torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 src, out = sys.argv[1], sys.argv[2]
@@ -56,7 +65,90 @@ model = AutoModelForCausalLM.from_pretrained(src, dtype=torch.float32).eval()
 layers = model.model.layers
 n_layers = len(layers)
 which = [int(x) for x in os.environ["PBR_LAYERS"].split(",")] if os.environ.get("PBR_LAYERS") else list(range(n_layers))
-print(f"Model has {n_layers} layers; quantizing: {which}")
+print(f"Model has {n_layers} layers; quantizing: {which}", flush=True)
+
+# ---- per-layer resume (weights only; does not change the quantizer) ----
+PROGRESS_VERSION = 1
+
+def recipe_record():
+    return {
+        "version": PROGRESS_VERSION,
+        "stages": STAGES,
+        "layer_stages": {str(k): v for k, v in sorted(LAYER_STAGES.items())},
+        "samples": SAMPLES,
+        "seq": SEQ,
+        "layers": which,
+    }
+
+def progress_path():
+    return os.path.join(out, "pbr_progress.json")
+
+def layer_npz_path(li):
+    return os.path.join(out, "layer_npz", f"layer_{li}.npz")
+
+def load_progress():
+    path = progress_path()
+    if not os.path.isfile(path):
+        return []
+    with open(path, encoding="utf-8") as f:
+        prog = json.load(f)
+    want = recipe_record()
+    got = {k: prog.get(k) for k in want}
+    if got != want:
+        raise SystemExit(
+            f"Partial checkpoint at {out} does not match this recipe.\n"
+            f"  file: {json.dumps(got)}\n  this run: {json.dumps(want)}\n"
+            f"Refusing to resume or overwrite. Remove {out} to start over.")
+    done = [int(x) for x in prog.get("done", [])]
+    if done != which[:len(done)]:
+        raise SystemExit(
+            f"Progress done={done} is not a prefix of layers={which}. Refusing to resume.")
+    missing = [li for li in done if not os.path.isfile(layer_npz_path(li))]
+    if missing:
+        raise SystemExit(f"Progress lists layers {missing} but their npz files are missing.")
+    return done
+
+def restore_done_layers(done):
+    for li in done:
+        data = np.load(layer_npz_path(li))
+        block = layers[li]
+        for name in data.files:
+            mod = block.get_submodule(name)
+            arr = np.array(data[name], copy=True)
+            with torch.no_grad():
+                mod.weight.copy_(torch.from_numpy(arr).to(dtype=mod.weight.dtype))
+        data.close()
+        print(f"restored layer {li:2d} from {layer_npz_path(li)}", flush=True)
+
+def save_layer_progress(li):
+    os.makedirs(os.path.join(out, "layer_npz"), exist_ok=True)
+    block = layers[li]
+    payload = {}
+    for name in TARGETS:
+        try:
+            mod = block.get_submodule(name)
+        except AttributeError:
+            continue
+        payload[name] = mod.weight.detach().float().cpu().numpy()
+    partial = os.path.join(out, "layer_npz", f"layer_{li}.partial.npz")
+    np.savez(partial, **payload)
+    os.replace(partial, layer_npz_path(li))
+    done_now = which[:which.index(li) + 1]
+    rec = recipe_record()
+    rec["done"] = done_now
+    tmp = progress_path() + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(rec, f, indent=2)
+        f.write("\n")
+    os.replace(tmp, progress_path())
+    print(f"progress saved through layer {li}", flush=True)
+
+done_layers = load_progress()
+if done_layers:
+    print(f"Resuming from {out}: {len(done_layers)} layer(s) already quantized "
+          f"({done_layers[0]}..{done_layers[-1]}). Restoring, then continuing.", flush=True)
+    restore_done_layers(done_layers)
+done_set = set(done_layers)
 
 # ---- calibration text: local file (PBR_TEXT) or WikiText-2 train via `datasets` ----
 if os.environ.get("PBR_TEXT"):
@@ -156,6 +248,23 @@ for li in which:
     stages = LAYER_STAGES.get(li, STAGES)
     used_stages[li] = stages
     block = layers[li]
+    if li in done_set:
+        n_restored = 0
+        for name in TARGETS:
+            try:
+                mod = block.get_submodule(name)
+            except AttributeError:
+                continue
+            n_restored += 1
+            total_params += mod.weight.numel()
+            quantized_params += mod.weight.numel()
+        stage_note = ""
+        if LAYER_STAGES:
+            stage_note = f"  stages={stages}  index {fmt_bpw(index_bpw(stages))} bpw"
+        print(f"layer {li:2d}/{n_layers-1}  resumed {n_restored} tensors  "
+              f"[{time.time()-t0:6.1f}s elapsed]{stage_note}", flush=True)
+        gc.collect()
+        continue
     targets = {}
     for name in TARGETS:
         try: targets[name] = block.get_submodule(name)
@@ -185,7 +294,9 @@ for li in which:
     if LAYER_STAGES:
         stage_note = f"  stages={stages}  index {fmt_bpw(index_bpw(stages))} bpw"
     print(f"layer {li:2d}/{n_layers-1}  quantized {len(targets)} tensors  "
-          f"[{time.time()-t0:6.1f}s elapsed]{stage_note}")
+          f"[{time.time()-t0:6.1f}s elapsed]{stage_note}", flush=True)
+    save_layer_progress(li)
+    gc.collect()
 
 # Index cost only (codebook storage is shared and <0.1 bpw on tensors this large,
 # larger on the narrow k/v projections). One number when every layer shares a recipe.
