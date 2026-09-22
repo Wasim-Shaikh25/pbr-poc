@@ -41,6 +41,7 @@ src, out = sys.argv[1], sys.argv[2]
 STAGES = [int(x) for x in os.environ.get("PBR_STAGES", "256,256,64").split(",")]
 SAMPLES = int(os.environ.get("PBR_SAMPLES", "64"))
 SEQ = int(os.environ.get("PBR_SEQ", "512"))
+PERLAYER = os.environ.get("PBR_ROT_PERLAYER", "0") == "1"  # per-(proj,layer) rotation vs one shared per width
 
 def parse_layer_stages(spec):
     """'0:512,256,64;1:256,256,256' -> {0: [512,256,64], 1: [256,256,256]}."""
@@ -67,6 +68,26 @@ n_layers = len(layers)
 which = [int(x) for x in os.environ["PBR_LAYERS"].split(",")] if os.environ.get("PBR_LAYERS") else list(range(n_layers))
 print(f"Model has {n_layers} layers; quantizing: {which}", flush=True)
 
+# PBR_INIT_CKPT: seed the NOT-selected layers from an already-quantized checkpoint,
+# so a run that only re-quantizes a few layers (e.g. richer end layers) inherits the
+# rest instead of leaving them at BF16. Used for curve-guided mixed precision.
+if os.environ.get("PBR_INIT_CKPT"):
+    from safetensors import safe_open as _sopen
+    _ck = os.path.join(os.environ["PBR_INIT_CKPT"], "model.safetensors")
+    _skip = set(which)
+    with _sopen(_ck, "pt") as _f:
+        _keys = set(_f.keys())
+        with torch.no_grad():
+            for _li in range(n_layers):
+                if _li in _skip:
+                    continue
+                for _t in ["self_attn.q_proj", "self_attn.k_proj", "self_attn.v_proj",
+                           "self_attn.o_proj", "mlp.gate_proj", "mlp.up_proj", "mlp.down_proj"]:
+                    _kn = f"model.layers.{_li}.{_t}.weight"
+                    if _kn in _keys:
+                        layers[_li].get_submodule(_t).weight.copy_(_f.get_tensor(_kn).float())
+    print(f"Seeded non-selected layers from {os.environ['PBR_INIT_CKPT']}", flush=True)
+
 # ---- per-layer resume (weights only; does not change the quantizer) ----
 PROGRESS_VERSION = 1
 
@@ -78,6 +99,7 @@ def recipe_record():
         "samples": SAMPLES,
         "seq": SEQ,
         "layers": which,
+        "rot_perlayer": PERLAYER,
     }
 
 def progress_path():
@@ -175,8 +197,23 @@ class StopForward(Exception): pass
 def ortho(n, seed):
     q, r = np.linalg.qr(np.random.default_rng(seed).normal(size=(n, n)))
     return (q * np.sign(np.diag(r))).astype(np.float64)
+
+# PBR_ROT_PERLAYER=1 gives every (projection, layer, side) its OWN random rotation
+# instead of reusing one cached rotation per width across all 24 layers. Still free
+# to store (both sides regenerate from the seed). Motivation: with a shared rotation,
+# each layer's quantization error has a correlated structure, so the errors it injects
+# into the shared residual stream add up COHERENTLY (~N) instead of like an incoherent
+# random walk (~sqrt(N)) -- see coherence_probe.py. Distinct per-layer rotations
+# scramble the error directions so they cancel rather than reinforce.
 rot_cache = {}
-def rotation(n):
+def rotation(n, key=None):
+    if PERLAYER and key is not None:
+        # stable, deterministic seed per (projection-name, layer, width, side) --
+        # zlib.crc32, NOT Python's process-randomized hash(), so a decoder can
+        # regenerate the identical rotation from the same key (the "free" property).
+        import zlib
+        seed = zlib.crc32(f"{key}|{n}".encode()) & 0x7fffffff
+        return ortho(n, seed)
     if n not in rot_cache: rot_cache[n] = ortho(n, n)   # cached: same rotation reused for every layer of this width
     return rot_cache[n]
 
@@ -197,7 +234,7 @@ def kmeans(V, k, it=10, chunk=CHUNK):
             if m.any(): C[j] = V[m].mean(0)
     return C
 
-def quantize_linear(Wt, H, stages):
+def quantize_linear(Wt, H, stages, name="", li=0):
     """Wt: torch weight (out, in). H: numpy (in, in) uncentered covariance of its real inputs.
        Returns a torch tensor of the same shape, quantized then dequantized.
        Two passes, matching the design already validated in push_nested.py:
@@ -208,7 +245,7 @@ def quantize_linear(Wt, H, stages):
        (2) a column-block pass that applies GPTQ-style error feedback using those
            already-fixed codebooks."""
     W = Wt.detach().double().numpy(); O, I = W.shape
-    Ro, Ri = rotation(O), rotation(I)
+    Ro, Ri = rotation(O, key=f"{name}:{li}:out"), rotation(I, key=f"{name}:{li}:in")
     Wr = Ro @ W @ Ri
     Hr = Ri.T @ H @ Ri
     Hr = Hr + 0.01 * np.mean(np.diag(Hr)) * np.eye(I)
@@ -287,7 +324,7 @@ for li in which:
         inputs[name].clear()
         H = X.T @ X / len(X)
         del X
-        Wq = quantize_linear(mod.weight, H, stages)
+        Wq = quantize_linear(mod.weight, H, stages, name=name, li=li)
         with torch.no_grad(): mod.weight.copy_(Wq)
         total_params += mod.weight.numel(); quantized_params += mod.weight.numel()
     stage_note = ""
