@@ -1,0 +1,106 @@
+{
+  "experiment": "phase2_retry_full24_mixed",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "gate_ppl": 14.959,
+  "gate_rule": "printed WikiText-2 test perplexity <= 14.959 (+5% vs 14.247)",
+  "verdict": "FAIL",
+  "full_24_layer_run": true,
+  "ppl": 19.280,
+  "delta_ppl_vs_14_247": 5.033,
+  "pct_vs_14_247": 35.327,
+  "over_gate": 4.321,
+  "phase2_flat_all24_ppl": 19.427,
+  "delta_ppl_vs_phase2_flat": -0.147,
+  "phase4_L012_only_ppl": 14.873,
+  "baseline_ppl": 14.247,
+  "baseline_reproduced_this_run": 14.247,
+  "resumed_from_partial_checkpoint": false,
+  "resume_note": "No usable partial checkpoint from the killed prior attempt was present. This was a full 24-layer pass. layer_npz and pbr_progress.json were written after each layer and all 24 completed.",
+  "eval": {
+    "script": "pbr_ladder/eval_ppl.py",
+    "env": "PBR_CPU_FP32=1",
+    "dataset": "Salesforce/wikitext",
+    "config": "wikitext-2-raw-v1",
+    "split": "test",
+    "tokens": 299078,
+    "checkpoint": "dequantized fp32 written by quantize_full_model.py; perplexity only, not a packed checkpoint, not a size win"
+  },
+  "recipe": {
+    "script": "pbr_ladder/quantize_full_model.py",
+    "samples": 64,
+    "seq": 512,
+    "chunk": 20000,
+    "chunk_note": "PBR_CHUNK only splits the pooled distance matrix. Per-row argmin matches the default chunk of 50000.",
+    "node_dim": 8,
+    "default_stages": [256, 256, 64],
+    "layer_stages": {
+      "0": [512, 256, 64],
+      "1": [512, 256, 64],
+      "2": [512, 256, 64]
+    },
+    "layers_3_to_23_stages": [256, 256, 64],
+    "parameters_quantized": 357826560,
+    "parameters_per_layer": 14909440,
+    "linears_per_layer": [
+      "self_attn.q_proj",
+      "self_attn.k_proj",
+      "self_attn.v_proj",
+      "self_attn.o_proj",
+      "mlp.gate_proj",
+      "mlp.up_proj",
+      "mlp.down_proj"
+    ]
+  },
+  "stack": {
+    "torch": "2.14.0+cpu",
+    "transformers": "5.17.0",
+    "datasets": "5.0.1",
+    "numpy": "2.4.4"
+  },
+  "bpw_estimate": {
+    "note": "Index bpw is the quantizer print, averaged with equal per-layer parameter counts. raw adds the push_below3.py fp16 codebook/scale side info. Not a measured file size.",
+    "layers_0_2_index_bpw": 2.875,
+    "layers_3_23_index_bpw": 2.75,
+    "average_index_bpw": 2.765625,
+    "average_index_bpw_formula": "(3*2.875 + 21*2.75) / 24",
+    "one_layer_index_plus_side_256_256_64": 2.798,
+    "one_layer_index_plus_side_512_256_64": 2.939,
+    "average_index_plus_side_bpw": 2.816,
+    "phase2_flat_index_bpw": 2.75,
+    "index_bpw_delta_vs_phase2_flat": 0.015625
+  },
+  "runs": [
+    {
+      "name": "baseline",
+      "ppl": 14.247,
+      "tokens": 299078,
+      "source": "this_run",
+      "log": "artifacts/pbr_ladder/phase2_retry_ppl_baseline.log"
+    },
+    {
+      "name": "phase2_flat_all24",
+      "ppl": 19.427,
+      "pct_vs_14_247": 36.359,
+      "gate": "FAIL",
+      "source": "phase2_log"
+    },
+    {
+      "name": "phase4_L012_512_only",
+      "ppl": 14.873,
+      "pct_vs_14_247": 4.394,
+      "gate": "PASS",
+      "source": "phase4_log",
+      "note": "layers 3-23 left full precision"
+    },
+    {
+      "name": "full24_mixed",
+      "ppl": 19.280,
+      "delta_ppl": 5.033,
+      "pct_vs_14_247": 35.327,
+      "gate": "FAIL",
+      "source": "this_run",
+      "tokens": 299078,
+      "log": "artifacts/pbr_ladder/phase2_retry_ppl_full.log"
+    }
+  ]
+}
