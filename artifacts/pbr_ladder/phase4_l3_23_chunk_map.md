@@ -9,6 +9,11 @@ test perplexity the most.
 isolated deltas. It is also the largest per layer (+0.240), and the
 chunk has five layers, one fewer than test_c.
 
+A bisection of that chunk puts the larger half on **layers 22–23**
+(perplexity **14.971**, Δ **+0.724**, +0.362 per layer). Layers 19–21
+alone are 14.746 (Δ +0.499, +0.166 per layer). The two halves add to
++1.223, against +1.200 measured on layers 19–23 together.
+
 ## Setup
 
 - Model: `Qwen/Qwen2.5-0.5B-Instruct`, local dir `pbr_ladder/qwen05b`.
@@ -22,7 +27,7 @@ chunk has five layers, one fewer than test_c.
   same chunk have been written back.
 - Eval: `pbr_ladder/eval_ppl.py`, `PBR_CPU_FP32=1`. WikiText-2 raw v1
   test via `Salesforce/wikitext`. Tokenized length 299078 on the
-  baseline and on all four chunk evals.
+  baseline, on all four chunk evals, and on both halves of test_d.
 - This run's unmodified baseline: **14.247**.
 - Stack: torch 2.14.0+cpu, transformers 5.17.0, datasets 5.0.1, numpy 2.4.4.
   CPU, four threads.
@@ -99,15 +104,41 @@ the sequential interaction, not a missing fifth chunk. Layers 0–2 at
 Adding that isolated early delta to the chunk sum gives +3.934, still
 short of the flat all-24 delta of +5.180 (19.427 − 14.247) by +1.246.
 
+## Bisection of the hot chunk
+
+test_d is large enough, and clearly ahead of the other three chunks,
+that it was split once, in order, into layers 19–21 and layers 22–23.
+Same stages `256,256,64`. Same eval. Each half leaves every other
+layer full precision, including the other half.
+
+| Run | Layers | n | ppl | Δppl | % vs 14.247 | Δ per layer |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| test_d1 | 19, 20, 21 | 3 | 14.746 | +0.499 | +3.502% | +0.166 |
+| test_d2 | 22, 23 | 2 | 14.971 | +0.724 | +5.082% | +0.362 |
+| test_d (above) | 19–23 | 5 | 15.447 | +1.200 | +8.423% | +0.240 |
+
+Sum of the two half-deltas: **+1.223**. The five-layer run measured
+**+1.200**. The five-layer point sits 0.023 ppl under that sum.
+Inside this chunk the hits add.
+
+Layers 22–23 are 59.2% of the +1.223 half-sum and about 2.2× the
+per-layer hit of layers 19–21, with one fewer layer. Three layers
+(19–21) touch 44,728,320 parameters. Two layers (22–23) touch
+29,818,880.
+
 ## Recommendation
 
-Spend the next extra bits on **layers 19–23 first**. That is the hot
-chunk on both the absolute delta and the per-layer delta.
+Spend the next extra bits on **layers 22 and 23 first**, then on
+layers 19–21. Layers 19–23 are the hot chunk of the four-way map.
+Inside that chunk, layers 22–23 carry the larger isolated delta
+(+0.724 vs +0.499) and the larger per-layer delta (+0.362 vs +0.166).
+Layers 22 and 23 were not split from each other.
 
 Keep stages `256,256,64` on layers 8–12 the longest. That chunk is the
 smallest isolated hit. Layers 3–7 and 13–18 are the middle of this map
 (about +0.13 ppl per layer). They are real damage, and they are not
-the first place to add bits.
+the first place to add bits. Layers 19–21 (+0.166 per layer) sit a
+step above that middle and a step below 22–23.
 
 Layers 0–2 remain the early-block story from Phase 2b and Phase 4.
 Their isolated per-layer hit at `256,256,64` was about +0.253, in the
@@ -118,8 +149,9 @@ stack, not spread evenly through layers 3–23.
 
 Closing one chunk will not reproduce the full-model gap. The four
 isolated deltas sum to +3.176, and the sequential L3–23-ish envelopes
-are about +4.4. A bit bump on layers 19–23 is the first L3–23 spend,
-scored later with the same WikiText-2 test. It was not run here.
+are about +4.4. A bit bump on layers 22–23, then 19–21, is the first
+L3–23 spend, scored later with the same WikiText-2 test. It was not
+run here.
 
 ## Commands
 
@@ -144,6 +176,14 @@ python3 eval_ppl.py ./qwen05b_iso_test_c
 PBR_LAYERS=19,20,21,22,23 PBR_STAGES=256,256,64 \
   python3 quantize_full_model.py ./qwen05b ./qwen05b_iso_test_d
 python3 eval_ppl.py ./qwen05b_iso_test_d
+
+PBR_LAYERS=19,20,21 PBR_STAGES=256,256,64 \
+  python3 quantize_full_model.py ./qwen05b ./qwen05b_iso_test_d1
+python3 eval_ppl.py ./qwen05b_iso_test_d1
+
+PBR_LAYERS=22,23 PBR_STAGES=256,256,64 \
+  python3 quantize_full_model.py ./qwen05b ./qwen05b_iso_test_d2
+python3 eval_ppl.py ./qwen05b_iso_test_d2
 ```
 
 ## Logs
@@ -153,12 +193,15 @@ python3 eval_ppl.py ./qwen05b_iso_test_d
 - `phase4map_quantize_test_b.log`, `phase4map_ppl_test_b.log` — 14.767
 - `phase4map_quantize_test_c.log`, `phase4map_ppl_test_c.log` — 15.053
 - `phase4map_quantize_test_d.log`, `phase4map_ppl_test_d.log` — 15.447
-- `phase4map_runner.log`
+- `phase4map_quantize_test_d1.log`, `phase4map_ppl_test_d1.log` — 14.746
+- `phase4map_quantize_test_d2.log`, `phase4map_ppl_test_d2.log` — 14.971
+- `phase4map_runner.log`, `phase4map_bisect_runner.log`
 - `phase4_l3_23_chunk_map.json`
 
 ## What this does not say
 
-These four perplexities are dequantized fp32 checkpoints. There is no
+These perplexities are dequantized fp32 checkpoints. There is no
 packed sub-4-bit file and no size win. The map does not re-score KLT,
 shared rotation, per-channel scale, permutation, or outlier correction.
-It does not re-run the 24-layer model.
+It does not re-run the 24-layer model. Layers 22 and 23 were measured
+together, not one at a time.

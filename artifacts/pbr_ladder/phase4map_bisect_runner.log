@@ -1,0 +1,28 @@
+=== BISECT START layers 19-21 and 22-23 2026-09-22T06:23:53Z ===
+=== QUANTIZE test_d1 PBR_LAYERS=19,20,21 -> ./qwen05b_iso_test_d1 2026-09-22T06:23:53Z ===
+quantize test_d1 rc=0
+Quantized 44,728,320 parameters across 3 layer(s), ~2.75 bpw for touched tensors (stages=[256, 256, 64], codebook overhead <0.1 bpw).
+Embeddings, output head, and norms were left untouched (full precision).
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  1.27it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  1.27it/s]
+
+Saved new checkpoint to: ./qwen05b_iso_test_d1
+Load and test it directly:  python eval_ppl.py ./qwen05b_iso_test_d1
+=== EVAL test_d1 2026-09-22T06:29:11Z ===
+eval test_d1 rc=0
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (299078 > 131072). Running this sequence through the model will result in indexing errors
+WikiText-2 test perplexity: 14.746
+=== QUANTIZE test_d2 PBR_LAYERS=22,23 -> ./qwen05b_iso_test_d2 2026-09-22T06:38:13Z ===
+quantize test_d2 rc=0
+Quantized 29,818,880 parameters across 2 layer(s), ~2.75 bpw for touched tensors (stages=[256, 256, 64], codebook overhead <0.1 bpw).
+Embeddings, output head, and norms were left untouched (full precision).
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:01<00:00,  1.17s/it]Writing model shards: 100%|██████████| 1/1 [00:01<00:00,  1.17s/it]
+
+Saved new checkpoint to: ./qwen05b_iso_test_d2
+Load and test it directly:  python eval_ppl.py ./qwen05b_iso_test_d2
+=== EVAL test_d2 2026-09-22T06:41:57Z ===
+eval test_d2 rc=0
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (299078 > 131072). Running this sequence through the model will result in indexing errors
+WikiText-2 test perplexity: 14.971
+=== BISECT DONE 2026-09-22T06:51:06Z ===
