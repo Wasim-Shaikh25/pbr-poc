@@ -1,0 +1,153 @@
+{
+  "experiment": "phase4_l3_23_chunk_map",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "gate": null,
+  "gate_note": "Diagnostic only. No pass/fail gate. Dequantized fp32 checkpoints for perplexity. Not a packed file and not a size win.",
+  "hot_chunk": "test_d",
+  "hot_chunk_layers": [19, 20, 21, 22, 23],
+  "hot_chunk_ppl": 15.447,
+  "hot_chunk_delta_ppl": 1.2,
+  "hot_chunk_pct_vs_14_247": 8.423,
+  "recommendation": "Spend the next extra bits on layers 19-23 first. Layers 8-12 are the smallest isolated hit. Layers 3-7 and 13-18 are in between.",
+  "baseline_ppl": 14.247,
+  "baseline_reproduced_this_run": 14.247,
+  "sum_of_chunk_deltas_ppl": 3.176,
+  "eval": {
+    "script": "pbr_ladder/eval_ppl.py",
+    "env": "PBR_CPU_FP32=1",
+    "dataset": "Salesforce/wikitext",
+    "config": "wikitext-2-raw-v1",
+    "split": "test",
+    "tokens": 299078,
+    "checkpoint": "dequantized fp32 written by quantize_full_model.py; perplexity only, not a packed checkpoint, not a size win"
+  },
+  "recipe": {
+    "script": "pbr_ladder/quantize_full_model.py",
+    "stages": [256, 256, 64],
+    "samples": 64,
+    "seq": 512,
+    "index_bpw_touched": 2.75,
+    "parameters_per_layer": 14909440,
+    "linears_per_layer": [
+      "self_attn.q_proj",
+      "self_attn.k_proj",
+      "self_attn.v_proj",
+      "self_attn.o_proj",
+      "mlp.gate_proj",
+      "mlp.up_proj",
+      "mlp.down_proj"
+    ]
+  },
+  "stack": {
+    "torch": "2.14.0+cpu",
+    "transformers": "5.17.0",
+    "datasets": "5.0.1",
+    "numpy": "2.4.4"
+  },
+  "runs": [
+    {
+      "name": "baseline",
+      "layers_quantized": [],
+      "n_layers": 0,
+      "ppl": 14.247,
+      "delta_ppl": 0.0,
+      "pct_vs_14_247": 0.0,
+      "source": "this_run",
+      "tokens": 299078,
+      "log": "artifacts/pbr_ladder/phase4map_ppl_baseline.log"
+    },
+    {
+      "name": "test_a",
+      "layers_quantized": [3, 4, 5, 6, 7],
+      "n_layers": 5,
+      "ppl": 14.897,
+      "delta_ppl": 0.65,
+      "pct_vs_14_247": 4.562,
+      "delta_ppl_per_layer": 0.13,
+      "share_of_chunk_sum": 0.2047,
+      "parameters_quantized": 74547200,
+      "source": "this_run",
+      "tokens": 299078,
+      "log": "artifacts/pbr_ladder/phase4map_ppl_test_a.log"
+    },
+    {
+      "name": "test_b",
+      "layers_quantized": [8, 9, 10, 11, 12],
+      "n_layers": 5,
+      "ppl": 14.767,
+      "delta_ppl": 0.52,
+      "pct_vs_14_247": 3.65,
+      "delta_ppl_per_layer": 0.104,
+      "share_of_chunk_sum": 0.1637,
+      "parameters_quantized": 74547200,
+      "source": "this_run",
+      "tokens": 299078,
+      "log": "artifacts/pbr_ladder/phase4map_ppl_test_b.log"
+    },
+    {
+      "name": "test_c",
+      "layers_quantized": [13, 14, 15, 16, 17, 18],
+      "n_layers": 6,
+      "ppl": 15.053,
+      "delta_ppl": 0.806,
+      "pct_vs_14_247": 5.657,
+      "delta_ppl_per_layer": 0.134,
+      "share_of_chunk_sum": 0.2538,
+      "parameters_quantized": 89456640,
+      "source": "this_run",
+      "tokens": 299078,
+      "log": "artifacts/pbr_ladder/phase4map_ppl_test_c.log"
+    },
+    {
+      "name": "test_d",
+      "layers_quantized": [19, 20, 21, 22, 23],
+      "n_layers": 5,
+      "ppl": 15.447,
+      "delta_ppl": 1.2,
+      "pct_vs_14_247": 8.423,
+      "delta_ppl_per_layer": 0.24,
+      "share_of_chunk_sum": 0.3778,
+      "parameters_quantized": 74547200,
+      "source": "this_run",
+      "tokens": 299078,
+      "log": "artifacts/pbr_ladder/phase4map_ppl_test_d.log",
+      "hot_chunk": true
+    }
+  ],
+  "additivity": {
+    "sum_of_isolated_chunk_deltas_ppl": 3.176,
+    "envelopes": [
+      {
+        "name": "phase2_retry_full_minus_baseline",
+        "ppl_hi": 19.28,
+        "ppl_lo": 14.247,
+        "delta_ppl": 5.033,
+        "note": "Includes layers 0-2 at 512,256,64 as well as layers 3-23 at 256,256,64. Confounded upper envelope, not an L3-23 total.",
+        "chunk_sum_over_envelope": 0.631,
+        "envelope_minus_chunk_sum_ppl": 1.857
+      },
+      {
+        "name": "phase2_retry_full_minus_phase4_early_only",
+        "ppl_hi": 19.28,
+        "ppl_lo": 14.873,
+        "delta_ppl": 4.407,
+        "note": "Both sides quantize layers 0-2 at 512,256,64. The gap is the sequential addition of layers 3-23. Later layers were calibrated on already-quantized earlier layers. Isolated chunks were not.",
+        "chunk_sum_over_envelope": 0.721,
+        "envelope_minus_chunk_sum_ppl": 1.231
+      },
+      {
+        "name": "phase2_flat_all24_minus_L012_only",
+        "ppl_hi": 19.427,
+        "ppl_lo": 15.005,
+        "delta_ppl": 4.422,
+        "note": "Both sides use stages 256,256,64. The gap is the sequential addition of layers 3-23 on top of quantized layers 0-2.",
+        "chunk_sum_over_envelope": 0.718,
+        "envelope_minus_chunk_sum_ppl": 1.246
+      }
+    ],
+    "early_L012_256_delta_ppl": 0.758,
+    "early_plus_chunk_sum_ppl": 3.934,
+    "phase2_flat_all24_delta_ppl": 5.18,
+    "flat_all24_minus_early_and_chunks_ppl": 1.246
+  }
+}
