@@ -1,0 +1,22 @@
+=== QUANTIZE L0hi_L12def 2026-09-22T00:03:20+00:00 ===
+env: PBR_LAYERS=0,1,2 PBR_STAGES=256,256,64 PBR_LAYER_STAGES=0:512,256,64
+Loading model from ./qwen05b ...
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   0%|          | 1/290 [00:00<03:32,  1.36it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 390.45it/s]
+Model has 24 layers; quantizing: [0, 1, 2]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (276404 > 131072). Running this sequence through the model will result in indexing errors
+layer  0/23  quantized 7 tensors  [ 126.8s elapsed]  stages=[512, 256, 64]  index 2.875 bpw
+layer  1/23  quantized 7 tensors  [ 200.7s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+layer  2/23  quantized 7 tensors  [ 278.9s elapsed]  stages=[256, 256, 64]  index 2.75 bpw
+
+Quantized 44,728,320 parameters across 3 layer(s), mixed stages:
+  layer 0: stages=[512, 256, 64]  index 2.875 bpw
+  layer 1: stages=[256, 256, 64]  index 2.75 bpw
+  layer 2: stages=[256, 256, 64]  index 2.75 bpw
+Codebook overhead is <0.1 bpw on wide tensors and larger on narrow k/v.
+Embeddings, output head, and norms were left untouched (full precision).
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:01<00:00,  1.38s/it]Writing model shards: 100%|██████████| 1/1 [00:01<00:00,  1.38s/it]
+
+Saved new checkpoint to: ./qwen05b_p4_L0hi_L12def
+Load and test it directly:  python eval_ppl.py ./qwen05b_p4_L0hi_L12def
+=== QUANTIZE DONE L0hi_L12def rc=0 2026-09-22T00:08:06+00:00 ===
