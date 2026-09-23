@@ -36,6 +36,10 @@ artifacts/pbr_q4/containers/*.pq4x
 # local Hugging Face cache
 .hf/
 
+# GGUF models + imatrix are large / reproducible via pbr_ladder/pbr_pipeline.py
+*.gguf
+*.imatrix.dat
+
 # pbr_ladder real-Qwen run artifacts (reproducible, see docs/pbr_ladder/README.md)
 pbr_ladder/qwen05b/
 pbr_ladder/qwen05b_*/

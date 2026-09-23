@@ -7,6 +7,32 @@ Governed by [`../AGENTS.md`](../AGENTS.md) RULE 0. If it isn't here, it didn't h
 
 ## 2026-09-23
 
+### Defensible pipeline BUILT + proven end-to-end (pbr_pipeline.py)
+- Built [`pbr_pipeline.py`](pbr_pipeline.py): one CPU-only command chain, base fp16 GGUF +
+  calib -> standard sub-4-bit GGUF + auditable manifest.json. Subcommands: quantize / validate
+  / run / recipes. Recipes encode findings (ship-3bit default; iq/2bit gated to >=1.5B/3B).
+  Binary discovery via --llama-bin/$LLAMA_BIN/PATH. `--reuse-imatrix` skips the slow rebuild.
+- PROVEN on 0.5B (laptop CPU, sharing cores with other jobs): quantize+imatrix 145 s ->
+  432.0 MB, 5.485 eff bpw (gguf stored-element count 630M); `run` generates coherent text at
+  **75.1 tok/s**; matches prior validated PPL 16.509 for the same recipe/artifact.
+- Manifest = the defensible handoff: base sha256, exact quantize command, output sha256, size,
+  eff bpw, PPL. Anyone can reproduce + re-verify. Shipped calib/eval slices in pipeline_data/.
+- Timing measured for the OWNER's machine: 0.5B full cycle ~3-5 min idle; **3B ~1-1.5 h**
+  (imatrix ~10-20 min, quantize ~2-5 min, PPL ~30-60 min) -- all CPU, free, no infra. GPU
+  would NOT speed quantize (CPU-bound); only helps lm-eval task-accuracy later.
+- RAM property CONFIRMED (answering owner): output stays ~3-bit in RAM, never re-expands to
+  fp16. Components applied: packed low-bit GGUF + mmap (only packed pages resident) + per-block
+  on-the-fly dequant inside the matmul (no full fp16 tensor ever materialized). T-MAC LUT =
+  optional drop-in later. Proof: artifacts/disk_ram_tunnel.md (0.078x peak RSS, bit-exact).
+  Our own PBR-E per-tensor tunnel works bit-exactly but 0.06 tok/s in Python -> parked research.
+- Added [`PIPELINE.md`](PIPELINE.md) (how-to + reproduced result) and [`POSITIONING.md`]
+  (POSITIONING.md) (honest wedge: BYO-model PTQ+DX+provenance; PrismML=QAT fixed models;
+  "sell for millions" = acquisition, needs traction or standout tech; path = prove 3B ->
+  task-accuracy -> on-phone -> package DX -> ship reference models+demo).
+- MCP/free-platform check: available MCPs (Render/Canva/Docs/scheduling/browser) are NOT free
+  GPU boxes; but the recipe path is CPU-only so no GPU platform is needed on the critical path.
+
+
 ### IQ / below-3-bit RESULTS — codebook thesis failed on 0.5B (decisive)
 - Q3_K_M+imatrix 16.509@432MB BEATS IQ3_M+imatrix 16.933@419MB. IQ (codebook) does NOT help at
   3-bit on 0.5B; IQ shines at 2-bit. IQ2_M tanks to 19.2 PPL for only ~27MB saved (embeddings
