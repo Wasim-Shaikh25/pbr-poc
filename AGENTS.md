@@ -4,6 +4,21 @@
 > Detailed results live in [`pbr_ladder/FINDINGS_AND_REPRODUCTION.md`](pbr_ladder/FINDINGS_AND_REPRODUCTION.md)
 > and the plain-language [`pbr_ladder/SUMMARY_SIMPLE.md`](pbr_ladder/SUMMARY_SIMPLE.md).
 
+## RULE 0 (HIGHEST — never skip) — Document everything in the repo
+Every experiment, decision, result, failure, command, and integration step gets written down
+**in the repo**, as it happens — not left in chat. The running journal is
+[`pbr_ladder/DEV_LOG.md`](pbr_ladder/DEV_LOG.md) (append newest at top, dated). Findings go in
+`FINDINGS_AND_REPRODUCTION.md`; plans in `DEPLOYMENT_PLAN.md`. If it isn't in the repo, it
+didn't happen. Commit + push after each meaningful step. Failures are logged with the same
+care as successes (they stop us re-running dead ends).
+
+## THE GOAL — cross from "nice project" to "people care" (all 4 must land)
+1. **3-bit quality holds usable** — the best-quality 3-bit run tells us this.
+2. **LUT + tunnel gives real phone speed** — measured tokens/sec on an actual Android/iPhone.
+3. **Generalizes to 3B–7B** — where the embedding tax vanishes and the method looks *better*.
+4. **A clean shareable story** — "our allocation recipe + LUT format runs model X at N tok/s
+   on a $200 phone at quality Y." A demo people share.
+
 ## Mission
 Turn the PBR-Ladder quantization research (which already beats GGUF q2_k at a matched
 ~5-bit budget on Qwen2.5-0.5B) into a **deployable, fast, on-device LLM format** — not a
