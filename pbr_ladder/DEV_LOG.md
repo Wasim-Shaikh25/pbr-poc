@@ -38,6 +38,20 @@ Governed by [`../AGENTS.md`](../AGENTS.md) RULE 0. If it isn't here, it didn't h
 - Prior baseline still standing: `qwen05b_rematch` = 4-bit, PPL 15.210 @ ~5.1 eff bpw (8-bit embeds),
   beats GGUF q2_k at matched budget.
 
+### Product spec pinned (owner)
+- Ship ONLY sub-4-bit at **≥98% quality**. Metric must be chosen: task-accuracy retention
+  (primary) vs PPL proxy — they disagree (0.5B 4-bit = +6.8% PPL but ~98–99% task acc).
+- **Bit target scales with model size**: 0.5B needs ~4-bit for 98%; 3B–7B can reach ~3-bit at
+  98%. The sub-4-bit-at-98% promise is a **3B–7B** deliverable, not a 0.5B one. 3-bit on 0.5B
+  = +18% PPL, will not hit 98%. Reinforces goal #3 (scale) as mandatory.
+- Decision logged in DEPLOYMENT_PLAN.md (PRODUCT SPEC + Unified custom-kernel option).
+
+### Unified-kernel option evaluated
+- Feasible: one custom llama.cpp type = RVQ codebook + LUT-GEMM decode (no dequant) + mmap +
+  NEON. Keeps novelty AND gets LUT speed. Cost = writing a new GEMM kernel (weeks). Gated:
+  build ONLY if P1 shows scalar-3bit+T-MAC misses 98% and RVQ clears it. Not speculative.
+
 ### Next
 - P1: GGUF + T-MAC feasibility spike — emit scalar 3-bit + imatrix + 8-bit embeds, measure real
-  in-RAM MB / CPU tok/s / PPL. These are the numbers that judge goals 1–2 and the F1-vs-F2 call.
+  in-RAM MB / CPU tok/s / PPL. Judges goals 1–2, the F1-vs-F2 call, AND whether the custom
+  kernel is justified. Draft export/convert script (no CPU) while quant runs finish.

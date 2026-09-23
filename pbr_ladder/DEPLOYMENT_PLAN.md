@@ -6,6 +6,25 @@ Owner doc for the deployment push. Governed by [`../AGENTS.md`](../AGENTS.md) RU
 ## The goal (all 4 must land — from AGENTS.md)
 1. 3-bit quality usable · 2. LUT+tunnel real phone tok/s · 3. scales to 3B–7B · 4. shareable demo.
 
+## PRODUCT SPEC (owner's target)
+Ship **only sub-4-bit models** that retain **≥98% quality** vs fp16.
+- **Metric must be pinned:** primary = downstream **task-accuracy retention ≥98%**; dev proxy =
+  PPL increase ≤ ~3%. (Strict PPL ratio and task-accuracy disagree — 0.5B 4-bit is +6.8% PPL
+  but typically ~98–99% task accuracy. Decide the metric before claiming pass/fail.)
+- **Bit target scales with model size** to hold the 98% bar: 0.5B needs ~4-bit; 3B–7B can reach
+  ~3-bit at the same 98% (more weight redundancy). This is *why* goal #3 (scale) is mandatory —
+  the sub-4-bit-at-98% promise is delivered on 3B–7B, not on 0.5B.
+- Measured so far (0.5B, PPL): 4-bit rematch 15.210 (+6.8%); 3-bit VQ 16.829 (+18%, will NOT
+  hit 98% on 0.5B). 3-bit at 98% is a *scale* result, not a 0.5B result.
+
+## Unified custom-kernel option (the novel path)
+One custom llama.cpp quant type = our RVQ vector codebook + a LUT-GEMM decode kernel
+(T-MAC/AQLM-style: precompute activation·codebook partial dot-products, matmul becomes
+lookups+adds, no dequant) + mmap tunnel + NEON for mobile. Keeps our codebook AND gets LUT
+speed. Cost: writing a new GEMM kernel (+ NEON) — weeks, not a flag. **Build only if the P1
+numbers show scalar-3bit+T-MAC misses the 98% bar and RVQ clears it.** Starting points: AQLM
+CPU kernel, Arm codebook kernels (arXiv 2501.00032). Do NOT build speculatively.
+
 ---
 
 ## Repo triage — what actually exists, verified (2026-09-23)
