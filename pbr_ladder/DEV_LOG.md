@@ -7,6 +7,44 @@ Governed by [`../AGENTS.md`](../AGENTS.md) RULE 0. If it isn't here, it didn't h
 
 ## 2026-09-24
 
+### 3B PHASE 2 — matched baselines CORRECT the phase-1 read (honest revision)
+- Filled the matched baselines (reused imatrix). Full frontier, best-first:
+  | config | PPL | size | bpw |
+  |---|---|---|---|
+  | stock Q4_K_M (ref) | 9.302 | 1930MB | 5.00 |
+  | iq3-imat-q8e | 9.734 | 1564MB | 4.055 |
+  | **iq3-imat (IQ3_M+imatrix) STAR** | **9.804** | **1489MB** | **3.860** |
+  | ship-3bit (Q3_K_M+imat) | 12.992 | 1590MB | 4.12 |
+  | stock Q3_K_M | 13.333 | 1590MB | 4.12 |
+  | ship-2bit-iq (IQ2+imat+q8e) | 12.285 | 1257MB | 3.26 |
+  | stock-iq2m-imat (IQ2+imat) | 12.398 | 1140MB | 2.957 |
+- REAL WINNER: **IQ3_M + imatrix @ 3.86 bpw = near-Q4 quality (+5.4% PPL vs Q4_K_M), 23%
+  smaller, genuinely sub-4-bit.** THIS is the shippable sub-4-bit-at-quality model.
+- IQ codebooks WIN at 3B (IQ3 9.80 crushes Q3_K_M 13.0 at same ~4bpw) -- OPPOSITE of 0.5B
+  where scalar Q3_K beat IQ3. Scale thesis fully confirmed; codebook thesis was right, just
+  needed scale.
+- TWO CORRECTIONS to yesterday's phase-1 read (I was wrong, matched baselines prove it):
+  (1) The q8-EMBED LEVER IS MARGINAL, not "decisive": IQ2+q8e vs IQ2 = -0.9% PPL for +10%
+      size; IQ3 case -0.7% for +0.2bpw. DROPPED from the default recipe.
+  (2) IQ2 IS TOO AGGRESSIVE for the >=98% bar (+33% PPL vs Q4). I mis-anchored IQ2 vs
+      Q3_K_M; vs the real target it fails quality. IQ2 = extreme-size only. IQ3 = sweet spot.
+- HONEST SCOPE: every config is stock llama.cpp type+imatrix+flags. No novel quantizer. Our
+  value = turnkey reproducible measured pipeline + the sweet-spot finding, not a quant moat.
+- ACTIONS: rewrote results_3b.md (unified table + corrections); updated pbr_pipeline.py
+  recipes (new `ship-sub4` = IQ3_M+imatrix default; ship-2bit-iq -> extreme-size, embed
+  dropped; embed notes corrected). NEXT: lm-eval task-accuracy on iq3-imat to prove >=98%.
+
+### Ops (autonomous, overnight)
+- 0.5B best-quality 4-bit reference `qwen05b_best` COMPLETED (~6.7h; beam=4, kmeans=10,
+  stages=[256]x4; ~4 bpw weights only, embeds/head/norms full precision). Research
+  upper-bound reference, NOT the shipped artifact. PPL eval deferred (0.5B = wrong testbed;
+  not worth CPU now). Eval later with: python eval_ppl.py ./qwen05b_best.
+- STOPPED the chained 0.5B 3-bit run (`qwen05b_best3`, PID 13828) right after it started:
+  it would hog CPU for ~6h and contend with the meaningful 3B phase-2 analysis. Low-value
+  0.5B reference on the wrong testbed; nothing lost (0% progress), trivially re-runnable
+  (`python quantize_full_model.py ./qwen05b ./qwen05b_best3` with PBR_STAGES=256,256,256
+  PBR_BEAM=4 PBR_KMEANS_IT=10). Protecting CPU for the 3B work is the right call.
+
 ### 3B RESULT — recipe WINS at scale (the 0.5B null was the testbed, not the method)
 - Ran full end-to-end on Qwen2.5-3B-Instruct f16 (bartowski GGUF, downloaded via robust
   resume-retry loop after curl AND huggingface_hub both dropped ~640-805MB on the flaky CDN).

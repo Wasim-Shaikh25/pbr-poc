@@ -53,7 +53,7 @@ log "perplexity"
   echo "|---|---|---|---|"
   for tag in stock-iq2m-imat iq3-imat iq3-imat-q8e; do
     f="$OUT/qwen3b-$tag.gguf"; P=$(ppl "$f"); S=$(mb "$f"); B=$(bpw "$f")
-    log "  $tag : PPL=$P  ${S}MB  ${B}bpw"
+    echo "$tag PPL=$P ${S}MB ${B}bpw" >&2   # progress to stderr, not into $RES
     echo "| $tag | $P | ${S} MB | ${B} |"
   done
   echo

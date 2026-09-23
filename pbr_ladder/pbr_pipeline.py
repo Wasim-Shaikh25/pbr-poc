@@ -82,32 +82,42 @@ RECIPES: dict[str, dict] = {
         "target_bpw": "~3.5 weights, 8-bit embed/output",
         "min_params": 0,
         "note": (
-            "Adds the 8-bit embedding lever. Only worth it when the base over- "
-            "spends embeddings at fp16; against a well-tuned baseline the gain "
-            "is small and it costs size. Measure before shipping."
+            "Adds the 8-bit embedding lever. Measured marginal on Qwen2.5-3B "
+            "(<1% PPL for +10% size); generally NOT worth it. Prefer ship-sub4."
         ),
     },
-    "ship-3bit-iq": {
+    "ship-sub4": {
         "type": "IQ3_M",
         "imatrix": True,
         "flags": [],
-        "target_bpw": "~3.3 (codebook)",
+        "target_bpw": "~3.86 (codebook)",
         "min_params": 1_500_000_000,
         "note": (
-            "IQ codebook at 3-bit. LOSES to scalar Q3_K_M on 0.5B; recommended "
-            "only at >=1.5B where codebooks start to pay. Scale test required."
+            "THE SWEET SPOT (validated on Qwen2.5-3B, 2026-09-24): IQ3_M + imatrix "
+            "= near-Q4 quality (+5.4% PPL vs Q4_K_M) at ~3.86 bpw, 23% smaller and "
+            "genuinely sub-4-bit. IQ codebooks WIN at >=~3B (they lose at 0.5B). "
+            "No q8-embed: the embedding lever adds <1% PPL for +10% size. "
+            "Recommended default for shipping a sub-4-bit model at >=1.5B."
         ),
+    },
+    "ship-3bit-iq": {  # alias kept for back-compat; identical to ship-sub4
+        "type": "IQ3_M",
+        "imatrix": True,
+        "flags": [],
+        "target_bpw": "~3.86 (codebook)",
+        "min_params": 1_500_000_000,
+        "note": "Alias of ship-sub4 (IQ3_M + imatrix). See ship-sub4.",
     },
     "ship-2bit-iq": {
         "type": "IQ2_M",
         "imatrix": True,
-        "flags": ["--token-embedding-type", "q8_0", "--output-tensor-type", "q8_0"],
-        "target_bpw": "~2.7 (codebook) + 8-bit embed",
+        "flags": [],
+        "target_bpw": "~2.96 (codebook)",
         "min_params": 3_000_000_000,
         "note": (
-            "Below-3-bit codebook. TANKS quality on small models; this is the "
-            "3B-7B regime where the >=98% sub-4-bit story is meant to land. "
-            "Do NOT ship on <3B without task-accuracy proof."
+            "EXTREME SIZE ONLY. IQ2_M+imatrix on Qwen2.5-3B = 2.96 bpw / smallest, "
+            "but +33% PPL vs Q4 -> below a >=98% quality bar. Use only when size "
+            "trumps quality. Prefer ship-sub4. (q8-embed dropped: marginal gain.)"
         ),
     },
 }
