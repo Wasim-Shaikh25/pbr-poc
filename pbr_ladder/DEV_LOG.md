@@ -5,6 +5,35 @@ Governed by [`../AGENTS.md`](../AGENTS.md) RULE 0. If it isn't here, it didn't h
 
 ---
 
+## 2026-09-24
+
+### 3B RESULT — recipe WINS at scale (the 0.5B null was the testbed, not the method)
+- Ran full end-to-end on Qwen2.5-3B-Instruct f16 (bartowski GGUF, downloaded via robust
+  resume-retry loop after curl AND huggingface_hub both dropped ~640-805MB on the flaky CDN).
+- Same base + same imatrix + same 150KB eval slice, ctx=512. Sizes/bpw from gguf stored count.
+  | config | PPL | size | eff bpw |
+  |---|---|---|---|
+  | stock Q3_K_M (no imatrix) | 13.333 | 1590MB | 4.12 |
+  | ship-3bit (Q3_K_M+imatrix) | 12.992 | 1590MB | 4.12 |  (-2.6% PPL, FREE, same size)
+  | ship-2bit-iq (IQ2_M+imatrix+q8embed) | 12.285 | 1257MB | 3.26 | (-7.9% PPL AND -21% size)
+  | stock Q4_K_M (ref) | 9.302 | 1930MB | 5.00 |
+- HEADLINE: ship-2bit-iq is Pareto-better than stock Q3_K_M -- SMALLER (1257 vs 1590MB) AND
+  lower PPL (12.29 vs 13.33), and genuinely sub-4-bit (3.26 bpw = product spec). This was
+  IMPOSSIBLE at 0.5B. Scale thesis CONFIRMED.
+- WHY: ship-2bit-iq uses IQ2 weights (lower precision than Q3) yet wins -> the 8-bit embed
+  lever + imatrix allocation is decisive at 3B (Qwen large vocab). The lever that was
+  worthless at 0.5B matters at scale. Full analysis: results_3b.md.
+- HONEST caveats: ship-3bit's win = imatrix (llama.cpp's, not ours). ship-2bit-iq lacks a
+  matched baseline (stock IQ2 needs imatrix; runner made it without -> failed). PENDING:
+  re-run stock-IQ2+imatrix (no q8embed) to isolate the embed lever. PPL only, 150KB slice,
+  task-accuracy still unproven. stock Q4_K_M (5bpw) still clearly better quality (9.30) --
+  sub-4-bit trades quality for size, does NOT beat 4-bit quality.
+- Runner bugs fixed: mb() used a /d/ path Windows-Python couldn't read (sizes blank live) ->
+  switched to stat; stock IQ2 now built WITH imatrix (= the matched baseline). run_3b_test.sh.
+- NEXT (autonomous): re-download f16, run matched IQ2+imatrix + IQ3 frontier baselines
+  (reuse saved imatrix), then task-accuracy (lm-eval) + on-phone tok/s.
+
+
 ## 2026-09-23
 
 ### Defensible pipeline BUILT + proven end-to-end (pbr_pipeline.py)

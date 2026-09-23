@@ -1,0 +1,32 @@
+{
+  "produced_by": "pbr_pipeline.py quantize",
+  "produced_at": "2026-09-24T01:18:44",
+  "base_model": "Qwen2.5-3B-Instruct-f16.gguf",
+  "base_sha256_head64mb": "e4182983372e196d61b75b7a972585294aec07c21d48eee3a376b216b25b7385",
+  "recipe": "ship-2bit-iq",
+  "recipe_detail": {
+    "type": "IQ2_M",
+    "imatrix": true,
+    "flags": [
+      "--token-embedding-type",
+      "q8_0",
+      "--output-tensor-type",
+      "q8_0"
+    ],
+    "target_bpw": "~2.7 (codebook) + 8-bit embed",
+    "min_params": 3000000000,
+    "note": "Below-3-bit codebook. TANKS quality on small models; this is the 3B-7B regime where the >=98% sub-4-bit story is meant to land. Do NOT ship on <3B without task-accuracy proof."
+  },
+  "quantize_command": "C:\\Users\\SHAIKH~1\\AppData\\Local\\Temp\\claude\\C--python-project-pbr-poc\\b6937007-7a3a-400e-aa4c-732d242b3438\\scratchpad\\tools\\llama\\llama-quantize.exe --imatrix D:\\pbr_work\\out\\qwen3b-ship3.imatrix.dat --token-embedding-type q8_0 --output-tensor-type q8_0 D:\\pbr_work\\models\\Qwen2.5-3B-Instruct-f16.gguf D:\\pbr_work\\out\\qwen3b-ship2iq.gguf IQ2_M",
+  "output": "qwen3b-ship2iq.gguf",
+  "output_sha256": "849625c4c106796e93d863eb6e1ee2f8ad2da88c869a99c36d6de8d576e79962",
+  "size_bytes": 1257202848,
+  "size_mb": 1257.2,
+  "param_count_stored": 3085938688,
+  "param_count_note": "GGUF stored tensor elements (may exceed nominal HF count if lm_head untied)",
+  "effective_bpw": 3.259,
+  "imatrix": "qwen3b-ship3.imatrix.dat",
+  "elapsed_s": 99.9,
+  "note": "Below-3-bit codebook. TANKS quality on small models; this is the 3B-7B regime where the >=98% sub-4-bit story is meant to land. Do NOT ship on <3B without task-accuracy proof.",
+  "runtime": "standard llama.cpp; mmap keeps it packed in RAM (never fp16)"
+}

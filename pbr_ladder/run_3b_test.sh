@@ -44,7 +44,8 @@ head -c 150000 "$REPO/pbr_ladder/pipeline_data/wiki_eval.txt" > "$EVAL"
 ppl(){ # model.gguf -> PPL number
   "$LLAMA_BIN/llama-perplexity.exe" -m "$1" -f "$EVAL" -c $CTX 2>&1 \
     | grep -oE "Final estimate: PPL = [0-9.]+" | tail -1 | grep -oE "[0-9.]+$"; }
-mb(){ python -c "import os;print(round(os.path.getsize(r'$1')/1e6,1))"; }
+# use stat (MSYS-native) not python(/d/ path) so size never silently fails
+mb(){ local b=$(stat -c%s "$1" 2>/dev/null || echo 0); awk "BEGIN{printf \"%.1f\", $b/1e6}"; }
 
 log "=== quantize: our recipes (via pipeline) ==="
 python "$PIPE" quantize --base "$BASE" --calib "$CALIB" --recipe ship-3bit \
@@ -53,9 +54,13 @@ IMAT="$OUT/qwen3b-ship3.imatrix.dat"
 python "$PIPE" quantize --base "$BASE" --recipe ship-2bit-iq --reuse-imatrix "$IMAT" \
   --out "$OUT/qwen3b-ship2iq.gguf" 2>&1 | tail -2
 
-log "=== quantize: stock baselines (direct, no imatrix) ==="
+log "=== quantize: baselines ==="
+# Q3_K_M with NO imatrix = the stock 3-bit baseline ship-3bit must beat.
 "$LLAMA_BIN/llama-quantize.exe" "$BASE" "$OUT/qwen3b-stock-q3km.gguf" Q3_K_M >/dev/null 2>&1
-"$LLAMA_BIN/llama-quantize.exe" "$BASE" "$OUT/qwen3b-stock-iq2m.gguf" IQ2_M >/dev/null 2>&1
+# IQ2_M REQUIRES an imatrix (llama.cpp refuses without one). IQ2+imatrix, NO q8
+# embed = the matched below-3-bit baseline that isolates ship-2bit-iq's embed lever.
+"$LLAMA_BIN/llama-quantize.exe" --imatrix "$IMAT" "$BASE" "$OUT/qwen3b-stock-iq2m.gguf" IQ2_M >/dev/null 2>&1
+# Q4_K_M = "what you'd normally download" reference.
 "$LLAMA_BIN/llama-quantize.exe" "$BASE" "$OUT/qwen3b-stock-q4km.gguf" Q4_K_M >/dev/null 2>&1
 
 # free the big f16 before the slow evals (perplexity only needs the quantized files)

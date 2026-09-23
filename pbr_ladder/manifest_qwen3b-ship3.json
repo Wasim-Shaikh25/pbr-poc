@@ -1,0 +1,27 @@
+{
+  "produced_by": "pbr_pipeline.py quantize",
+  "produced_at": "2026-09-24T01:17:03",
+  "base_model": "Qwen2.5-3B-Instruct-f16.gguf",
+  "base_sha256_head64mb": "e4182983372e196d61b75b7a972585294aec07c21d48eee3a376b216b25b7385",
+  "recipe": "ship-3bit",
+  "recipe_detail": {
+    "type": "Q3_K_M",
+    "imatrix": true,
+    "flags": [],
+    "target_bpw": "~3.5 (weights); embeddings dominate on small models",
+    "min_params": 0,
+    "note": "Scalar k-quant + importance matrix. The honest winner at 0.5B (beats IQ3 at equal size). Safest default across all sizes."
+  },
+  "quantize_command": "C:\\Users\\SHAIKH~1\\AppData\\Local\\Temp\\claude\\C--python-project-pbr-poc\\b6937007-7a3a-400e-aa4c-732d242b3438\\scratchpad\\tools\\llama\\llama-quantize.exe --imatrix D:\\pbr_work\\out\\qwen3b-ship3.imatrix.dat D:\\pbr_work\\models\\Qwen2.5-3B-Instruct-f16.gguf D:\\pbr_work\\out\\qwen3b-ship3.gguf Q3_K_M",
+  "output": "qwen3b-ship3.gguf",
+  "output_sha256": "8d9a6fe11d282126a74789ece0e46d46647034ad7cf0016e464d0ff6a0baf639",
+  "size_bytes": 1590475936,
+  "size_mb": 1590.5,
+  "param_count_stored": 3085938688,
+  "param_count_note": "GGUF stored tensor elements (may exceed nominal HF count if lm_head untied)",
+  "effective_bpw": 4.123,
+  "imatrix": "qwen3b-ship3.imatrix.dat",
+  "elapsed_s": 682.6,
+  "note": "Scalar k-quant + importance matrix. The honest winner at 0.5B (beats IQ3 at equal size). Safest default across all sizes.",
+  "runtime": "standard llama.cpp; mmap keeps it packed in RAM (never fp16)"
+}
