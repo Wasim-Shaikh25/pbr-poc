@@ -17,13 +17,32 @@ Ship **only sub-4-bit models** that retain **≥98% quality** vs fp16.
 - Measured so far (0.5B, PPL): 4-bit rematch 15.210 (+6.8%); 3-bit VQ 16.829 (+18%, will NOT
   hit 98% on 0.5B). 3-bit at 98% is a *scale* result, not a 0.5B result.
 
-## Unified custom-kernel option (the novel path)
-One custom llama.cpp quant type = our RVQ vector codebook + a LUT-GEMM decode kernel
-(T-MAC/AQLM-style: precompute activation·codebook partial dot-products, matmul becomes
-lookups+adds, no dequant) + mmap tunnel + NEON for mobile. Keeps our codebook AND gets LUT
-speed. Cost: writing a new GEMM kernel (+ NEON) — weeks, not a flag. **Build only if the P1
-numbers show scalar-3bit+T-MAC misses the 98% bar and RVQ clears it.** Starting points: AQLM
-CPU kernel, Arm codebook kernels (arXiv 2501.00032). Do NOT build speculatively.
+## DECISION (2026-09-23): NO custom kernel, NO industry infra — recipe-on-GGUF only
+Owner constraint: cannot spend weeks writing a GEMM/NEON kernel, and has no industry-level
+validation infra. Resolution: **contribute at the quantization-recipe layer, use only
+existing tools & kernels.** We DROP the RVQ codebook and the custom kernel entirely (Shannon-
+wall result → scalar quant at equal bits ≈ same quality, so ~no real loss).
+
+**Our method = a recipe on top of llama.cpp's existing `llama-quantize`:**
+- importance matrix → `llama-imatrix` (built from our activation analysis)
+- per-tensor bit allocation → `--tensor-type` overrides
+- 8-bit embeddings → `--token-embedding-type q8_0`
+Output = a **standard GGUF** that runs on every llama.cpp target (CPU/Android/iOS/Metal) with
+ZERO new code. T-MAC is an optional drop-in accelerator, also no code from us.
+
+**Validation on consumer/free hardware only:** PPL via `llama-perplexity` (laptop CPU);
+task-accuracy via `lm-eval-harness` (laptop / free Colab/Kaggle); mobile tok/s via a prebuilt
+llama.cpp Android app on the owner's own phone; 3B via free Colab T4 / Kaggle P100. Never
+quantize huge models ourselves — the recipe is model-agnostic.
+
+**Honest scope after pivot:** novelty narrows to the allocation recipe + imatrix tuning +
+findings. A *well-tuned* stock GGUF already does some of this, so the quality edge may be
+MODEST; the product value is packaging (sub-4-bit @ ≥98%, runs on a phone, exact recipe).
+
+### Parked (do NOT build unless this whole path fails AND funding/infra appears)
+- Unified custom llama.cpp type (RVQ codebook + LUT-GEMM + NEON): keeps codebook + LUT speed
+  but needs a new kernel (weeks) — out of scope under current constraints.
+- AQLM path (keeps RVQ, kernels already exist CPU/GPU): viable for desktop, weak on mobile.
 
 ---
 
@@ -65,46 +84,45 @@ Building it would be a real, novel kernel contribution, not a weekend. Park it b
 
 ---
 
-## Decision framework (resolve after the numbers come in)
-- **If scalar-3bit + our recipe (Family 1) matches our RVQ quality** → ship Family 1 (T-MAC),
-  fastest path, all 4 goals reachable. Our novelty = the recipe + imatrix + findings.
-- **If RVQ meaningfully beats scalar-3bit** → go Family 2 (AQLM/Q4X), keep the codebook.
-- **Only if both fall short** → invest in the novel vector-LUT kernel.
-
-The Shannon-wall result predicts Family 1 ≈ Family 2 in quality → **bias toward Family 1 for
-shipping, Family 2 for the "our method" research artifact.** Numbers decide.
+## Chosen path (locked): recipe-on-GGUF, no kernel, consumer hardware
+Family 1 only. We express our method entirely through llama.cpp's existing quantize tool and
+run on existing kernels. RVQ codebook + custom kernel are PARKED (see DECISION above). The
+Shannon-wall result says scalar ≈ RVQ quality, so we lose ~no quality by dropping the codebook.
 
 ---
 
-## Pipeline (end-to-end, target state)
+## Pipeline (end-to-end, NO new code)
 ```
-calib data ──► [imatrix build]            (our activation importance)
-base fp16 ──► [Hadamard rotate]           (deployable, replaces random-orthogonal)
-          ──► [quantize]  ── Family 1: scalar 2/3/4-bit (GPTQ fmt) + per-layer allocation
-                          └─ Family 2: RVQ D=8 codebook (AQLM fmt) + per-layer allocation
-          ──► [8-bit embeddings]          (the lever)
-          ──► [pack to GGUF / AQLM]       (stays packed; never fp16 in RAM)
-          ──► [LUT decode kernel]         F1: T-MAC/Vec-LUT · F2: AQLM/Arm-codebook
-          ──► [mmap tunnel]               (page in only touched weights)
-          ──► [CPU tok/s + mobile tok/s + PPL]   ← the numbers that judge all 4 goals
+calib data ──► llama-imatrix                 (importance matrix; our activation insight)
+base fp16  ──► llama-quantize                 (scalar sub-4-bit)
+                 --imatrix <file>
+                 --token-embedding-type q8_0  (the embedding lever)
+                 --tensor-type <regex:type>   (our per-layer bit allocation)
+           ──► standard .gguf                 (stays packed; never fp16 in RAM; mmap'd)
+           ──► llama.cpp (+ optional T-MAC)    (existing kernels: CPU/Android/iOS/Metal)
+           ──► llama-perplexity + lm-eval + on-phone tok/s   ← judges all 4 goals
 ```
+Note: arbitrary rotation is NOT expressible in stock GGUF without runtime support, so the
+recipe drops rotation (or uses only GGUF-native transforms). Re-test whether imatrix +
+allocation + 8-bit embeds alone still beats a *well-tuned* stock GGUF — that is the open question.
 
-## Roadmap (priority)
-- **P0** (running): best-quality 3-bit + 4-bit models (`qwen05b_best3`, `qwen05b_best`).
-- **P1 — GGUF + T-MAC spike (Family 1):** emit scalar 3-bit GPTQ + our imatrix + 8-bit embeds,
-  convert to GGUF, build llama.cpp (+T-MAC), measure **real in-RAM MB, CPU tok/s, PPL** vs stock.
-  *This is the fastest way to get the judging numbers.*
-- **P1b — AQLM sanity (Family 2):** confirm our RVQ codebooks load into AQLM; get its PPL/CPU
-  numbers to compare against Family 1. Decides the family question.
-- **P2 — Hadamard rotation swap** in `quantize_full_model.py` (mobile-cheap incoherence).
-- **P3 — mobile build** (Android NDK / iOS) of the winning family; on-device tok/s.
-- **P4 — scale (3B/7B) + diverse calibration + task-accuracy benchmarks.**
+## Roadmap (priority) — all on consumer/free hardware
+- **P0** (running): best-quality reference models 3-bit + 4-bit (`qwen05b_best3/best`) — for our
+  own upper-bound reference; the shipped models come from the GGUF recipe below.
+- **P1 — GGUF recipe spike (no kernel):** build/download llama.cpp, `llama-imatrix` on our
+  calib data, `llama-quantize` at sub-4-bit with `--token-embedding-type q8_0` + `--tensor-type`
+  allocation, vs a *well-tuned* stock GGUF baseline. Measure **in-RAM MB, CPU tok/s, PPL**.
+  Open question: does our recipe beat a well-configured stock quant, and by how much?
+- **P2 — task-accuracy harness:** `lm-eval-harness`, a few tasks, to state the real "≥98%".
+- **P3 — on-phone tok/s:** prebuilt llama.cpp Android app on the owner's own phone.
+- **P4 — scale to 3B** on free Colab/Kaggle; confirm sub-4-bit @ ≥98% holds where it should.
 
 ## Honest risks
-- LUT speedup is biggest at 2-bit (6.7×) vs 4-bit (2.8×) → pushes us to 2–3 bit.
-- Tunneling beyond mmap needs activation sparsity we don't yet have (dense model).
-- Family 1 means our RVQ codebook is not in the shipped model (recipe survives, codebook doesn't).
-- Everything is 0.5B / PPL / in-domain so far. Numbers at scale + on tasks are unproven.
+- The pivot narrows novelty to "a better llama.cpp quant recipe + imatrix + findings." Edge over
+  a *well-tuned* stock GGUF may be MODEST — P1 must honestly measure this, not assume the old win.
+- Our documented GGUF win was vs *downloaded defaults*; a properly-tuned baseline is a harder bar.
+- Dropping rotation may cost some of our quality advantage — P1 tells us.
+- Everything is 0.5B / PPL / in-domain so far. Scale + task numbers still unproven.
 
 ## Sources
 - T-MAC arXiv 2407.00088 · github.com/microsoft/T-MAC

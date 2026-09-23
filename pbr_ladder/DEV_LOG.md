@@ -51,7 +51,18 @@ Governed by [`../AGENTS.md`](../AGENTS.md) RULE 0. If it isn't here, it didn't h
   NEON. Keeps novelty AND gets LUT speed. Cost = writing a new GEMM kernel (weeks). Gated:
   build ONLY if P1 shows scalar-3bit+T-MAC misses 98% and RVQ clears it. Not speculative.
 
+### PIVOT (owner constraint: no weeks for a kernel, no industry infra)
+- **Decision: NO custom kernel, recipe-on-GGUF only.** Drop RVQ codebook + custom LUT-GEMM
+  entirely. Express our method through llama.cpp's EXISTING `llama-quantize`: `llama-imatrix`
+  + `--token-embedding-type q8_0` + `--tensor-type` allocation → standard GGUF → existing
+  kernels (CPU/Android/iOS/Metal). Zero new code. Shannon-wall → scalar ≈ RVQ quality, ~no loss.
+- **Validation = consumer/free hardware:** llama-perplexity (laptop), lm-eval-harness
+  (laptop/free Colab/Kaggle), on-phone tok/s (owner's phone), 3B on free Colab T4/Kaggle P100.
+- **Honest:** novelty narrows to recipe + imatrix + findings; edge over a *well-tuned* stock
+  GGUF may be modest (our old win was vs downloaded defaults). Dropping rotation may cost some
+  advantage. P1 must measure this honestly. Parked: custom kernel, AQLM. See DEPLOYMENT_PLAN.md.
+
 ### Next
-- P1: GGUF + T-MAC feasibility spike — emit scalar 3-bit + imatrix + 8-bit embeds, measure real
-  in-RAM MB / CPU tok/s / PPL. Judges goals 1–2, the F1-vs-F2 call, AND whether the custom
-  kernel is justified. Draft export/convert script (no CPU) while quant runs finish.
+- P1 GGUF recipe spike (no kernel, mostly not CPU-heavy): get llama.cpp, build imatrix on our
+  calib text, quantize sub-4-bit with embed+allocation overrides, compare vs well-tuned stock
+  GGUF on in-RAM MB / CPU tok/s / PPL. Heavy steps wait for the quant runs to free the CPU.
