@@ -7,6 +7,41 @@ Governed by [`../AGENTS.md`](../AGENTS.md) RULE 0. If it isn't here, it didn't h
 
 ## 2026-09-23
 
+### IQ / below-3-bit RESULTS — codebook thesis failed on 0.5B (decisive)
+- Q3_K_M+imatrix 16.509@432MB BEATS IQ3_M+imatrix 16.933@419MB. IQ (codebook) does NOT help at
+  3-bit on 0.5B; IQ shines at 2-bit. IQ2_M tanks to 19.2 PPL for only ~27MB saved (embeddings
+  dominate). q8-embed lever still not worth it.
+- NET: at 0.5B we have NO quant-quality edge over well-tuned stock GGUF beyond stock imatrix
+  (which is llama.cpp's, not ours -> not a differentiator). Only untested lever = fused rotation,
+  whose benefit is largest at 2-bit = pointless on 0.5B.
+- DECISION: STOP optimizing on 0.5B (wrong testbed, embedding-dominated). Next real test = 3B on
+  free Colab/Kaggle, where embeddings ~4% and low-bit+rotation+imatrix can matter. Table:
+  gguf_validation_results.md.
+- Business context (from research): PrismML/Deepgrove hit 98% at 27B-on-phone via ternary QAT
+  (trained-from-scratch, needs GPU infra) -- a bigger effort than our PTQ. Our realistic wedge =
+  "quantize + deploy the customer's OWN model on-device, dead simple" (PTQ+DX), which PrismML
+  (sells fixed models) does not serve. Monetization here = API/licensing/complement/acquisition;
+  "sell for millions" = acquisition, needs traction or standout tech.
+
+
+### DECISION LOCKED — fused offline quantizer -> standard IQ-GGUF (owner)
+- Build ONE offline quantizer that fuses the cheaply-ownable pieces and emits a STANDARD
+  IQ-GGUF (no new kernel, runs on every llama.cpp backend today):
+  Hadamard rotation (baked/fused into adjacent layers, QuaRot-style) -> GPTQ error feedback ->
+  IQ codebook quant (llama.cpp IQ2/IQ3, already kernel-backed on AVX/NEON/Metal) ->
+  imatrix weighting -> per-tensor bit allocation.
+- DROP AQLM + T-MAC (need runtime kernels / weeks / infra — not doable easily). PARKED.
+- Streaming: use llama.cpp mmap now; "our own" streaming layer is a LATER, separate effort.
+- Target regime = below 3-bit (IQ2/IQ3), which is exactly where these components pay off.
+- Honest boundary: beats stock GGUF on quality/size (rotation+feedback+alloc the default lacks);
+  beats AQLM on speed/portability/mobile (it's standard GGUF); does NOT strictly beat AQLM on
+  pure quality-per-bit (that needs AQLM's parked kernel).
+- Licenses: llama.cpp/T-MAC/QuaRot MIT, AQLM Apache-2.0 — all permissive; algorithms not
+  copyrightable, reimplement cleanly with paper attribution; verify each before copying code.
+- Deliverable framing: NOT a new file FORMAT (needs a kernel) but a new QUANTIZER/recipe that
+  produces best-in-class standard IQ-GGUF files.
+
+
 ### GGUF recipe small-validation RESULTS (0.5B, laptop CPU, b11138)
 - Pipeline works end-to-end on consumer hardware (base->imatrix->quantize->PPL->packed gguf).
 - stock Q3_K_M 16.549 @432MB | +imatrix 16.509 @432MB (-0.04 FREE) | +q8 embed/out 16.468 @500MB (+68MB).

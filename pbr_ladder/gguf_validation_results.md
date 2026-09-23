@@ -34,7 +34,34 @@ llama.cpp b11138 CPU build. Runner: `run_validation.sh`. Model params ≈ 494 M.
 - Not matched-size: the recipe row is bigger. A fair "win" test = beat 16.509 at ≤432 MB via
   per-tensor `--tensor-type` allocation (net-neutral). Not yet done.
 
+## IQ (codebook) + below-3-bit results (2026-09-23, same slice/ctx)
+| config | PPL | size | eff bpw |
+|---|---|---|---|
+| **Q3_K_M + imatrix (scalar)** | **16.509** | 432 MB | 7.00 |
+| IQ3_M stock | 17.314 | 419 MB | 6.79 |
+| IQ3_M + imatrix | 16.933 | 419 MB | 6.79 |
+| IQ3_M + imatrix + q8 embed | 16.878 | 487 MB | 7.89 |
+| IQ2_M + imatrix (below-3-bit) | 19.217 | 405 MB | 6.56 |
+| IQ2_M + imatrix + q8 embed | 19.167 | 473 MB | 7.66 |
+
+### Findings (sobering but decisive)
+1. **The IQ-codebook thesis FAILED on 0.5B.** Scalar Q3_K_M+imatrix (16.509) BEATS IQ3_M+imatrix
+   (16.933) at ~equal size. IQ formats shine at 2-bit, not 3-bit; at 3-bit tuned k-quants win.
+2. **imatrix is the one consistent free win** (−0.38 PPL on IQ3, −0.04 on Q3_K_M; no size cost).
+   But imatrix is llama.cpp's, not ours — so it is NOT a differentiator.
+3. **q8-embed lever: still not worth it** (+55–68 MB for ~0.05 PPL). Confirms prior run.
+4. **Below-3-bit on 0.5B is a losing trade:** IQ2_M tanks PPL to 19.2 while saving only ~27 MB
+   vs Q3_K_M (embeddings dominate, so cutting weight bits barely shrinks the file).
+5. **Net: at 0.5B we have NO quant-quality edge over a well-tuned stock GGUF beyond stock imatrix.**
+   The only untested lever is **fused rotation** (QuaRot-style) — but its benefit is largest at
+   2-bit, which is pointless on 0.5B. So rotation, too, only matters at scale.
+
+## DECISION: stop optimizing on 0.5B — it is the wrong testbed
+Every result reconfirms the scale thesis: 0.5B is embedding-dominated, so sub-4-bit is neither
+achievable nor meaningful here. The next real experiment MUST be at **3B** (free Colab/Kaggle),
+where embeddings shrink to ~4% and low-bit + rotation + imatrix finally have room to matter.
+Only there can the ≥98% story be honestly evaluated.
+
 ## Next
-- Matched-size allocation test (`--tensor-type`) at ≤432 MB — can smarter per-layer bits beat
-  imatrix-only at the same size? This is the real remaining lever on 0.5B.
-- Repeat on a 3B model (free Colab/Kaggle) where sub-4-bit-at-98% actually lives.
+- Build the **fused-rotation offline step** (QuaRot/Hadamard baked into weights → standard GGUF).
+- Run the whole recipe on **3B** on free Colab/Kaggle; that is the decisive test, not 0.5B.
