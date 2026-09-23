@@ -224,7 +224,7 @@ CHUNK = int(os.environ.get("PBR_CHUNK", 50000))
 def assign_rows(V, C, chunk=CHUNK):
     return np.concatenate([((V[i:i+chunk]**2).sum(1)[:, None] - 2*V[i:i+chunk]@C.T
                              + (C**2).sum(1)[None]).argmin(1) for i in range(0, len(V), chunk)])
-def kmeans(V, k, it=10, chunk=CHUNK):
+def kmeans(V, k, it=int(os.environ.get("PBR_KMEANS_IT", 10)), chunk=CHUNK):
     rng = np.random.default_rng(0)
     C = V[rng.choice(len(V), k, replace=False)]
     for _ in range(it):
@@ -248,6 +248,27 @@ def beam_assign(Rb, books, B):
         recon = np.take_along_axis(cand.reshape(n, bb*k, -1), idx[:, :, None], axis=1)
     fd = ((Rb[:, None, :] - recon)**2).sum(-1)
     return recon[np.arange(n), fd.argmin(1)]
+
+LOWRANK = int(os.environ.get("PBR_LOWRANK", "0"))   # rank of activation-weighted residual correction (0=off)
+def lowrank_correct(W, Wq, H, r):
+    """Add a rank-r, 8-bit low-rank correction to Wq, fit to minimize the activation-
+    metric residual ||A(W-Wq-UV^T)^T||^2 with H = A^T A / n. Harvests the low-rank
+    activation-subspace error the (output-blind) VQ leaves behind. Cost r*(O+I)*8 bits."""
+    E = W - Wq
+    ev, Ug = np.linalg.eigh(H); ev = ev[::-1]; Ug = Ug[:, ::-1]
+    sq = np.sqrt(np.clip(ev, 0, None))
+    B = (E @ Ug) * sq[None, :]
+    P, S, Qt = np.linalg.svd(B, full_matrices=False)
+    r = min(r, len(S))
+    Br = (P[:, :r] * S[:r]) @ Qt[:r]
+    inv = np.where(sq > 1e-9, 1.0 / sq, 0.0)
+    C = (Br * inv[None, :]) @ Ug.T
+    Pc, Sc, Qc = np.linalg.svd(C, full_matrices=False)
+    def q8(X):
+        m = np.abs(X).max()
+        return np.round(X / m * 127) * (m / 127) if m > 0 else X
+    Uf = q8(Pc[:, :r] * np.sqrt(Sc[:r])); Vf = q8(np.sqrt(Sc[:r])[:, None] * Qc[:r])
+    return Wq + Uf @ Vf
 
 def quantize_linear(Wt, H, stages, name="", li=0):
     """Wt: torch weight (out, in). H: numpy (in, in) uncentered covariance of its real inputs.
@@ -303,6 +324,8 @@ def quantize_linear(Wt, H, stages, name="", li=0):
         if j + D < I:
             T[:, j+D:] -= (T[:, b] - Q[:, b]) @ np.linalg.solve(U[b, b], U[b, j+D:])
     Wq = Ro.T @ Q @ Ri.T
+    if LOWRANK > 0:
+        Wq = lowrank_correct(W, Wq, H, LOWRANK)
     return torch.from_numpy(Wq).to(Wt.dtype)
 
 def index_bpw(stages):
