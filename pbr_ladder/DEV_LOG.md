@@ -7,6 +7,18 @@ Governed by [`../AGENTS.md`](../AGENTS.md) RULE 0. If it isn't here, it didn't h
 
 ## 2026-09-23
 
+### GGUF recipe small-validation RESULTS (0.5B, laptop CPU, b11138)
+- Pipeline works end-to-end on consumer hardware (base->imatrix->quantize->PPL->packed gguf).
+- stock Q3_K_M 16.549 @432MB | +imatrix 16.509 @432MB (-0.04 FREE) | +q8 embed/out 16.468 @500MB (+68MB).
+- HONEST: imatrix = free win; q8-embed lever NOT worth it vs a *well-tuned* stock GGUF (k-quants
+  already quantize embeddings). Edge over tuned stock GGUF is small. Earlier "beat GGUF" was vs
+  downloaded defaults / our own fp16-embed mistake, not a tuned baseline.
+- SCALE THESIS CONFIRMED: on 0.5B even Q3_K_M is ~7 eff bpw (embeddings 27.5% of params dominate).
+  Sub-4-bit-at-quality only real at 3B-7B. Full table: gguf_validation_results.md. Script:
+  run_gguf_validation.sh.
+- Next: matched-size --tensor-type allocation test (<=432MB); then repeat on 3B (free Colab/Kaggle).
+
+
 ### Repo triage of LUT / codebook runtimes (verified via repos + papers)
 - **Correction to an earlier optimistic claim:** T-MAC and Vec-LUT are **scalar** ultra-low-bit
   LUT accelerators, **not** vector-codebook kernels. Verified:
