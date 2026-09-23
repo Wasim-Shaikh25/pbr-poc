@@ -339,8 +339,10 @@ def cmd_run(args) -> int:
         raise SystemExit(f"model not found: {model}")
     cli_bin = find_bin("llama-cli", args.llama_bin)
     print("generating (proves the handed-over file runs)...\n")
+    # Cap context: long-context models (e.g. phi-3.5 = 128K) otherwise try to
+    # allocate a huge KV cache and OOM. -c bounds it to what we actually need.
     out = _run([cli_bin, "-m", str(model), "-p", args.prompt,
-                "-n", str(args.n_predict), "-st"], quiet=True)
+                "-n", str(args.n_predict), "-c", str(args.ctx), "-st"], quiet=True)
     # print only the generated tail, not the load spam
     print(out[-1500:])
     return 0
@@ -377,6 +379,8 @@ def main() -> int:
     sr.add_argument("--model", required=True)
     sr.add_argument("--prompt", default="Hello, my name is")
     sr.add_argument("--n-predict", type=int, default=64)
+    sr.add_argument("--ctx", type=int, default=2048, help="context cap (bounds KV cache; "
+                                                          "raise only if you need long prompts)")
     sr.set_defaults(func=cmd_run)
 
     args = p.parse_args()
