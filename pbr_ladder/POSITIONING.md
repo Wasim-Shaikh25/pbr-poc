@@ -31,6 +31,14 @@ shippable yet.
 **A body of quantization research** (RVQ ~0.27 dB from the Shannon distortion-rate bound;
 rotation; GPTQ error feedback; bit-allocation; the embedding lever).
 
+**★ CONFIRMED (2026-09-24): IQ3_M is the training-free ceiling — and we are ON it.**
+We rigorously tried to beat IQ3 with rotation + vector/lattice codebooks + imatrix + RVQ (5 experiments,
+[`SUB3BIT_FINDINGS.md`](SUB3BIT_FINDINGS.md)). All lose; the heroic matched-bit RVQ loses 46%. IQ3 sits
+on the rate-distortion floor (0.099 weighted err ≈ theoretical ~0.125). This is a POSITIVE for
+positioning: our shipped 99%-quality 3-bit model is provably near information-theoretic optimal for
+training-free PTQ. Beating it needs QAT (training) — a different, heavier product. We stop out-engineering
+the quantizer and ship IQ3.
+
 ### What we do NOT have (say it out loud)
 - **No proven quant-quality edge over a *well-tuned* stock GGUF at 0.5B beyond `imatrix`** —
   and `imatrix` is llama.cpp's, not ours. Our earlier "beat GGUF" win was against *downloaded

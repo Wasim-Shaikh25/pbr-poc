@@ -7,6 +7,27 @@ Governed by [`../AGENTS.md`](../AGENTS.md) RULE 0. If it isn't here, it didn't h
 
 ## 2026-09-24
 
+### SUB-3-BIT / ROTATION / VECTOR-CODEBOOK INVESTIGATION — ❌ cannot beat IQ3 (DECISION: ship IQ3)
+- Goal: beat IQ3_M training-free — below 3 bpw @ ≥98%, or 99% at fewer bits than 3.86.
+- 5 convergent NEGATIVES on real Qwen2.5-3B weights (scripts: rotation_spike, vector_codebook_spike,
+  beat_iq3, beat_iq3_imatrix, heroic_rvq .py):
+  1. rotation+VQ → loses 26–34% vs IQ3
+  2. rotation alone → neutral (0.1614 vs 0.1603); it decorrelates, which VQ needs → no synergy
+  3. imatrix-weighted VQ (weighted-error space) → loses 50%
+  4. heroic RVQ + imatrix + MATCHED per-tensor bits → loses 46% (IQ3 0.099 vs ours 0.144, all 9 tensors)
+  5. rate-distortion: IQ3 (0.099 wtd / 0.126 plain) sits ON the Gaussian floor (~0.125 @ 3 bpw)
+- Mechanisms DO work in isolation (0.5B: rotation flattens outliers kurtosis 22.8→6.6, max/std 42→7;
+  VQ beats scalar 15–38%) but do NOT beat IQ3, which has lattice codebook + GPTQ error-feedback +
+  mixed precision. Leech-lattice VQ (LLVQ, arXiv 2603.11021) is proven-optimal codebook, beats
+  QuIP#/QTIP ~14% at 2-bit — but can't bridge a 46% gap, and at 3 bpw ≈ parity w/ IQ3 (months of
+  CPU-kernel work for ~15% size win, no buzz). "Invent a new codebook by combining" is impossible:
+  Leech is the singular proven optimum in 24D.
+- Also captured this session: IQ2_S+imatrix = 2.75 bpw, PPL 14.12, HellaSwag 90.8% (confirms cliff).
+- Kernel note: online-Hadamard IS merged in mainline llama.cpp (PR #21038, KV path); no merged
+  weight-quant rotated codebook type (TurboQuant PR closed unmerged).
+- DECISION: ship IQ3_M (99% @ 3.86 bpw); stop quantizer chase; pivot energy to product/demo.
+  Full writeup: SUB3BIT_FINDINGS.md. Only wall-mover = training (QAT), breaks the training-free wedge.
+
 ### 3B TASK-ACCURACY — ✅ PASS: IQ3+imatrix retains 99.1% at 3.86 bpw (proof point)
 - HellaSwag (1000 tasks) via llama.cpp --hellaswag. Retention vs Q4_K_M (near-lossless proxy):
   | model | bpw | acc | retention |
