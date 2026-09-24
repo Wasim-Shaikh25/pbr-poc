@@ -6,11 +6,20 @@ journal: [`DEV_LOG.md`](DEV_LOG.md). Evidence: [`gguf_validation_results.md`](gg
 
 ---
 
-## 1. What we honestly have (as of 2026-09-23)
+## 1. What we honestly have (as of 2026-09-24)
+
+**★ A PROVEN sub-4-bit-at-quality result at 3B** ([`results_3b_taskacc.md`](results_3b_taskacc.md)):
+`IQ3_M + imatrix` on Qwen2.5-3B is **3.86 bpw (genuinely sub-4-bit), 23% smaller than Q4_K_M,
+and retains 99.1% of Q4-level HellaSwag accuracy** (1000 tasks) — statistically
+indistinguishable from Q4. This clears the ≥98% product bar on a real downstream task, not
+just PPL. It was impossible at 0.5B (embedding-dominated), which is why scale was mandatory.
+Honest asterisks: retention is vs a Q4 near-lossless proxy (f16 deleted to save disk; vs true
+fp16 likely ~98.5–99%), 1000/10042 tasks, one task family. But the core claim now has teeth.
 
 **A working, CPU-only, no-infra pipeline** ([`pbr_pipeline.py`](pbr_pipeline.py)) that turns
 any base model into a standard sub-4-bit GGUF + an auditable manifest, in minutes on a
-laptop. Proven end-to-end on 0.5B: 145 s to quantize, 432 MB out, runs under llama.cpp.
+laptop. Proven end-to-end on 0.5B (145 s, 432 MB) and 3B (the result above), model-agnostic
+(Qwen + phi3 tested). Ship recipe: `ship-sub4` = IQ3_M + imatrix.
 
 **A real "tunnel" result** ([`../artifacts/disk_ram_tunnel.md`](../artifacts/disk_ram_tunnel.md)):
 weights stay on disk, RAM holds only the working set — **0.078× peak RSS vs full-load
@@ -26,8 +35,10 @@ rotation; GPTQ error feedback; bit-allocation; the embedding lever).
 - **No proven quant-quality edge over a *well-tuned* stock GGUF at 0.5B beyond `imatrix`** —
   and `imatrix` is llama.cpp's, not ours. Our earlier "beat GGUF" win was against *downloaded
   defaults* / our own fp16-embed mistake, not a tuned baseline.
-- **No 3B/7B result yet.** The whole sub-4-bit-at-≥98% thesis is a *scale* claim, still untested.
-- **No task-accuracy numbers** (only PPL, in-domain, tiny slice).
+- ~~No 3B/7B result yet~~ → **DONE at 3B** (above). 7B still untested, but the thesis now has one solid proof point.
+- ~~No task-accuracy numbers~~ → **DONE** (HellaSwag 99.1% retention). Broader tasks (MMLU/ARC) still worth adding before a hard marketing claim.
+- **Still no *novel quantizer*** — the win uses stock llama.cpp IQ3 + imatrix. The moat is the pipeline (DX + provenance) + the validated recipe/findings, not a new algorithm.
+- **No on-phone tok/s measured** on a real device yet.
 - **No custom kernel, no mobile tok/s measured on-device yet.**
 
 Selling anything beyond this list today would be dishonest. The next section is how we

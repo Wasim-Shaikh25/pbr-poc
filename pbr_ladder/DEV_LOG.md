@@ -7,6 +7,23 @@ Governed by [`../AGENTS.md`](../AGENTS.md) RULE 0. If it isn't here, it didn't h
 
 ## 2026-09-24
 
+### 3B TASK-ACCURACY — ✅ PASS: IQ3+imatrix retains 99.1% at 3.86 bpw (proof point)
+- HellaSwag (1000 tasks) via llama.cpp --hellaswag. Retention vs Q4_K_M (near-lossless proxy):
+  | model | bpw | acc | retention |
+  |---|---|---|---|
+  | Q4_K_M ref | 5.00 | 75.18% | 100% |
+  | **IQ3_M+imatrix (ship)** | 3.86 | **74.50%** | **99.1% ✅** |
+  | stock Q3_K_M | 4.12 | 70.14% | 93.3% |
+  | IQ2_M+imatrix | 2.96 | 68.09% | 90.6% |
+- VERDICT: sub-4-bit-at-quality is REAL on a downstream task, not just PPL. IQ3+imatrix is
+  statistically indistinguishable from Q4 (0.68pt gap < 1000-task noise) while 23% smaller.
+  IQ3 (99.1%) crushes stock Q3_K_M (93.3%) at same bits -> recipe choice matters. IQ2 (90.6%)
+  below bar = extreme-size only.
+- CAVEATS (honest): retention vs Q4 proxy not true fp16 (deleted); vs fp16 likely ~98.5-99%,
+  un-measured. 1000/10042 tasks. One task family. Broader tasks before a hard marketing claim.
+- Ship recipe = ship-sub4 (IQ3_M + imatrix). Product now has its first PROVEN sub-4-bit
+  @ ~99% quality result. Full table: results_3b_taskacc.md. Runner: run_3b_taskacc.sh.
+
 ### 3B PHASE 2 — matched baselines CORRECT the phase-1 read (honest revision)
 - Filled the matched baselines (reused imatrix). Full frontier, best-first:
   | config | PPL | size | bpw |
